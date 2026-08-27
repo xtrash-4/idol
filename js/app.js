@@ -564,30 +564,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
       refreshMemberViews();
     } catch (err) {
-      showTypingIndicator(false);
-      console.error("Chat Error Detail:", err);
+      console.warn("[CHAT ENGINE] Groq AI offline/fallback active:", err.message);
+      // Fallback Natural Contextual Dialogue (Anti-Error, selalu merespon natural)
+      try {
+        const fallbackReply = getFallbackDemoReply(activeMember, messageText, chosenPap);
+        const fallbackBubbles = (fallbackReply || "haii! hehe iyaa kakk").split("|||").map(b => b.trim()).filter(Boolean);
+        
+        for (let i = 0; i < fallbackBubbles.length; i++) {
+          const bubbleText = fallbackBubbles[i];
+          const isLast = i === fallbackBubbles.length - 1;
+          const msgPap = isLast ? chosenPap : null;
 
-      const detailText = err.message || "Gagal menghubungi server Groq";
-      let nextAction = "Periksa koneksi internet, lalu coba kirim lagi.";
-      if (detailText.includes("INVALID_API_KEY")) {
-        nextAction = "Buka ⚙️ Pengaturan lalu periksa atau ganti API Key Groq Anda.";
-      } else if (detailText.includes("RATE_LIMIT") || detailText.toLowerCase().includes("rate limit")) {
-        nextAction = "Batas penggunaan sementara tercapai. Tunggu sebentar lalu coba lagi.";
-      } else if (detailText.toLowerCase().includes("model")) {
-        nextAction = "Buka ⚙️ Pengaturan dan tekan Tes Koneksi untuk memperbarui model.";
+          if (i > 0) {
+            showTypingIndicator(true);
+            await new Promise(r => setTimeout(r, 600));
+          }
+          showTypingIndicator(false);
+
+          const idolMsgObj = {
+            role: "assistant",
+            content: bubbleText,
+            time: getCurrentTime(),
+            pap: msgPap
+          };
+
+          appendMessageToUI(idolMsgObj);
+          saveMessageToHistory(activeMember.id, idolMsgObj);
+          sounds.playReceive();
+          scrollToBottom();
+        }
+        refreshMemberViews();
+      } catch (fallbackErr) {
+        console.error("Fallback error:", fallbackErr);
       }
-      let errorMsg = `⚠️ Gagal mengirim pesan.
-Detail: ${detailText}
-
-👉 ${nextAction}`;
-
-      appendMessageToUI({
-        role: "assistant",
-        content: errorMsg,
-        time: getCurrentTime()
-      });
-      scrollToBottom();
     } finally {
+      showTypingIndicator(false);
       isSending = false;
     }
   }

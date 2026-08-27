@@ -262,10 +262,6 @@ class GroqService {
    */
   async sendChat(member, chatHistory, userMessage, userName = "Kamu", attachedPap = null) {
     const apiKey = this.getApiKey();
-    if (!apiKey) {
-      throw new Error("NO_API_KEY");
-    }
-
     const groupName = member.group || (member.generation?.includes("NewJeans") ? "NewJeans" : "JKT48");
 
     // Bangun System Prompt yang sangat ketat untuk logika chat manusia asli
