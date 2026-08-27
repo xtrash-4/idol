@@ -22,18 +22,22 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
       - name: Copy Web Assets to Android Assets
         run: |
           mkdir -p android/app/src/main/assets
-          cp -r index.html css js member_photos manifest.json *.png *.jpg android/app/src/main/assets/ 2>/dev/null || true
+          cp -r index.html css js member_photos manifest.json *.jpg *.png android/app/src/main/assets/ 2>/dev/null || true
 
-      - name: Build Debug APK with Gradle
+      - name: Build Debug APK
         working-directory: ./android
         run: |
-          gradle assembleDebug || (chmod +x gradlew 2>/dev/null; ./gradlew assembleDebug)
+          gradle assembleDebug || ./gradlew assembleDebug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: MPRUYY-HALU-Android-APK
           path: android/app/build/outputs/apk/debug/*.apk
+          retention-days: 30
