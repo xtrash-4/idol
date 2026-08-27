@@ -1,0 +1,28 @@
+# Android build output
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+*.apk
+*.aab
+
+# Node & Temp files
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+face_detection_yunet_2023mar.onnx
+
+# Scratch & test scripts
+test_*.py
+test_*.png
+debug_*.py
+check_cards.py
+update_*.py
+download_*.py
+verify_*.py
+
+# Environment variables
+.env
+.env.local
+.vercel/

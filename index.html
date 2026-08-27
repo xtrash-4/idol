@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>MPRUYY HALU ✨ — Chat Idol JKT48 & NewJeans</title>
+  <meta name="description" content="Aplikasi simulasi chat 1-on-1 idol JKT48 & NewJeans dengan Foto PAP HD & Instagram Story 24 Jam.">
+
+  <!-- Android & iOS PWA Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#070913">
+  <meta name="application-name" content="MPRUYY HALU">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="jkt48 logo.png">
+  <link rel="apple-touch-icon" href="jkt48 logo.png">
+
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- App Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Ambient Liquid Glass Canvas (Glowing Mesh Orbs for Refraction & Frost) -->
+  <div class="ambient-canvas" aria-hidden="true">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+    <div class="ambient-orb orb-4"></div>
+  </div>
+
+  <div id="app-container">
+    
+    <!-- ==========================================================================
+         LOBBY SCREEN: Member Selection Screen (Masuk Pertama / Pilih Idol)
+         ========================================================================== -->
+    <section class="lobby-view" id="lobby-view">
+      <div class="lobby-container">
+        
+        <!-- Lobby Top Header -->
+        <header class="lobby-header">
+          <div class="brand-badge">
+            <div class="brand-logo">MH</div>
+            <div class="brand-info">
+              <h1>MPRUYY HALU</h1>
+              <p>Official Direct Message (JKT48 & NewJeans)</p>
+            </div>
+          </div>
+
+          <div class="lobby-top-actions">
+            <button class="btn-lobby-action" id="btn-open-add-member" title="Tambah Oshi / Idol Custom">
+              <i class="fa-solid fa-plus"></i> Tambah Custom
+            </button>
+            <button class="btn-lobby-action" id="btn-lobby-sound" title="Toggle Suara">
+              <i class="fa-solid fa-volume-high"></i>
+            </button>
+            <button class="btn-lobby-action" id="btn-lobby-user" title="Profil Pengguna">
+              <i class="fa-regular fa-user"></i> <span id="lobby-user-name">Fans Setia</span>
+            </button>
+            <button class="btn-lobby-action" id="btn-lobby-settings" title="Pengaturan Groq API Key">
+              <i class="fa-solid fa-gear"></i> Pengaturan
+            </button>
+          </div>
+        </header>
+
+        <!-- Lobby Hero Banner -->
+        <div class="lobby-hero">
+          <div class="lobby-badge"><i class="fa-solid fa-sparkles"></i> PILIH GRUP IDOL</div>
+          <h2>Mau chat dengan siapa hari ini?</h2>
+          <p>Pilih grup di bawah ini untuk melihat daftar member secara terpisah.</p>
+
+          <!-- Group Switcher (JKT48 vs NewJeans) -->
+          <div class="lobby-group-switch-wrapper">
+            <div class="group-switcher-tabs" id="group-switcher-tabs">
+              <button class="group-tab-btn active jkt48-tab" data-group="JKT48" type="button">
+                <img src="jkt48 logo.jpg" alt="JKT48 Logo" class="group-tab-logo jkt48">
+                <div class="group-tab-meta">
+                  <span class="group-tab-name">JKT48</span>
+                  <span class="group-tab-desc">8 Member Oshi</span>
+                </div>
+              </button>
+              <button class="group-tab-btn newjeans-tab" data-group="NewJeans" type="button">
+                <img src="newjeans logo.jpg" alt="NewJeans Logo" class="group-tab-logo newjeans">
+                <div class="group-tab-meta">
+                  <span class="group-tab-name">NewJeans</span>
+                  <span class="group-tab-desc">5 Member K-Pop</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Search & Sub-Filter Bar -->
+          <div class="lobby-controls">
+            <div class="lobby-search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="lobby-search-input" placeholder="Cari nama atau panggilan member...">
+            </div>
+            <div class="lobby-filter-pills" id="lobby-filter-pills">
+              <!-- Dynamically populated based on active group -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Lobby Member Grid -->
+        <div class="lobby-grid" id="lobby-grid">
+          <!-- Rendered dynamically via JavaScript -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         FULL-SCREEN CHAT INTERFACE (100% Dedicated 1-on-1 Room)
+         ========================================================================== -->
+    <div class="chat-layout" id="chat-layout">
+      
+      <!-- MAIN CHAT VIEW (Full-Screen Dedicated Room) -->
+      <main class="chat-view">
+        
+        <!-- Chat Header -->
+        <header class="chat-header">
+          <div class="chat-header-left" id="header-member-info">
+            <button class="btn-chat-back" id="btn-header-back-lobby" title="Kembali ke Pilihan Idol">
+              <i class="fa-solid fa-arrow-left"></i> <span>Ganti Idol</span>
+            </button>
+            <div class="header-avatar-wrap">
+              <img src="" alt="Avatar" class="header-avatar" id="active-header-avatar">
+              <div class="online-dot"></div>
+            </div>
+            <div class="header-details">
+              <h2 id="active-header-name">Michelle Alexandra <span class="member-badge" id="active-header-gen">Gen 11</span></h2>
+              <p>
+                <span class="header-status-indicator"></span>
+                <span id="active-header-status">Online</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="chat-header-actions">
+            <button class="header-action-btn btn-pap" id="btn-request-pap" title="Minta Foto PAP dari Idol">
+              <i class="fa-solid fa-camera"></i> <span>Minta PAP</span>
+            </button>
+            <button class="header-action-btn" id="btn-reset-chat" title="Bersihkan Obrolan Ini">
+              <i class="fa-solid fa-rotate-right"></i> <span>Reset</span>
+            </button>
+            <button class="header-action-btn" id="btn-open-profile-drawer" title="Profil Lengkap Idol & Galeri PAP">
+              <i class="fa-solid fa-circle-info"></i> <span>Profil</span>
+            </button>
+            <button class="header-action-btn" id="btn-header-settings" title="Pengaturan Groq API Key">
+              <i class="fa-solid fa-gear"></i>
+            </button>
+          </div>
+        </header>
+
+        <!-- Chat Messages Container -->
+        <div class="chat-messages-wrapper">
+          <div class="chat-messages-container" id="chat-messages">
+            <!-- Welcome Banner & Message history dynamically rendered -->
+          </div>
+
+          <!-- Typing Indicator -->
+          <div class="typing-row" id="typing-indicator">
+            <div class="typing-bubble">
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+            </div>
+            <span class="typing-label" id="typing-label">Sedang mengetik...</span>
+          </div>
+
+          <!-- Quick Suggestion Prompts -->
+          <div class="quick-prompts-bar" id="quick-prompts">
+            <button class="quick-chip" data-prompt="haii, lagi apa nih?">
+              <i class="fa-regular fa-comment-dots"></i> Lagi apa nih?
+            </button>
+            <button class="quick-chip" data-prompt="lagi sibuk ga? mau ngobrol dong">
+              <i class="fa-regular fa-message"></i> Mau ngobrol dong
+            </button>
+            <button class="quick-chip" data-prompt="minta pap foto kamu dong, kangen nih">
+              <i class="fa-solid fa-camera"></i> Minta PAP dong
+            </button>
+            <button class="quick-chip" data-prompt="gombalin aku dong">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Gombalin aku dong
+            </button>
+            <button class="quick-chip" data-prompt="udah makan belum hari ini?">
+              <i class="fa-regular fa-clock"></i> Udah makan belum?
+            </button>
+          </div>
+
+          <!-- Chat Input Bar -->
+          <div class="chat-input-container">
+            <form class="chat-input-form" id="chat-form">
+              <button type="button" class="input-tool-btn" id="btn-attach-pap" title="Minta Foto PAP">
+                <i class="fa-solid fa-camera"></i>
+              </button>
+              <textarea 
+                id="chat-input" 
+                class="chat-textarea" 
+                placeholder="Ketik pesan santai... (Enter untuk kirim)"
+                rows="1"
+              ></textarea>
+              <button type="submit" class="btn-send-message" id="btn-send" title="Kirim Pesan">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <!-- ==========================================================================
+         MEMBER PROFILE DRAWER (Right Sidebar)
+         ========================================================================== -->
+    <div class="profile-drawer" id="profile-drawer">
+      <div class="drawer-header">
+        <h3>Profil Oshi</h3>
+        <button class="btn-close-modal" id="btn-close-drawer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="drawer-body">
+        <div class="drawer-profile-hero">
+          <img src="" alt="Avatar" class="drawer-avatar" id="drawer-avatar">
+          <div class="drawer-hero-name" id="drawer-name">Freya Jayawardana</div>
+          <div class="drawer-hero-sub" id="drawer-gen">Generasi 7 JKT48</div>
+        </div>
+
+        <div class="drawer-section-title">Jikoshoukai (Catchphrase)</div>
+        <div class="welcome-banner" style="margin-bottom: 18px; padding: 14px;">
+          <p id="drawer-jiko" style="font-size: 13px; color: #fda4af; font-style: italic;"></p>
+        </div>
+
+        <div class="drawer-section-title">Karakteristik & Minat</div>
+        <div class="drawer-tags-wrap" id="drawer-tags">
+          <!-- Injected via JS -->
+        </div>
+
+        <div class="drawer-section-title">Galeri Foto & PAP Member</div>
+        <div class="pap-gallery-grid" id="drawer-gallery">
+          <!-- Injected via JS -->
+        </div>
+
+        <div class="drawer-section-title" style="margin-top: 24px;">Kelola Obrolan</div>
+        <button class="btn-secondary" id="btn-clear-current-chat" style="width: 100%; color: #f87171; border-color: rgba(239, 68, 68, 0.3);">
+          <i class="fa-solid fa-trash-can"></i> Hapus Riwayat Chat Ini
+        </button>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL: Groq API Key Setup
+         ========================================================================== -->
+    <div class="modal-overlay" id="modal-settings">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-key" style="color: var(--accent-gold);"></i> Pengaturan Groq API Key</h3>
+          <button class="btn-close-modal" id="btn-close-settings">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="api-steps-box">
+            <strong>Cara Dapatkan Groq API Key 100% GRATIS:</strong>
+            <ol>
+              <li>Buka <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys <i class="fa-solid fa-arrow-up-right-from-square"></i></a></li>
+              <li>Login dengan akun Google / GitHub (Tanpa Kartu Kredit).</li>
+              <li>Klik tombol <strong>"Create API Key"</strong>.</li>
+              <li>Salin kuncinya (berawalan <code>gsk_...</code>) dan tempel di bawah ini.</li>
+            </ol>
+          </div>
+
+          <form id="settings-form">
+            <div class="form-group">
+              <label for="input-groq-key">Groq API Key (gsk_...)</label>
+              <input type="password" id="input-groq-key" class="form-control" placeholder="gsk_xxxxxxxxxxxxxxxxxxxxxxxxx" required autocomplete="off">
+              <p class="help-text">API Key disimpan aman hanya di memori browser lokal (localStorage) Anda.</p>
+            </div>
+
+            <div class="form-group">
+              <label for="select-groq-model">Model AI</label>
+              <select id="select-groq-model" class="form-control">
+                <option value="openai/gpt-oss-120b" selected>GPT-OSS 120B (🧠 Percakapan Paling Alami)</option>
+                <option value="qwen/qwen3.6-27b">Qwen 3.6 27B (⚖️ Seimbang)</option>
+                <option value="openai/gpt-oss-20b">GPT-OSS 20B (⚡ Cepat)</option>
+              </select>
+              <p class="help-text">Daftar model akan disesuaikan otomatis dengan model yang tersedia untuk API key Anda.</p>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btn-remove-api-key">Hapus Key</button>
+          <button type="button" class="btn-secondary" id="btn-test-api-key" style="border-color: rgba(245, 158, 11, 0.4); color: var(--accent-gold);">
+            <i class="fa-solid fa-bolt"></i> Tes Koneksi
+          </button>
+          <button type="button" class="btn-primary" id="btn-save-settings">Simpan & Aktifkan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL: Tambah Custom Member / Oshi
+         ========================================================================== -->
+    <div class="modal-overlay" id="modal-add-member">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-user-plus" style="color: var(--accent-jkt48);"></i> Tambah Oshi Custom</h3>
+          <button class="btn-close-modal" id="btn-close-add-member">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="custom-member-form">
+            <div class="form-group">
+              <label for="custom-name">Nama Lengkap Member</label>
+              <input type="text" id="custom-name" class="form-control" placeholder="Contoh: Reva Fidela" required>
+            </div>
+            <div class="form-group">
+              <label for="custom-nickname">Nama Panggilan / Nickname</label>
+              <input type="text" id="custom-nickname" class="form-control" placeholder="Contoh: Adel" required>
+            </div>
+            <div class="form-group">
+              <label for="custom-gen">Generasi / Sub-unit</label>
+              <input type="text" id="custom-gen" class="form-control" placeholder="Contoh: Generasi 8" required>
+            </div>
+            <div class="form-group">
+              <label for="custom-avatar">Link Foto Avatar (URL)</label>
+              <input type="url" id="custom-avatar" class="form-control" placeholder="https://..." value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400">
+            </div>
+            <div class="form-group">
+              <label for="custom-jiko">Jikoshoukai (Catchphrase)</label>
+              <input type="text" id="custom-jiko" class="form-control" placeholder="Contoh: Bagaikan kucing yang selalu lincah..." required>
+            </div>
+            <div class="form-group">
+              <label for="custom-persona">Deskripsi Karakter & Gaya Ketikan</label>
+              <textarea id="custom-persona" class="form-control" rows="3" placeholder="Sebutkan sifat khas, apakah tomboy, suka emoji apa, gaya ketikan santai/manja/cuek..." required></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btn-cancel-add-member">Batal</button>
+          <button type="button" class="btn-primary" id="btn-save-custom-member">Tambah Member</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL: Edit User Profile (Fan Name)
+         ========================================================================== -->
+    <div class="modal-overlay" id="modal-user-profile">
+      <div class="modal-card" style="max-width: 420px;">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-id-badge" style="color: var(--accent-gold);"></i> Profil Fans Kamu</h3>
+          <button class="btn-close-modal" id="btn-close-user-profile">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="input-user-name">Nama Panggilan Kamu</label>
+            <input type="text" id="input-user-name" class="form-control" placeholder="Masukkan nama kamu (misal: Budi, Rian)">
+            <p class="help-text">Nama ini akan digunakan oleh member JKT48 saat membalas chat dan menyapamu!</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-primary" id="btn-save-user-profile">Simpan Nama</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL: Instagram / Weverse-Style 24-Hour Story Player
+         ========================================================================== -->
+    <div class="story-player-modal" id="story-player-modal">
+      <div class="story-player-backdrop" id="story-player-backdrop"></div>
+      <div class="story-player-card" id="story-player-card">
+        <!-- Story Progress Bars -->
+        <div class="story-progress-container" id="story-progress-container">
+          <!-- Dynamically populated bars -->
+        </div>
+
+        <!-- Story Header -->
+        <div class="story-player-header">
+          <div class="story-author-info">
+            <div class="story-author-avatar-wrap">
+              <img src="" alt="Avatar" class="story-author-avatar" id="story-author-avatar">
+            </div>
+            <div class="story-author-meta">
+              <span class="story-author-name" id="story-author-name">Michelle Alexandra</span>
+              <span class="story-timestamp" id="story-timestamp">2 jam lalu</span>
+            </div>
+          </div>
+          <button class="btn-story-close" id="btn-story-close" title="Tutup Story">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Story Main Media & Overlays -->
+        <div class="story-media-container" id="story-media-container">
+          <img src="" alt="Story Media" class="story-main-image" id="story-main-image">
+          
+          <!-- Tap areas for left (prev) and right (next) -->
+          <div class="story-tap-zone left" id="story-tap-prev" title="Slide Sebelumnya"></div>
+          <div class="story-tap-zone right" id="story-tap-next" title="Slide Selanjutnya"></div>
+
+          <!-- Interactive Story Stickers -->
+          <div class="story-stickers-layer" id="story-stickers-layer">
+            <div class="story-sticker location" id="story-sticker-location">
+              <i class="fa-solid fa-location-dot"></i> <span id="story-location-text">JKT48 Theater, FX Sudirman</span>
+            </div>
+            <div class="story-sticker music" id="story-sticker-music">
+              <i class="fa-solid fa-music"></i> <span id="story-music-text">Heavy Rotation • JKT48</span>
+            </div>
+            <div class="story-sticker time-badge" id="story-sticker-time">14:30</div>
+          </div>
+
+          <!-- Story Text Caption Overlay -->
+          <div class="story-caption-overlay" id="story-caption-overlay">
+            <p id="story-caption-text">GR teater hari ini seru bangett, sampai ketemu nanti malam yaa! ✨💖</p>
+          </div>
+        </div>
+
+        <!-- Story Footer & Reply Bar -->
+        <div class="story-player-footer">
+          <div class="story-reply-box">
+            <input type="text" id="story-reply-input" placeholder="Kirim balasan story..." autocomplete="off">
+            <button class="btn-story-send-reply" id="btn-story-send-reply" title="Kirim Balasan">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+          <div class="story-quick-reactions">
+            <button class="btn-story-emoji" data-emoji="❤️">❤️</button>
+            <button class="btn-story-emoji" data-emoji="🔥">🔥</button>
+            <button class="btn-story-emoji" data-emoji="😍">😍</button>
+            <button class="btn-story-emoji" data-emoji="💖">💖</button>
+            <button class="btn-story-emoji" data-emoji="😭">😭</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         LIGHTBOX: Image / PAP Preview
+         ========================================================================== -->
+    <div class="lightbox-modal" id="lightbox-modal">
+      <div class="lightbox-img-wrap">
+        <img src="" alt="PAP Preview" id="lightbox-img">
+        <div class="lightbox-caption" id="lightbox-caption"></div>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         TOAST NOTIFICATION
+         ========================================================================== -->
+    <div class="toast-notification" id="toast-notification">
+      <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+      <span id="toast-message">Pengaturan berhasil disimpan!</span>
+    </div>
+
+  </div>
+
+  <!-- App Scripts -->
+  <script src="js/sound.js"></script>
+  <script src="js/members.js"></script>
+  <script src="js/groq-api.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => {
+          console.log('[PWA] Service Worker registration skipped:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
