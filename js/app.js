@@ -137,10 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const groqService = new GroqService();
   const sounds = (typeof SoundEngine !== 'undefined') ? new SoundEngine() : { playClick:()=>{}, playSend:()=>{}, playReceive:()=>{}, toggle:()=>true };
 
-  // ==========================================================================
-  // INITIALIZATION
-  // ==========================================================================
-  
   function init() {
     updateUserProfileDisplay();
     renderGroupFilterPills();
@@ -149,14 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Default: Tampilkan Lobby Screen
     showLobby();
-
-    // Check if API key is not yet set
-    if (!groqService.hasApiKey()) {
-      setTimeout(() => {
-        openSettingsModal();
-        showToast("Selamat datang! Masukkan Groq API Key gratis untuk mulai chat cerdas.");
-      }, 400);
-    }
   }
 
   // ==========================================================================
