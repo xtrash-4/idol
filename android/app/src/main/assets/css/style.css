@@ -69,30 +69,36 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+html {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden !important;
+  overscroll-behavior-x: none;
+  -webkit-overflow-scrolling: touch;
+}
+
 body {
   background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(circle at 15% 10%, rgba(225, 29, 72, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 85% 90%, rgba(159, 18, 57, 0.06) 0%, transparent 45%);
+  background-attachment: fixed;
   color: var(--text-main);
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden !important;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
   display: flex;
   flex-direction: column;
   position: relative;
 }
 
-.hidden {
-  display: none !important;
-}
-
-/* ==========================================================================
-   Ambient Liquid Canvas (Floating Mesh Orbs)
-   ========================================================================== */
-
 .ambient-canvas {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
+  display: none !important; /* Disabled for ultra-smooth 60FPS mobile performance */
 }
 
 .ambient-orb {
@@ -1968,23 +1974,13 @@ body {
   padding: 2.5px;
   border-radius: 25px;
   background: linear-gradient(135deg, #ff1744 0%, #e11d48 50%, #9f1239 100%);
-  box-shadow: 0 0 16px rgba(225, 29, 72, 0.65), inset 0 0 8px rgba(255, 23, 68, 0.4);
-  animation: storyRingPulse 2.5s ease-in-out infinite;
+  box-shadow: 0 0 14px rgba(225, 29, 72, 0.6), inset 0 0 6px rgba(255, 23, 68, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-}
-
-@keyframes storyRingPulse {
-  0%, 100% {
-    box-shadow: 0 0 12px rgba(225, 29, 72, 0.55);
-    transform: scale(1);
-  }
-  50% {
-    box-shadow: 0 0 22px rgba(255, 23, 68, 0.85);
-    transform: scale(1.025);
-  }
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .story-player-modal {
@@ -2735,4 +2731,53 @@ body {
     max-height: 100vh;
     border-radius: 0;
   }
+}
+
+
+/* Anti-Horizontal Scroll Rules */
+.lobby-view, .lobby-container, .chat-layout, .chat-view, .lobby-hero, .lobby-controls {
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  overflow-x: hidden !important;
+}
+
+.lobby-group-switch-wrapper {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.group-switcher-tabs {
+  width: 100%;
+  max-width: 480px;
+  box-sizing: border-box;
+  display: flex;
+}
+
+.lobby-filter-pills {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  gap: 6px;
+  padding: 2px 0 6px 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  flex-wrap: nowrap;
+}
+
+.lobby-card {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
