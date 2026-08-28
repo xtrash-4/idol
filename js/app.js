@@ -391,15 +391,18 @@ document.addEventListener("DOMContentLoaded", () => {
       targetGroup = document.createElement("div");
       targetGroup.className = `message-group ${roleClass}`;
 
-      // User avatar adalah polos inisial huruf "P"
       const avatarHtml = isUser
-        ? `<div class="user-initial-avatar">P</div>`
+        ? ``
         : `<img src="${activeMember.avatar}" alt="Avatar" class="group-avatar">`;
+
+      const senderNameHtml = isUser
+        ? ``
+        : `<span class="group-sender-name">${escapeHtml(activeMember.nickname || activeMember.name)}</span>`;
 
       targetGroup.innerHTML = `
         ${avatarHtml}
         <div class="group-content">
-          <span class="group-sender-name">${isUser ? userName : (activeMember.nickname || activeMember.name)}</span>
+          ${senderNameHtml}
           <div class="group-bubbles"></div>
           <span class="group-time">${msg.time || getCurrentTime()}</span>
         </div>
