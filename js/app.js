@@ -772,29 +772,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const song = songs[Math.floor(Math.random() * songs.length)];
 
-    const captionsList = isNewJeans
+    const captionsPool = isNewJeans
       ? [
           `Bunnies! How's your day? Semoga harimu menyenangkan yaa ✨🐰`,
           `Dance practice dulu hari ini, semangaat! 💃💖`,
           `Dengerin playlist santai dulu sambil istirahat 🎧`,
-          `Nite nite bunnies, mimpi indah yaa semuanya! 🌙✨`
+          `Nite nite bunnies, mimpi indah yaa semuanya! 🌙✨`,
+          `Spill ootd santai hari ini, gimana gemes ga? 😜🤍`,
+          `Selfie santai sebelum lanjut jadwal berikutnya ✨`
         ]
       : [
           `Semangat buat hari ini semuanya, jangan lupa tersenyum yaa ✨💖`,
           `GR teater hari ini seru bangett, sampai ketemu nanti malam! 💃✨`,
           `Lagi istirahat bentar nih sambil santai, kalian lagi apa? ☕`,
-          `Selamat istirahat semuanya, terima kasih buat hari ini yaa 🌙🤍`
+          `Selamat istirahat semuanya, terima kasih buat hari ini yaa 🌙🤍`,
+          `Selfie hari ini buat kalian hehe, gemes gaa? 😜✨`,
+          `Ootd santai sebelum ke teater nih hehe 👗✨`
         ];
 
-    const slide1Img = member.avatar;
-    const slide2Img = paps[0]?.url || member.avatar;
-    const slide3Img = paps[1]?.url || paps[0]?.url || member.avatar;
-    const slide4Img = paps[2]?.url || paps[1]?.url || member.avatar;
+    // Acak foto PAP dari koleksi member agar story selalu bervariasi dan tidak itu-itu saja
+    const shuffledPaps = [...paps].sort(() => Math.random() - 0.5);
+    const shuffledCaptions = [...captionsPool].sort(() => Math.random() - 0.5);
+
+    const slide1Img = shuffledPaps[0]?.url || member.avatar;
+    const slide2Img = shuffledPaps[1]?.url || member.avatar;
+    const slide3Img = shuffledPaps[2]?.url || member.avatar;
+    const slide4Img = shuffledPaps[3]?.url || member.avatar;
 
     return [
       {
         image: slide1Img,
-        caption: captionsList[0],
+        caption: shuffledCaptions[0] || captionsPool[0],
         location: location,
         music: song,
         time: "11:20",
@@ -802,7 +810,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       {
         image: slide2Img,
-        caption: captionsList[1],
+        caption: shuffledCaptions[1] || captionsPool[1],
         location: location,
         music: song,
         time: "14:45",
@@ -810,7 +818,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       {
         image: slide3Img,
-        caption: captionsList[2],
+        caption: shuffledCaptions[2] || captionsPool[2],
         location: isNewJeans ? "Seoul, South Korea" : "Jakarta, Indonesia",
         music: song,
         time: "16:30",
@@ -818,7 +826,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       {
         image: slide4Img,
-        caption: captionsList[3],
+        caption: shuffledCaptions[3] || captionsPool[3],
         location: location,
         music: song,
         time: "18:10",
