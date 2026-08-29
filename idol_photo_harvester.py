@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 ==============================================================================
-   🌸 IDOLCHAT - OFFICIAL MEMBER PHOTO HARVESTER TOOL (STRICT IG & X) 🌸
+   🌸 IDOLCHAT - PURE OFFICIAL PHOTO HARVESTER (DIRECT IG & X ONLY) 🌸
 ==============================================================================
-Tool resmi untuk mengunduh foto eksklusif member JKT48:
-1. Instagram: HANYA dari profil resmi member (Postingan Feed + Carousel + Sorotan)
-2. Twitter / X: HANYA dari media resmi tweet member (pbs.twimg.com/media/)
-Fitur Utama:
-- 100% STRICT SOURCE: HANYA server resmi Meta & Twitter (Zero website luar)
-- 100% BEBAS DUPLIKAT: Binary MD5 Content Hash Deduplication
-- 100% FOTO SAJA: Menyaring semua file video/MP4
-- Otomatis set Avatar portrait terbaik
-- Otomatis perbarui database js/members.js & Android assets
-- Opsi otomatis Git Commit & Push
+Tool 100% MURNI & LANGSUNG dari Profil Resmi Member:
+1. Instagram: Membuka profil resmi, memutar seluruh Sorotan & mengekstrak seluruh
+   postingan Feed & slide Carousel langsung dari CDN Meta (cdninstagram.com).
+2. Tanpa pihak ketiga, tanpa pencarian luar, tanpa video, 100% foto asli member!
+3. Sistem Anti-Duplikat MD5 Binary Hash.
+4. Otomatis set Avatar, update database js/members.js & Android assets.
 """
 
 import sys
@@ -22,7 +18,6 @@ import json
 import time
 import hashlib
 import re
-import urllib.parse
 import subprocess
 import requests
 from io import BytesIO
@@ -40,59 +35,51 @@ MEMBERS_PRESET = {
     "1": {
         "id": "freya",
         "name": "Freya Jayawardana",
-        "ig_url": "https://www.instagram.com/jkt48.freya/",
-        "x_handle": "Freya_JKT48"
+        "ig_url": "https://www.instagram.com/jkt48.freya/"
     },
     "2": {
         "id": "michie",
         "name": "Michelle Alexandra (Michie)",
-        "ig_url": "https://www.instagram.com/jkt48.michie_/",
-        "x_handle": "A_MichieJKT48"
+        "ig_url": "https://www.instagram.com/jkt48.michie_/"
     },
     "3": {
         "id": "christy",
         "name": "Angelina Christy",
-        "ig_url": "https://www.instagram.com/jkt48.christy/",
-        "x_handle": "A_ChristyJKT48"
+        "ig_url": "https://www.instagram.com/jkt48.christy/"
     },
     "4": {
         "id": "gracia",
         "name": "Shania Gracia",
-        "ig_url": "https://www.instagram.com/jkt48gracia/",
-        "x_handle": "S_GraciaJKT48"
+        "ig_url": "https://www.instagram.com/jkt48gracia/"
     },
     "5": {
         "id": "ella",
         "name": "Gabriela Abigail (Ella)",
-        "ig_url": "https://www.instagram.com/jkt48.ella__/",
-        "x_handle": "A_EllaJKT48"
+        "ig_url": "https://www.instagram.com/jkt48.ella__/"
     },
     "6": {
         "id": "gita",
         "name": "Gita Sekar Andarini",
-        "ig_url": "https://www.instagram.com/jkt48.gita/",
-        "x_handle": "A_GitaJKT48"
+        "ig_url": "https://www.instagram.com/jkt48.gita/"
     },
     "7": {
         "id": "marsha",
         "name": "Marsha Lenathea",
-        "ig_url": "https://www.instagram.com/jkt48.marsha_/",
-        "x_handle": "L_MarshaJKT48"
+        "ig_url": "https://www.instagram.com/jkt48.marsha_/"
     },
     "8": {
         "id": "muthe",
         "name": "Mutiara Azzahra (Muthe)",
-        "ig_url": "https://www.instagram.com/jkt48.muthe_/",
-        "x_handle": "A_MutheJKT48"
+        "ig_url": "https://www.instagram.com/jkt48.muthe_/"
     }
 }
 
 def banner():
     print("""
 ╔════════════════════════════════════════════════════════════════════════╗
-║             🌸 IDOLCHAT - STRICT MEMBER PHOTO HARVESTER 🌸             ║
-║     HANYA Mengunduh Foto Asli dari Instagram & Twitter/X Resmi Member  ║
-║        100% Anti-Duplikat (MD5 Hash) • Foto HD • Bebas Video           ║
+║             🌸 IDOLCHAT - DIRECT MEMBER PHOTO HARVESTER 🌸             ║
+║     100% MURNI Langsung dari Profil Resmi Member (Sorotan & Feed)      ║
+║        100% Anti-Duplikat (MD5 Hash) • Foto HD • Tanpa Video           ║
 ╚════════════════════════════════════════════════════════════════════════╝
 """)
 
@@ -102,7 +89,7 @@ def select_target():
     print("------------------------------------------------------------------------")
     for k, v in MEMBERS_PRESET.items():
         print(f"  [{k}] {v['name']} (ID: {v['id']})")
-    print("  [9] Custom Member (Input URL manual)")
+    print("  [9] Custom Member (Input link manual)")
     print("------------------------------------------------------------------------")
     
     choice = input("Pilih nomor (1-9) [1]: ").strip()
@@ -118,29 +105,21 @@ def select_target():
         t = {
             "id": m_id,
             "name": m_id.capitalize(),
-            "ig_url": f"https://www.instagram.com/jkt48.{m_id}/",
-            "x_handle": f"{m_id.capitalize()}_JKT48"
+            "ig_url": f"https://www.instagram.com/jkt48.{m_id}/"
         }
         
     print(f"\nTarget: {t['name']} (ID: {t['id']})")
     
-    # Input link Instagram
     ig_in = input(f"Link Instagram Profil [{t['ig_url']}]: ").strip()
     if ig_in:
         t['ig_url'] = ig_in
-        
-    # Input username / link Twitter / X
-    x_in = input(f"Username / Link Twitter Profil [{t['x_handle']}]: ").strip()
-    if x_in:
-        x_clean = x_in.rstrip('/').split('/')[-1].replace('@', '')
-        t['x_handle'] = x_clean
         
     wipe_in = input(f"Kosongkan folder foto lama {t['name']} agar bersih total? (Y/n) [Y]: ").strip().lower()
     t['wipe_old'] = wipe_in != 'n'
     
     return t
 
-def harvest_strict(target):
+def harvest_member(target):
     member_id = target['id']
     member_dir = os.path.join(MEMBER_PHOTOS_BASE, member_id)
     android_dir = os.path.join(ANDROID_PHOTOS_BASE, member_id)
@@ -148,16 +127,16 @@ def harvest_strict(target):
     
     seen_hashes = set()
     
-    # 1. Bersihkan folder lama atau muat hash
+    # 1. Bersihkan folder lama atau muat hash yang sudah ada
     if target['wipe_old']:
-        print(f"\n[1/5] Membersihkan folder member_photos/{member_id}/...")
+        print(f"\n[1/4] Membersihkan folder member_photos/{member_id}/...")
         for f in os.listdir(member_dir):
             fp = os.path.join(member_dir, f)
             if os.path.isfile(fp) and f != ".gitkeep":
                 os.remove(fp)
-        print("  [✓] Folder bersih total!")
+        print("  [✓] Folder bersih total dari foto lama!")
     else:
-        print(f"\n[1/5] Membaca foto yang sudah ada agar tidak ada duplikasi...")
+        print(f"\n[1/4] Membaca foto yang sudah ada untuk mencegah duplikasi...")
         for f in os.listdir(member_dir):
             fp = os.path.join(member_dir, f)
             if os.path.isfile(fp) and f.endswith(".jpg") and f != "avatar.jpg":
@@ -168,11 +147,10 @@ def harvest_strict(target):
                     pass
         print(f"  [✓] Terdeteksi {len(seen_hashes)} foto unik tersimpan.")
         
-    strict_ig_urls = set()
-    strict_x_urls = set()
+    raw_photo_urls = set()
     
-    # 2. Scrape Instagram LANGSUNG dari Profil Resmi Member (Playwright)
-    print(f"\n[2/5] Membuka Instagram Resmi: {target['ig_url']} ...")
+    # 2. Buka Instagram Resmi secara langsung via Playwright
+    print(f"\n[2/4] Membuka Instagram Resmi: {target['ig_url']} ...")
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -182,20 +160,20 @@ def harvest_strict(target):
             )
             page = context.new_page()
             
-            # STRICT FILTER: HANYA cdninstagram.com & BUKAN Video & BUKAN Thumbnail kecil
+            # Response Interceptor murni CDN Meta
             def on_response(res):
                 u = res.url
                 if "cdninstagram.com" in u:
                     c_type = res.headers.get("content-type", "")
                     if "video" not in c_type and ("image" in c_type or ".jpg" in u or ".webp" in u or "dst-jpg" in u):
                         if not any(thumb in u for thumb in ["/s150x150/", "/p150x150/", "/s320x320/"]):
-                            strict_ig_urls.add(u)
+                            raw_photo_urls.add(u)
                             
             page.on("response", on_response)
-            page.goto(target['ig_url'], timeout=30000)
+            page.goto(target['ig_url'], timeout=35000)
             time.sleep(2.5)
             
-            # Tutup modal login jika ada
+            # Tutup modal login jika muncul
             close_btn = page.locator("div[role='dialog'] svg[aria-label='Close'], div[role='dialog'] button, svg[aria-label='Close']")
             if close_btn.count() > 0:
                 try:
@@ -204,104 +182,65 @@ def harvest_strict(target):
                 except Exception:
                     pass
                     
-            # A. Sorotan (Story Highlights)
-            highlight_links = page.locator("a[href*='/stories/highlights/']").evaluate_all("els => els.map(e => e.href)")
-            print(f"  --> Memutar {len(highlight_links)} Sorotan (Story Highlights)...")
-            for h_idx, h_url in enumerate(highlight_links[:6]):
-                try:
-                    page.goto(h_url, timeout=15000)
-                    time.sleep(1.2)
-                    for _ in range(16):
-                        if "/stories/" not in page.url:
-                            break
-                        page.mouse.click(850, 450)
-                        time.sleep(0.25)
-                except Exception:
-                    pass
-            print(f"  [✓] Foto asli dari Sorotan Instagram: {len(strict_ig_urls)}")
-            
-            # B. Postingan Feed & Carousel
-            print("  --> Memindai postingan feed & seluruh carousel...")
-            page.goto(target['ig_url'], timeout=20000)
-            time.sleep(2.0)
-            post_links = []
-            for _ in range(8):
-                links = page.locator("a[href*='/p/']").evaluate_all("els => els.map(e => e.href)")
-                for l in links:
-                    if l not in post_links:
-                        post_links.append(l)
-                page.mouse.wheel(0, 1000)
-                time.sleep(0.5)
+            # A. Putar seluruh Sorotan (Story Highlights)
+            first_highlight = page.locator("a[href*='/stories/highlights/'], ul li div[role='button']").first
+            if first_highlight.count() > 0:
+                print("  --> Memutar SELURUH Sorotan (Story Highlights)...")
+                first_highlight.click()
+                time.sleep(1.8)
+                for _ in range(90):
+                    if "/stories/" not in page.url:
+                        break
+                    page.mouse.click(850, 450)
+                    time.sleep(0.25)
+                print(f"  [✓] Foto tertangkap dari Sorotan: {len(raw_photo_urls)}")
                 
-            print(f"  --> Ditemukan {len(post_links)} postingan feed.")
-            for p_url in post_links:
-                try:
-                    page.goto(p_url, timeout=12000)
-                    time.sleep(0.8)
-                    next_btn = page.locator("button[aria-label='Next'], button[aria-label='Selanjutnya'], button._afxw")
-                    if next_btn.count() > 0:
-                        for _ in range(8):
-                            if next_btn.first.is_visible():
-                                next_btn.first.click()
-                                time.sleep(0.2)
-                            else:
-                                break
-                except Exception:
-                    pass
-                    
-            print(f"  [✓] Total Foto Instagram Resmi Terkumpul: {len(strict_ig_urls)}")
+            # B. Buka Postingan Feed & Jelajahi seluruh Carousel
+            print("  --> Memindai SELURUH Postingan Feed & Carousel...")
+            page.goto(target['ig_url'], timeout=25000)
+            time.sleep(2.0)
             
-            # 3. Scrape Twitter / X LANGSUNG Media Tweet Member
-            print(f"\n[3/5] Memindai media foto Twitter/X resmi (@{target['x_handle']})...")
-            # Strict queries for twimg
-            tw_queries = [
-                f"site:pbs.twimg.com/media {target['x_handle']}",
-                f"site:twitter.com/{target['x_handle']} status",
-                f"{target['x_handle']} twitter pap",
-                f"{target['x_handle']} twitter selfie"
-            ]
-            for tq in tw_queries:
-                try:
-                    encoded = urllib.parse.quote(tq)
-                    page.goto(f"https://www.bing.com/images/search?q={encoded}&form=HDRSC2&first=1", timeout=15000)
-                    time.sleep(0.8)
-                    for _ in range(4):
-                        page.mouse.wheel(0, 3500)
-                        time.sleep(0.4)
-                    content = page.content()
-                    murls = re.findall(r'murl&quot;:&quot;(http[^&]+)&quot;', content)
-                    for u in murls:
-                        u_clean = u.replace(r'\/', '/').replace(r'\u0026', '&')
-                        # STRICT FILTER: HANYA pbs.twimg.com/media/ (TIDAK ADA WEBSITE LUAR)
-                        if "pbs.twimg.com/media/" in u_clean and not any(x in u_clean for x in ["profile_images", "profile_banners"]):
-                            base_twimg = u_clean.split('?')[0].split('&')[0].split(':')[0]
-                            strict_x_urls.add(f"{base_twimg}?format=jpg&name=orig")
-                except Exception:
-                    pass
+            first_post = page.locator("a[href*='/p/']").first
+            if first_post.count() > 0:
+                first_post.click()
+                time.sleep(1.5)
+                
+                for _ in range(60):
+                    # Klik seluruh slide carousel jika ada
+                    for _ in range(8):
+                        c_next = page.locator("div[role='dialog'] button[aria-label='Next'], div[role='dialog'] button[aria-label='Selanjutnya'], div[role='dialog'] button._afxw")
+                        if c_next.count() > 0 and c_next.first.is_visible():
+                            c_next.first.click()
+                            time.sleep(0.2)
+                        else:
+                            break
+                            
+                    # Pindah ke postingan berikutnya
+                    page.keyboard.press("ArrowRight")
+                    time.sleep(0.3)
                     
-            print(f"  [✓] Total Foto Twitter/X Resmi Terkumpul: {len(strict_x_urls)}")
+            print(f"  [✓] Total Foto Murni Tertangkap dari Instagram: {len(raw_photo_urls)}")
             browser.close()
             
     except Exception as e:
-        print("  [!] Browser notice:", e)
+        print("  [!] Notice:", e)
         
-    all_valid_urls = list(strict_ig_urls) + list(strict_x_urls)
-    print(f"\n[4/5] Mengunduh {len(all_valid_urls)} foto resmi dengan MD5 Content Deduplication...")
+    print(f"\n[3/4] Mengunduh {len(raw_photo_urls)} foto dengan MD5 Binary Deduplication...")
     
-    # 4. Unduh & Validasi Binary Hash MD5
-    new_saved_photos = []
+    # 3. Download Paralel & Binary MD5 Deduplication
+    saved_photos = []
     
-    def download_photo(url):
+    def download_img(url):
         try:
             req_headers = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-                "Referer": "https://www.instagram.com/" if "cdninstagram" in url else "https://x.com/"
+                "Referer": "https://www.instagram.com/"
             }
             res = requests.get(url, headers=req_headers, timeout=10)
             if res.status_code != 200 or len(res.content) < 6000:
                 return None
                 
-            # Content Hash
+            # Validasi MD5 Hash biner asli
             content_hash = hashlib.md5(res.content).hexdigest()
             if content_hash in seen_hashes:
                 return None  # Duplikat diabaikan 100%!
@@ -313,8 +252,7 @@ def harvest_strict(target):
                 
             seen_hashes.add(content_hash)
             
-            source_tag = "x" if "twimg" in url else "ig"
-            filename = f"{member_id}_{source_tag}_{content_hash[:10]}.jpg"
+            filename = f"{member_id}_ig_{content_hash[:10]}.jpg"
             save_path = os.path.join(member_dir, filename)
             
             im.convert("RGB").save(save_path, "JPEG", quality=95, optimize=True)
@@ -323,13 +261,13 @@ def harvest_strict(target):
             return None
             
     with ThreadPoolExecutor(max_workers=32) as executor:
-        results = executor.map(download_photo, all_valid_urls)
+        results = executor.map(download_img, list(raw_photo_urls))
         for r in results:
             if r:
-                new_saved_photos.append(r)
-                print(f"  [✓] Tersimpan: {r[0]} ({r[1]}x{r[2]} px)")
+                saved_photos.append(r)
+                print(f"  [✓] Foto Asli Tersimpan: {r[0]} ({r[1]}x{r[2]} px)")
                 
-    # 5. Pasang Avatar Terbaik
+    # 4. Pasang Avatar Terbaik
     all_files = [f for f in os.listdir(member_dir) if f.endswith(".jpg") and f != "avatar.jpg"]
     if all_files:
         avatar_path = os.path.join(member_dir, "avatar.jpg")
@@ -345,11 +283,11 @@ def harvest_strict(target):
                 except Exception:
                     pass
             Image.open(os.path.join(member_dir, chosen_avatar)).convert("RGB").save(avatar_path, "JPEG", quality=95)
-            print(f"\n--> [✓] Avatar diset dari foto portrait terbaik: {chosen_avatar}")
+            print(f"\n--> [✓] Avatar diset dari foto selfie portrait terbaik: {chosen_avatar}")
             
-    # 6. Update js/members.js & Android assets
-    print(f"\n[5/5] Memperbarui database & sinkronisasi Android...")
-    update_members_js(member_id, all_files)
+    # 5. Update Database js/members.js & Android assets
+    print(f"\n[4/4] Memperbarui database & sinkronisasi Android...")
+    update_database(member_id, all_files)
     
     if os.path.exists(os.path.dirname(android_dir)):
         import shutil
@@ -359,14 +297,14 @@ def harvest_strict(target):
         print("  [✓] Android assets berhasil disinkronkan!")
         
     print("\n════════════════════════════════════════════════════════════════════════")
-    print(f"  🎉 SELESAI! Total {len(all_files)} Foto Asli (IG & X) Siap untuk {target['name']}!")
+    print(f"  🎉 SELESAI! Total {len(all_files)} Foto Asli Siap untuk {target['name']}!")
     print("════════════════════════════════════════════════════════════════════════\n")
     
     git_choice = input("Langsung Git Commit & Push ke Vercel/GitHub? (Y/n) [Y]: ").strip().lower()
     if git_choice != 'n':
         git_push(target['name'], len(all_files))
 
-def update_members_js(member_id, all_photos):
+def update_database(member_id, all_photos):
     try:
         with open(MEMBERS_JS_PATH, "r", encoding="utf-8") as f:
             content = f.read()
@@ -380,10 +318,9 @@ def update_members_js(member_id, all_photos):
                     m["avatar"] = f"member_photos/{member_id}/avatar.jpg"
                     paps = []
                     for fname in all_photos:
-                        caption = "Selfie manis spesial ✨" if "_ig_" in fname else "PAP terbaru dari Twitter 💖"
                         paps.append({
                             "url": f"member_photos/{member_id}/{fname}",
-                            "caption": caption
+                            "caption": "Selfie manis spesial ✨"
                         })
                     m["paps"] = paps
                     found = True
@@ -398,7 +335,7 @@ def update_members_js(member_id, all_photos):
                     "jiko": f"Halo semuanya, aku {member_id.capitalize()}!",
                     "color": "#e11d48",
                     "badge": "JKT48",
-                    "paps": [{"url": f"member_photos/{member_id}/{fname}", "caption": "PAP spesial ✨"} for fname in all_photos]
+                    "paps": [{"url": f"member_photos/{member_id}/{fname}", "caption": "Selfie manis spesial ✨"} for fname in all_photos]
                 })
                 
             new_js = "/**\n * IDOLCHAT Database - JKT48 Official Oshi Direct Message\n */\n\nconst DEFAULT_MEMBERS = " + json.dumps(members_list, indent=2, ensure_ascii=False) + ";\n"
@@ -417,7 +354,7 @@ def git_push(member_name, count):
     print("\n[Git] Menjalankan Git Add, Commit & Push...")
     try:
         subprocess.run(["git", "add", "-A"], cwd=BASE_DIR, check=True)
-        msg = f"feat: harvest {count} official HD photos (IG & X) for {member_name}"
+        msg = f"feat: harvest {count} official HD photos for {member_name}"
         subprocess.run(["git", "commit", "-m", msg], cwd=BASE_DIR, check=True)
         subprocess.run(["git", "push", "origin", "main"], cwd=BASE_DIR, check=True)
         print("  [✓] Berhasil di-push ke GitHub & Vercel!")
@@ -427,7 +364,7 @@ def git_push(member_name, count):
 if __name__ == "__main__":
     while True:
         target = select_target()
-        harvest_strict(target)
+        harvest_member(target)
         cont = input("Ingin mengunduh untuk member lain? (y/N) [N]: ").strip().lower()
         if cont != 'y':
             print("\nTerima kasih! Selesai sempurna. 🌸✨\n")
