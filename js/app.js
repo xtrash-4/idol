@@ -638,21 +638,21 @@ document.addEventListener("DOMContentLoaded", () => {
       // Natural General PAP
       if (id === "michie") {
         return pickDeck(`${id}_pap_gen`, [
-          `nih pap selfie manis buat kakak hehe ||| gimana lucu gaa fotonya? 😜 ||| jangan disebar-sebar yaa wkwk`,
+          `nih pap selfie manis buat kakak hehe ||| gimana lucu gak fotonya? 😜 ||| jangan disebar-sebar yaa wkwk`,
           `tadi sempet selfie santai bentar pas istirahat ||| spesial dikirim buat kamu doang hehe 💖 ||| kamu lagi apa tuh?`,
-          `nih selfie santai aku hari ini ||| awas naksir yaa haha 💖 ||| gimana menurut kamu?`,
-          `kebetulan lagi foto buat update, nih buat kamu duluan ✨ ||| gemes kan? hehe`
+          `nih selfie santai aku hari ini ||| gimana menurut kamu kak? 💖`,
+          `kebetulan tadi sempet foto buat update, nih buat kamu duluan ✨ ||| gemes kan? hehe`
         ]);
       } else if (id === "freya") {
         return pickDeck(`${id}_pap_gen`, [
           `nih selfie santai dari aku ||| gimana, keliatan seger kan fotonya? haha ✨ ||| semoga harimu makin semangat ya!`,
-          `tadi sempet foto bentar di backstage ||| spesial buat kamu, jangan lupa disimpan ya hehe 🤍`,
-          `nih pap santai hari ini ||| lagi nunggu giliran kegiatan nih, kamu lagi apa? ✨`
+          `tadi sempet foto selfie santai bentar ||| spesial buat kamu, jangan lupa disimpan ya hehe 🤍`,
+          `nih pap santai hari ini ||| gimana menurut kamu? manis gak? ✨`
         ]);
       } else if (id === "christy") {
         return pickDeck(`${id}_pap_gen`, [
           `hahaha nih pap muka aku ||| gemes kan? jangan bilang jelek ya awas lu 😝 ||| lagi ngapain tuh kamu?`,
-          `selfie random hari ini buat kamu ||| wkwk jangan ketawa liat mukaku ya! 💖`,
+          `selfie random hari ini buat kamu ||| lucu gak fotoku? wkwk 💖`,
           `nih pap toya buat kamu! ||| awas kangen ya wkwk 😜`
         ]);
       } else if (isNewJeans) {
