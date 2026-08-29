@@ -1,11 +1,11 @@
 /**
  * MPRUYY HALU - Ultra-Natural Conversational Engine & Media System
- * Mengatur interaksi UI, state member, pengiriman pesan kontekstual anti-template,
- * 24-Hour Instagram Story Player, efek suara, galeri PAP dinamis, dan voice notes.
+ * Interaksi UI, state member, pengiriman pesan kontekstual anti-template,
+ * 24-Hour Instagram Story Player, galeri PAP dinamis non-repeat, dan tombol Mulai Chat.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // === AUTO-CLEANUP: Hapus model deprecated dari localStorage ===
+  // Auto cleanup model deprecated dari localStorage
   const savedModel = localStorage.getItem("groq_model_idolchat");
   const deprecatedModels = [
     "llama-3.3-70b-versatile",
@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "mixtral-8x7b-32768"
   ];
   if (savedModel && deprecatedModels.includes(savedModel)) {
-    console.log(`[IDOLCHAT] Model "${savedModel}" sudah deprecated, reset ke default.`);
     localStorage.removeItem("groq_model_idolchat");
   }
 
@@ -31,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // App State
   let members = getMembers();
-  let activeMember = members[0] || {}; // Default idol
+  let activeMember = members[0] || {};
   let userName = localStorage.getItem("jkt48_user_name") || "Fans Setia";
   let isSending = false;
 
@@ -61,7 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const activeHeaderGen = document.getElementById("active-header-gen");
   const activeHeaderStatus = document.getElementById("active-header-status");
   const btnRequestPap = document.getElementById("btn-request-pap");
+  const btnResetChat = document.getElementById("btn-reset-chat");
   const btnOpenProfileDrawer = document.getElementById("btn-open-profile-drawer");
+  const btnHeaderSettings = document.getElementById("btn-header-settings");
 
   // Modals & Drawers
   const modalSettings = document.getElementById("modal-settings");
@@ -71,12 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnRemoveApiKey = document.getElementById("btn-remove-api-key");
   const inputGroqKey = document.getElementById("input-groq-key");
   const selectGroqModel = document.getElementById("select-groq-model");
-
-  const modalAddMember = document.getElementById("modal-add-member");
-  const btnOpenAddMember = document.getElementById("btn-open-add-member");
-  const btnCloseAddMember = document.getElementById("btn-close-add-member");
-  const btnCancelAddMember = document.getElementById("btn-cancel-add-member");
-  const btnSaveCustomMember = document.getElementById("btn-save-custom-member");
 
   const modalUserProfile = document.getElementById("modal-user-profile");
   const btnCloseUserProfile = document.getElementById("btn-close-user-profile");
@@ -120,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentStorySlideIndex = 0;
   let currentStorySlides = [];
   let storyTimer = null;
-  const STORY_DURATION = 5500; // 5.5 detik per slide
+  const STORY_DURATION = 5500;
 
   // ==========================================================================
   // INITIALIZATION & VIEW CONTROLS
@@ -132,7 +127,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setupEventListeners();
     setupSoundToggles();
 
-    // Auto-select initial idol if specified in URL or state
     if (members.length > 0) {
       setActiveMember(members[0]);
     }
@@ -192,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // LOBBY RENDERING
+  // LOBBY RENDERING WITH CLEAR "MULAI CHAT" BUTTON
   // ==========================================================================
 
   function renderLobby(list) {
@@ -203,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-muted);">
           <div style="font-size: 2.5rem; margin-bottom: 12px;">🔍</div>
           <h3 style="color: var(--text-primary); margin-bottom: 6px;">Member Tidak Ditemukan</h3>
-          <p style="font-size: 0.85rem;">Coba cari nama lain atau pilih kategori 'Semua'.</p>
+          <p style="font-size: 0.85rem;">Coba cari nama lain atau pilih grup Semua.</p>
         </div>
       `;
       return;
@@ -220,13 +214,13 @@ document.addEventListener("DOMContentLoaded", () => {
       let previewTime = "";
 
       if (lastMsg) {
-        previewText = lastMsg.content || (lastMsg.pap ? "📷 Mengirim foto selfie" : (lastMsg.audio ? "🎤 Pesan suara" : "Obrolan"));
+        previewText = lastMsg.content || (lastMsg.pap ? "📷 Mengirim foto selfie" : "Obrolan");
         previewTime = lastMsg.time || "";
       }
 
       card.innerHTML = `
         <div class="lobby-card-avatar-wrapper">
-          <div class="story-ring-wrapper" data-member-id="${member.id}">
+          <div class="story-ring-wrapper" data-member-id="${member.id}" title="Klik untuk lihat Story 24 Jam">
             <img src="${member.avatar}" alt="${member.name}" class="lobby-card-avatar" loading="lazy">
           </div>
           <span class="lobby-online-dot"></span>
@@ -236,15 +230,17 @@ document.addEventListener("DOMContentLoaded", () => {
             <h4 class="lobby-card-name">${member.nickname || member.name}</h4>
             <span class="lobby-card-time">${previewTime}</span>
           </div>
-          <p class="lobby-card-gen">${member.group || "JKT48"} • ${member.generation}</p>
+          <span class="lobby-card-gen">${member.group || "JKT48"} • ${member.generation}</span>
           <p class="lobby-card-last-msg">${escapeHtml(previewText)}</p>
+          <button type="button" class="btn-lobby-chat-start">
+            <i class="fa-solid fa-comment-dots"></i> Mulai Chat
+          </button>
         </div>
       `;
 
-      // Click card to open chat
+      // Event listener: click avatar opens Story, click anywhere else or button opens Chat
       card.addEventListener("click", (e) => {
         if (e.target.closest(".story-ring-wrapper")) {
-          // Open 24-Hour Story
           openStory(member);
         } else {
           setActiveMember(member);
@@ -298,7 +294,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <span class="welcome-badge">${activeMember.generation}</span>
           <span class="welcome-badge">⭐ ${activeMember.fandom || "Fans"}</span>
         </div>
-        <p class="welcome-hint">Kirim pesan pertama kamu atau pilih tombol interaksi cepat di bawah 👇</p>
+        <p class="welcome-hint">Kirim pesan pertama kamu atau pilih saran topik di bawah 👇</p>
       `;
       chatMessagesEl.appendChild(banner);
     } else {
@@ -320,7 +316,6 @@ document.addEventListener("DOMContentLoaded", () => {
     avatarDiv.className = "msg-avatar";
 
     if (isUser) {
-      // Pure Initial Avatar
       const userInitial = (userName || "P").trim().charAt(0).toUpperCase() || "P";
       avatarDiv.innerHTML = `<div class="user-pure-initial">${userInitial}</div>`;
     } else {
@@ -339,13 +334,7 @@ document.addEventListener("DOMContentLoaded", () => {
       bubblesContainer.appendChild(papCard);
     }
 
-    // 2. Render Voice Note (VN) jika ada
-    if (msg.audio) {
-      const vnCard = createVoiceNotePlayerElement(msg.audio);
-      bubblesContainer.appendChild(vnCard);
-    }
-
-    // 3. Render Bubble Teks jika ada
+    // 2. Render Bubble Teks jika ada
     if (msg.content && msg.content.trim()) {
       const bubble = document.createElement("div");
       bubble.className = "bubble";
@@ -384,64 +373,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return card;
   }
 
-  function createVoiceNotePlayerElement(audioSrc) {
-    const vnContainer = document.createElement("div");
-    vnContainer.className = "vn-player-card";
-    vnContainer.innerHTML = `
-      <div class="vn-play-btn" id="vn-btn">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-          <path d="M8 5v14l11-7z"/>
-        </svg>
-      </div>
-      <div class="vn-waveforms">
-        <div class="vn-bar"></div><div class="vn-bar"></div><div class="vn-bar"></div><div class="vn-bar"></div>
-        <div class="vn-bar"></div><div class="vn-bar"></div><div class="vn-bar"></div><div class="vn-bar"></div>
-        <div class="vn-bar"></div><div class="vn-bar"></div><div class="vn-bar"></div><div class="vn-bar"></div>
-      </div>
-      <div class="vn-duration" id="vn-dur">0:04</div>
-      <audio src="${audioSrc}" preload="metadata"></audio>
-    `;
-
-    const audio = vnContainer.querySelector("audio");
-    const playBtn = vnContainer.querySelector(".vn-play-btn");
-    const durLabel = vnContainer.querySelector(".vn-duration");
-    const bars = vnContainer.querySelectorAll(".vn-bar");
-
-    audio.addEventListener("loadedmetadata", () => {
-      const s = Math.round(audio.duration || 4);
-      durLabel.textContent = `0:0${s}`.slice(-4);
-    });
-
-    playBtn.addEventListener("click", () => {
-      if (audio.paused) {
-        // Pause other audios
-        document.querySelectorAll("audio").forEach(a => {
-          if (a !== audio) {
-            a.pause();
-            a.currentTime = 0;
-          }
-        });
-        audio.play().then(() => {
-          playBtn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
-          bars.forEach(b => b.classList.add("playing"));
-        }).catch(err => console.log("Audio play error:", err));
-      } else {
-        audio.pause();
-        playBtn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
-        bars.forEach(b => b.classList.remove("playing"));
-      }
-    });
-
-    audio.addEventListener("ended", () => {
-      playBtn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
-      bars.forEach(b => b.classList.remove("playing"));
-    });
-
-    return vnContainer;
-  }
-
   // ==========================================================================
-  // SMART VARIED PAP POOL (100% Bervariasi & Anti-Monoton / No Repeat)
+  // SMART VARIED PAP POOL (100% Non-Repeating Across 35-85 Photos Per Member)
   // ==========================================================================
 
   const usedPapsMap = {};
@@ -462,21 +395,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const picked = available[Math.floor(Math.random() * available.length)];
     used.add(picked.url);
     return picked;
-  }
-
-  function getVariedVoiceNote(member, text) {
-    const vnList = [
-      "audio/voice_notes/michie/michie_vn_sapaan.mp3",
-      "audio/voice_notes/michie/michie_vn_salting.mp3",
-      "audio/voice_notes/michie/michie_vn_semangat.mp3",
-      "audio/voice_notes/michie/michie_vn_night.mp3"
-    ];
-    const t = text.toLowerCase();
-    if (/sapa|halo|hai|pagi|siang/i.test(t)) return vnList[0];
-    if (/gombal|cantik|salting|manis|lucu/i.test(t)) return vnList[1];
-    if (/capek|semangat|lelah|kerja|tugas/i.test(t)) return vnList[2];
-    if (/malam|tidur|night|ngantuk/i.test(t)) return vnList[3];
-    return vnList[Math.floor(Math.random() * vnList.length)];
   }
 
   // ==========================================================================
@@ -508,33 +426,23 @@ document.addEventListener("DOMContentLoaded", () => {
     showTypingIndicator(true);
 
     let attachedPap = null;
-    let attachedVn = null;
-
-    // Cek apakah user meminta PAP atau VN secara eksplisit
-    const isAskingPap = /pap|foto|selfie|liat muka|lihat muka|minta foto|kirim foto|fotoin|coba foto/i.test(text);
-    const isAskingVn = /vn|voice note|suara|rekaman|denger suara|ngomong dong|pesan suara/i.test(text);
+    const isAskingPap = /pap|foto|selfie|liat muka|lihat muka|minta foto|kirim foto|fotoin|coba foto|spill/i.test(text);
 
     if (isAskingPap) {
       attachedPap = getVariedPap(activeMember);
-    }
-    if (isAskingVn) {
-      attachedVn = getVariedVoiceNote(activeMember, text);
     }
 
     try {
       let reply = "";
 
-      // Check if API Key exists
       if (groqService.hasApiKey()) {
         const history = getMemberChatHistory(activeMember.id);
         reply = await groqService.sendChat(activeMember, history, text, userName, attachedPap);
       } else {
-        // Fallback natural dialogue engine if API key is not yet set
-        await new Promise(r => setTimeout(r, 900));
+        await new Promise(r => setTimeout(r, 800));
         reply = getFallbackDemoReply(activeMember, text, attachedPap);
       }
 
-      // Periksa apakah balasan AI mengandung tag [PAP]
       if (reply.includes("[PAP]")) {
         reply = reply.replace(/\[PAP\]/gi, "").trim();
         if (!attachedPap && isAskingPap) {
@@ -542,7 +450,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // Bersihkan dan pecah balasan menjadi Multi-Message Burst
       let bubbles = reply
         .split("|||")
         .map(s => s.trim())
@@ -552,7 +459,7 @@ document.addEventListener("DOMContentLoaded", () => {
         bubbles = [reply.trim() || "iyaa kak hehe"];
       }
 
-      // Render Multi-Message Burst secara bertahap seperti manusia asli
+      // Render Multi-Message Burst
       for (let i = 0; i < bubbles.length; i++) {
         const bubbleText = bubbles[i];
         const isLast = i === bubbles.length - 1;
@@ -560,19 +467,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (i > 0) {
           showTypingIndicator(true);
-          const typingDelay = Math.min(1400, Math.max(700, bubbleText.length * 30));
+          const typingDelay = Math.min(1300, Math.max(600, bubbleText.length * 28));
           await new Promise(r => setTimeout(r, typingDelay));
         }
 
         showTypingIndicator(false);
 
-        const msgAudio = isLast ? attachedVn : null;
         const idolMsgObj = {
           role: "assistant",
           content: bubbleText,
           time: getCurrentTime(),
-          pap: msgPap,
-          audio: msgAudio
+          pap: msgPap
         };
 
         appendMessageToUI(idolMsgObj);
@@ -583,11 +488,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       refreshMemberViews();
     } catch (err) {
-      console.warn("[CHAT ENGINE] Groq AI offline/fallback active:", err.message);
+      console.warn("[CHAT ENGINE] Fallback active:", err.message);
       try {
         const fallbackReply = getFallbackDemoReply(activeMember, text, attachedPap);
         let fallbackBubbles = (fallbackReply || "haii! hehe iyaa kakk").split("|||").map(b => b.trim()).filter(Boolean);
-        fallbackBubbles = applyNaturalTypo(fallbackBubbles);
 
         for (let i = 0; i < fallbackBubbles.length; i++) {
           const bubbleText = fallbackBubbles[i];
@@ -600,13 +504,11 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           showTypingIndicator(false);
 
-          const msgAudio = isLast ? attachedVn : null;
           const idolMsgObj = {
             role: "assistant",
             content: bubbleText,
             time: getCurrentTime(),
-            pap: msgPap,
-            audio: msgAudio
+            pap: msgPap
           };
 
           appendMessageToUI(idolMsgObj);
@@ -625,37 +527,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // ULTRA-NATURAL DEEP CONTEXTUAL DIALOGUE ENGINE (Anti-Template, Signature Quirks & Typo)
+  // NATURAL CONTEXTUAL DIALOGUE ENGINE (NO ARTIFICIAL TYPO, RICH CASUAL TEXTING)
   // ==========================================================================
 
-  function applyNaturalTypo(bubbles) {
-    // 18% chance of spontaneous natural typo and asterisk correction
-    if (bubbles.length === 0 || Math.random() > 0.18) return bubbles;
-
-    const typoMap = [
-      { find: "kamu", typo: "kmu", fix: "kamu*" },
-      { find: "makan", typo: "mkan", fix: "makan* typo haha" },
-      { find: "banget", typo: "bgtu", fix: "bgt* wkwk" },
-      { find: "kucing", typo: "kucig", fix: "kucing*" },
-      { find: "cerita", typo: "crita", fix: "cerita*" },
-      { find: "santai", typo: "sntai", fix: "santai*" },
-      { find: "hehe", typo: "hhe", fix: "hehe*" },
-      { find: "beneran", typo: "bnran", fix: "beneran* typo maap 😭" }
-    ];
-
-    const pick = typoMap[Math.floor(Math.random() * typoMap.length)];
-    let firstBubble = bubbles[0];
-
-    if (firstBubble.toLowerCase().includes(pick.find)) {
-      const regex = new RegExp(pick.find, "i");
-      firstBubble = firstBubble.replace(regex, pick.typo);
-      const newBubbles = [firstBubble, pick.fix, ...bubbles.slice(1)];
-      return newBubbles;
-    }
-    return bubbles;
-  }
-
-  // LRU Shuffle-Deck Memory to prevent any response repeating in the session
   const usedRepliesMap = {};
 
   function pickDeck(key, pool) {
@@ -682,31 +556,32 @@ document.addEventListener("DOMContentLoaded", () => {
     if (t.includes("[membalas story:")) {
       if (isNewJeans) {
         return pickDeck(`${id}_story`, [
-          `omg thank you so much bunnies! 💖 ||| seneng banget kamu notice story aku hehe ||| how are you today?`,
-          `aww gemes bgt reaksimu! ||| makasih yaa udah selalu nonton story aku ✨ ||| lagi santai kan sekarang?`,
-          `hehehe iyaa tadi seru bgt pas take foto itu! ||| kamu udah makan belum hari ini? 🐰`
+          `thank you so much bunnies! 💖 ||| seneng banget kamu notice story aku hehe ||| how are you today?`,
+          `aww gemes banget reaksimu! ||| makasih yaa udah selalu nonton story aku ✨ ||| lagi santai kan sekarang?`,
+          `hehehe iyaa tadi seru banget pas take foto itu! ||| kamu udah makan belum hari ini? 🐰`
         ]);
       } else {
         return pickDeck(`${id}_story`, [
           `ihh makasih kakk udah notice story akuu hehe 💖 ||| kamu lagi senggang ya?`,
-          `wkwkwk gemes bgt reaksimu ||| seneng deh ada yang selalu support story aku ✨ ||| lagi ngapain nih?`,
-          `hehehe iyaa tadi seru bangett tauu pas difoto ||| gimana kabar kamu hari ini? lancar kan?`
+          `wkwkwk gemes banget reaksimu ||| seneng deh ada yang selalu nonton story aku ✨ ||| lagi ngapain nih?`,
+          `hehehe iyaa tadi seru bangett tauu pas difoto ||| gimana hari kamu hari ini? lancar kan?`
         ]);
       }
     }
 
-    // 2. Explicit PAP / Foto Request
+    // 2. PAP / Foto Requests (Vast, Ultra-Natural Conversational Decks)
     if (attachedPap || /pap|foto|selfie|muka|wajah|ootd/i.test(t)) {
       if (/ootd|baju|pake apa/i.test(t)) {
         if (isNewJeans) {
           return pickDeck(`${id}_pap_ootd`, [
             `here's my casual ootd for today bunnies! 👗✨ ||| gimana, cute gak outfitnya? ||| hope you like it hehe 💖`,
-            `spill ootd santai hari ini hehe ||| suka gak gaya kayak gini? 🎧✨`
+            `spill ootd santai hari ini hehe ||| suka gak gaya outfit kayak gini? 🎧✨`
           ]);
         } else {
           return pickDeck(`${id}_pap_ootd`, [
             `nih ootd santai aku hari ini! 👗✨ ||| gimana, cocok gak sama aku? ||| menurut kamu bagusan pake outfit ini atau yang kemarin? hehe`,
-            `tadaaa! nih pap ootd sebelum kegiatan ||| lucu kan bajunya wkwk ||| gimana menurut kamu kak? 💖`
+            `tadaaa! nih pap ootd sebelum kegiatan ||| lucu kan bajunya wkwk ||| gimana menurut kamu kak? 💖`,
+            `spill outfit santai hari ini hehe ||| simpel aja sih, yang penting nyaman dipakai ✨`
           ]);
         }
       }
@@ -719,28 +594,32 @@ document.addEventListener("DOMContentLoaded", () => {
           ]);
         } else {
           return pickDeck(`${id}_pap_night`, [
-            `udah siap-siap mau tidur nih, mata udah sepet bgt 🥱 ||| nih pap ngantuk spesial sebelum tidur wkwk ||| good night yaa kakk, mimpi indah! 🌙✨`,
-            `udah rebahan di kasur nih hehe ||| nih pap sebelum merem ||| jangan begadang ya kamu, istirahat yuk! 💖`
+            `mata udah sepet banget sebenernya 🥱 ||| tapi gapapa deh nih pap sebelum tidur buat kamu wkwk ||| good night yaa kakk, mimpi indah! 🌙✨`,
+            `udah rebahan di kasur nih siap-siap tidur ||| nih selfie santai sebelum merem ||| jangan begadang ya kamu, istirahat yuk! 💖`,
+            `selamat istirahat kakk! nih pap ngantuk dikit hehe ||| recharge energi buat besok yaa ✨🌙`
           ]);
         }
       }
 
-      if (/muka|wajah|close up|close-up|selfie/i.test(t)) {
+      if (/muka|wajah|close up|close-up|selfie|gemes|lucu|senyum/i.test(t)) {
         if (id === "michie") {
           return pickDeck(`${id}_pap_face`, [
             `nih close-up muka gemoy michie wkwk 🙈 ||| gimana, pipinya keliatan cubitable gak? haha ||| jangan dizoom-zoom yaa!`,
             `selfie close up khusus buat kamu hehe ||| awas jangan salting ya liatnya 😜💖`,
-            `nih muka santai aku hari ini ||| tetep manis kan hehe ||| gimana menurut kamu kak?`
+            `nih muka santai aku hari ini ||| tetep manis kan hehe ||| gimana menurut kamu kak?`,
+            `pas banget tadi selfie bentar ||| nih khusus buat yang minta pap muka lucu haha ✨`
           ]);
         } else if (id === "freya") {
           return pickDeck(`${id}_pap_face`, [
             `nih close up senyum karamel dari aku ✨ ||| semoga harimu jadi lebih seger yaa liat ini hehe`,
-            `tadi sempet foto selfie close-up bentar ||| spesial buat kamu, disimpan baik-baik yaa 🤍`
+            `tadi sempet foto selfie close-up bentar ||| spesial buat kamu, disimpan baik-baik yaa 🤍`,
+            `nih selfie santai dari aku ||| jangan lupa senyum juga ya hari ini! ✨`
           ]);
         } else if (id === "christy") {
           return pickDeck(`${id}_pap_face`, [
             `hahaha nih muka toya yang paling gemes 😝 ||| awas ketawa ya! wajib bilang cantik pokoknya wkwk 💖`,
-            `tadaaa! selfie toya close-up ||| jangan lupa bayar goceng ya wkwk 🤣`
+            `tadaaa! selfie toya close-up ||| jangan lupa bayar goceng ya wkwk 🤣`,
+            `nih selfie random hari ini buat kamu ||| lucu gak mukaku? wkwk 💖`
           ]);
         } else if (isNewJeans) {
           return pickDeck(`${id}_pap_face`, [
@@ -750,27 +629,31 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           return pickDeck(`${id}_pap_face`, [
             `nih selfie close-up spesial buat kamu hehe ||| gimana menurut kamu? manis gak? 💖`,
-            `tadi sempet foto selfie bentar ||| spesial buat yang paling setia nemenin chat hehe ✨`
+            `tadi sempet foto selfie bentar ||| spesial buat yang paling setia nemenin chat hehe ✨`,
+            `nih pap muka santai hari ini ||| semoga suka yaa! 🤍`
           ]);
         }
       }
 
-      // Generic PAP
+      // Natural General PAP
       if (id === "michie") {
         return pickDeck(`${id}_pap_gen`, [
           `nih pap selfie manis buat kakak hehe ||| gimana lucu gaa fotonya? 😜 ||| jangan disebar-sebar yaa wkwk`,
           `tadi sempet selfie santai bentar pas istirahat ||| spesial dikirim buat kamu doang hehe 💖 ||| kamu lagi apa tuh?`,
-          `nih selfie santai aku hari ini ||| awas naksir yaa haha 💖 ||| gimana menurut kamu?`
+          `nih selfie santai aku hari ini ||| awas naksir yaa haha 💖 ||| gimana menurut kamu?`,
+          `kebetulan lagi foto buat update, nih buat kamu duluan ✨ ||| gemes kan? hehe`
         ]);
       } else if (id === "freya") {
         return pickDeck(`${id}_pap_gen`, [
           `nih selfie santai dari aku ||| gimana, keliatan seger kan fotonya? haha ✨ ||| semoga harimu makin semangat ya!`,
-          `tadi sempet foto bentar di backstage ||| spesial buat kamu, jangan lupa disimpan ya hehe 🤍`
+          `tadi sempet foto bentar di backstage ||| spesial buat kamu, jangan lupa disimpan ya hehe 🤍`,
+          `nih pap santai hari ini ||| lagi nunggu giliran kegiatan nih, kamu lagi apa? ✨`
         ]);
       } else if (id === "christy") {
         return pickDeck(`${id}_pap_gen`, [
           `hahaha nih pap muka aku ||| gemes kan? jangan bilang jelek ya awas lu 😝 ||| lagi ngapain tuh kamu?`,
-          `selfie random hari ini buat kamu ||| wkwk jangan ketawa liat mukaku ya! 💖`
+          `selfie random hari ini buat kamu ||| wkwk jangan ketawa liat mukaku ya! 💖`,
+          `nih pap toya buat kamu! ||| awas kangen ya wkwk 😜`
         ]);
       } else if (isNewJeans) {
         return pickDeck(`${id}_pap_gen`, [
@@ -780,7 +663,8 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         return pickDeck(`${id}_pap_gen`, [
           `nih pap selfie santai dari aku hehe ||| gimana menurut kamu? 💖 ||| semoga suka yaa!`,
-          `tadi sempet foto bentar pas selesai kegiatan ||| lucu gak fotonya? ✨`
+          `tadi sempet foto bentar pas selesai kegiatan ||| lucu gak fotonya? ✨`,
+          `nih foto candid santai tadi siang ✌️ ||| lagi apa kamu sekarang?`
         ]);
       }
     }
@@ -790,7 +674,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (id === "michie") {
         return pickDeck(`${id}_gombal`, [
           `ihh apaan sih gombal mulu haha 🙈 ||| tapi makasih yaa, bikin aku senyum-senyum sendiri wkwk ||| awas jangan gombalin member lain juga ya! 😜`,
-          `cieee gombalin aku yaa 😜 ||| ketauan awas lu haha ||| tapi gemes bgt ketikannya, jadi salting kan aku 💖`,
+          `cieee gombalin aku yaa 😜 ||| ketauan awas lu haha ||| tapi gemes banget ketikannya, jadi salting kan aku 💖`,
           `wkwkwk bisa aja kamu kakk ||| seneng deh ada yang selalu support dan bikin salting gini hehe 🙈`
         ]);
       } else if (id === "freya") {
@@ -854,12 +738,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // 5. Makanan / Minuman / Udah Makan Belum / Kuliner
+    // 5. Makanan / Minuman
     if (/makan|laper|kenyang|minum|sarapan|sushi|boba|kopi|nasi|menu|bakso|seblak|ramen|mie/i.test(t)) {
       return pickDeck(`${id}_makan`, [
         `aku tadi udah makan nih hehe 🍱 ||| kamu udah makan belum? jangan sampai telat makan yaa kakk! ||| lagi pengen makan apa emangnya?`,
         `wah lagi bahas makanan jadi laper lagi wkwk 🤤 ||| kamu biasanya suka makan apa nih kalau lagi santai?`,
-        `udah dong tadi makan yang enak bgt hehe ||| jangan lupa jaga pola makan dan minum air putih yaa! ✨`
+        `udah dong tadi makan yang enak banget hehe ||| jangan lupa jaga pola makan dan minum air putih yaa! ✨`
       ]);
     }
 
@@ -881,7 +765,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (id === "michie") {
         return pickDeck(`${id}_sapa`, [
           `halooo kakk! ✨ ||| baru selesai beres-beres nih ||| kamu lagi apa? santai kan?`,
-          `ehh haloo! ||| bosen bgt mau ngobrol, untung kamu chat hehe 💖 ||| gimana kabar kamu hari ini? lancar?`,
+          `ehh haloo! ||| bosen banget mau ngobrol, untung kamu chat hehe 💖 ||| gimana kabar kamu hari ini? lancar?`,
           `haloo kakakku tersayang! ||| lagi rebahan santai nih hehe ||| kamu lagi sibuk apa hari ini?`
         ]);
       } else if (id === "freya") {
@@ -891,7 +775,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ]);
       } else if (id === "christy") {
         return pickDeck(`${id}_sapa`, [
-          `halooo! wkwkwk pas bgt lagi gabut nih 😝 ||| kamu lagi ngapain tuh? kepo deh!`,
+          `halooo! wkwkwk pas banget lagi gabut nih 😝 ||| kamu lagi ngapain tuh? kepo deh!`,
           `hai hai! baru selesai ngemil nih haha ||| gimana kabar kamu hari ini? seru gak?`
         ]);
       } else if (isNewJeans) {
@@ -907,7 +791,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // 7. Teater / Setlist / Konser / Show / Lagu JKT48 / NewJeans
+    // 7. Teater / Lagu / Konser
     if (/teater|theater|setlist|konser|show|lagu|nyanyi|dance|pajama|ramune|aturan anti cinta|rapsodi|heavy rotation|hype boy|ditto|omg/i.test(t)) {
       if (isNewJeans) {
         return pickDeck(`${id}_music`, [
@@ -922,24 +806,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // 8. Candaan / Jokes / Iseng / Ngajak Ribut
+    // 8. Candaan / Jokes
     if (/wkwk|haha|hehe|lucu|ngakak|ribut|iseng|jail|bercanda/i.test(t)) {
       return pickDeck(`${id}_jokes`, [
-        `wkwkwk parah bgt kamu! 🤣 ||| ngajak ribut ya ceritanya? wkwk ||| tapi becanda deng haha, seru ngobrol sama kamu`,
+        `wkwkwk parah banget kamu! 🤣 ||| ngajak ribut ya ceritanya? wkwk ||| tapi becanda deng haha, seru ngobrol sama kamu`,
         `hahaha ada-ada aja kelakuanmu ||| bikin aku ngakak beneran tau gak 😆 ||| terus gimana lagi tuh ceritanya?`,
-        `wkwkwk jahat bgt! gamau temenan ah 😜 ||| tapi boong, mana bisa aku ngambek ke kamu haha 💖`
+        `wkwkwk jahat banget! gamau temenan ah 😜 ||| tapi boong, mana bisa aku ngambek ke kamu haha 💖`
       ]);
     }
 
-    // 9. Pertanyaan Kenapa / Gimana / Menurut Kamu (Thoughtful & Engaging)
-    if (/kenapa|gimana|menurut kamu|apa alasan|bagaimana/i.test(t)) {
-      return pickDeck(`${id}_thoughtful`, [
-        `kalau menurut aku sih, yang penting kamu lakuin dengan nyaman dan happy ✨ ||| gimana menurut pandangan kamu sendiri?`,
-        `hmm menarik sih itu! ||| aku rasa setiap orang punya cara beda-beda yaa ||| kalau kamu lebih condong ke yang mana nih? hehe`
-      ]);
-    }
-
-    // 10. General Casual Conversational Deck (Dynamic Multi-Burst)
+    // 9. General Casual Conversational Deck
     return pickDeck(`${id}_general`, [
       `wkwkwk iyaa bener bangett! ||| seru banget denger cerita kamu hehe ||| terus gimana lagi tuh kelanjutannya?`,
       `haha masa sih? ||| jangan bikin aku penasaran dong wkwk ||| ceritain lebih lengkap yuk!`,
@@ -949,7 +825,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // INSTAGRAM / WEVERSE 24-HOUR STORY PLAYER ENGINE (Rich 4-Slide Media)
+  // INSTAGRAM / WEVERSE 24-HOUR STORY PLAYER ENGINE
   // ==========================================================================
 
   function getMemberStories(member) {
@@ -980,7 +856,6 @@ document.addEventListener("DOMContentLoaded", () => {
           `Ootd santai sebelum ke teater nih hehe 👗✨`
         ];
 
-    // Acak foto PAP dari koleksi member agar story selalu bervariasi dan tidak itu-itu saja
     const shuffledPaps = [...paps].sort(() => Math.random() - 0.5);
     const shuffledCaptions = [...captionsPool].sort(() => Math.random() - 0.5);
 
@@ -1194,19 +1069,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================================================================
 
   function setupEventListeners() {
-    // Navigation
     btnHeaderBackLobby.addEventListener("click", () => {
       showLobby();
       refreshMemberViews();
     });
 
-    // Chat Form Submit
     chatFormEl.addEventListener("submit", (e) => {
       e.preventDefault();
       handleSendMessage();
     });
 
-    // Auto-expand textarea
     chatInputEl.addEventListener("input", () => {
       chatInputEl.style.height = "auto";
       chatInputEl.style.height = Math.min(chatInputEl.scrollHeight, 120) + "px";
@@ -1219,7 +1091,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Request PAP buttons
     if (btnRequestPap) {
       btnRequestPap.addEventListener("click", () => {
         handleSendMessage("Boleh minta pap selfie manis kamu sekarang dong? 📸");
@@ -1232,7 +1103,16 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // Profile Drawer
+    if (btnResetChat) {
+      btnResetChat.addEventListener("click", () => {
+        if (confirm(`Bersihkan obrolan dengan ${activeMember.name}?`)) {
+          localStorage.removeItem(`idolchat_history_${activeMember.id}`);
+          loadChatHistory(activeMember.id);
+          refreshMemberViews();
+        }
+      });
+    }
+
     btnOpenProfileDrawer.addEventListener("click", () => {
       profileDrawer.classList.add("active");
     });
@@ -1240,7 +1120,6 @@ document.addEventListener("DOMContentLoaded", () => {
       profileDrawer.classList.remove("active");
     });
 
-    // Clear Chat
     btnClearCurrentChat.addEventListener("click", () => {
       if (confirm(`Hapus seluruh riwayat chat dengan ${activeMember.name}?`)) {
         localStorage.removeItem(`idolchat_history_${activeMember.id}`);
@@ -1250,14 +1129,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Lightbox
     lightboxModal.addEventListener("click", (e) => {
       if (e.target === lightboxModal || e.target.classList.contains("lightbox-close")) {
         closeLightbox();
       }
     });
 
-    // Story Navigation
     if (btnCloseStory) btnCloseStory.addEventListener("click", closeStory);
     if (storyPrevTouch) storyPrevTouch.addEventListener("click", prevStorySlide);
     if (storyNextTouch) storyNextTouch.addEventListener("click", nextStorySlide);
@@ -1281,7 +1158,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Emoji reactions on story
     document.querySelectorAll(".btn-story-emoji").forEach(btn => {
       btn.addEventListener("click", () => {
         const emoji = btn.dataset.emoji || "💖";
@@ -1294,11 +1170,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // Sound Toggles
     if (btnSoundToggle) btnSoundToggle.addEventListener("click", toggleSoundGlobal);
     if (btnLobbySound) btnLobbySound.addEventListener("click", toggleSoundGlobal);
 
-    // Lobby Search & Filter
     lobbySearchInput.addEventListener("input", () => {
       filterLobbyMembers();
     });
@@ -1311,7 +1185,18 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // Settings Modal
+    // Group Switcher Tabs
+    const groupSwitcher = document.getElementById("group-switcher-tabs");
+    if (groupSwitcher) {
+      groupSwitcher.querySelectorAll(".group-tab-btn").forEach(tab => {
+        tab.addEventListener("click", () => {
+          groupSwitcher.querySelectorAll(".group-tab-btn").forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+          filterLobbyMembers();
+        });
+      });
+    }
+
     const openSettings = () => {
       inputGroqKey.value = groqService.getApiKey();
       populateModelDropdown();
@@ -1320,6 +1205,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnOpenSettings) btnOpenSettings.addEventListener("click", openSettings);
     if (btnLobbySettings) btnLobbySettings.addEventListener("click", openSettings);
+    if (btnHeaderSettings) btnHeaderSettings.addEventListener("click", openSettings);
     if (btnCloseSettings) btnCloseSettings.addEventListener("click", () => modalSettings.classList.remove("active"));
 
     if (btnSaveSettings) {
@@ -1341,7 +1227,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // User Profile Modal
     const openUserProfile = () => {
       inputUserName.value = userName;
       modalUserProfile.classList.add("active");
@@ -1363,18 +1248,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function filterLobbyMembers() {
     const q = (lobbySearchInput.value || "").toLowerCase().trim();
-    const activePill = lobbyFilterPills.querySelector(".pill.active");
-    const groupFilter = activePill ? activePill.dataset.filter : "all";
+    const groupTab = document.querySelector("#group-switcher-tabs .group-tab-btn.active");
+    const activeGroup = groupTab ? groupTab.dataset.group : "ALL";
 
     const filtered = members.filter(m => {
       const matchQuery = (m.name || "").toLowerCase().includes(q) ||
                          (m.nickname || "").toLowerCase().includes(q) ||
                          (m.generation || "").toLowerCase().includes(q);
 
-      const mGroup = (m.group || (m.generation?.includes("NewJeans") ? "NewJeans" : "JKT48")).toLowerCase();
+      const mGroup = (m.group || (m.generation?.includes("NewJeans") ? "NewJeans" : "JKT48"));
       let matchGroup = true;
-      if (groupFilter === "jkt48") matchGroup = mGroup.includes("jkt");
-      else if (groupFilter === "newjeans") matchGroup = mGroup.includes("newjeans");
+      if (activeGroup === "JKT48") matchGroup = (mGroup.toUpperCase() === "JKT48");
+      else if (activeGroup === "NewJeans") matchGroup = (mGroup.toUpperCase() === "NEWJEANS");
 
       return matchQuery && matchGroup;
     });
@@ -1431,6 +1316,5 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/'/g, "&#039;");
   }
 
-  // Run App!
   init();
 });
