@@ -159,23 +159,8 @@ document.addEventListener("DOMContentLoaded", () => {
     activeHeaderGen.textContent = member.gen || member.generation || "JKT48";
     activeHeaderStatus.textContent = member.status || "Online";
 
-    // Drawer updates
-    drawerAvatar.src = member.avatar;
-    drawerName.textContent = member.name;
-    drawerGen.textContent = member.gen || member.generation || "JKT48";
-    drawerJiko.textContent = member.jiko || member.jikoshoukai || "-";
-
-    // Drawer tags
-    drawerTags.innerHTML = "";
-    (member.tags || [member.badge || "JKT48", member.gen || "Member"]).forEach(tag => {
-      const sp = document.createElement("span");
-      sp.className = "drawer-tag";
-      sp.textContent = tag;
-      drawerTags.appendChild(sp);
-    });
-
-    // Drawer gallery
-    renderDrawerGallery(member);
+    // Populate complete Biodata drawer
+    populateProfileDrawer(member);
 
     // Quick prompts
     renderQuickPrompts(member);
@@ -891,24 +876,102 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function renderDrawerGallery(member) {
-    drawerGallery.innerHTML = "";
-    const paps = member.paps || [];
+  function openProfileDrawer(member) {
+    if (!member) return;
+    populateProfileDrawer(member);
+    if (profileDrawer) {
+      profileDrawer.classList.add("active");
+    }
+  }
 
-    if (paps.length === 0) {
-      drawerGallery.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px;">Belum ada koleksi foto.</p>`;
-      return;
+  function closeProfileDrawer() {
+    if (profileDrawer) {
+      profileDrawer.classList.remove("active");
+    }
+  }
+
+  function populateProfileDrawer(member) {
+    if (!member) return;
+
+    if (drawerAvatar) drawerAvatar.src = member.avatar || "";
+    if (drawerName) drawerName.textContent = member.nickname || member.name || "Member JKT48";
+    
+    const drawerFullname = document.getElementById("drawer-fullname");
+    if (drawerFullname) drawerFullname.textContent = member.fullName || member.name || "-";
+    
+    if (drawerGen) drawerGen.textContent = `${member.gen || member.generation || "Member"} • JKT48`;
+    if (drawerJiko) drawerJiko.textContent = `"${member.jiko || member.jikoshoukai || ''}"`;
+
+    // Biodata Grid
+    const elBirthdate = document.getElementById("drawer-birthdate");
+    if (elBirthdate) elBirthdate.textContent = member.birthDate ? `${member.birthDate} (${member.age || ''})` : "-";
+
+    const elBirthplace = document.getElementById("drawer-birthplace");
+    if (elBirthplace) elBirthplace.textContent = member.birthPlace || "-";
+
+    const elZodiac = document.getElementById("drawer-zodiac");
+    if (elZodiac) elZodiac.textContent = member.zodiac || "-";
+
+    const elBlood = document.getElementById("drawer-bloodtype");
+    if (elBlood) elBlood.textContent = member.bloodType || "-";
+
+    const elHeight = document.getElementById("drawer-height");
+    if (elHeight) elHeight.textContent = member.height || "-";
+
+    const elGen = document.getElementById("drawer-generation");
+    if (elGen) elGen.textContent = member.gen || member.generation || "JKT48";
+
+    // Karakteristik & Hobi Tags
+    if (drawerTags) {
+      drawerTags.innerHTML = "";
+      const tags = [...(member.traits || []), ...(member.hobbies || [])];
+      if (tags.length === 0) {
+        drawerTags.innerHTML = `<span class="drawer-tag">Idol JKT48</span>`;
+      } else {
+        tags.forEach(t => {
+          const span = document.createElement("span");
+          span.className = "drawer-tag";
+          span.textContent = t;
+          drawerTags.appendChild(span);
+        });
+      }
     }
 
-    paps.forEach(p => {
-      const item = document.createElement("div");
-      item.className = "drawer-gallery-item";
-      item.innerHTML = `<img src="${p.url}" alt="${p.caption || 'Foto'}" loading="lazy">`;
-      item.addEventListener("click", () => {
-        openLightbox(p.url, p.caption);
+    // Bio / Trivia
+    const elBioDesc = document.getElementById("drawer-bio-desc");
+    if (elBioDesc) {
+      elBioDesc.textContent = member.bio || `${member.name} adalah member bertalenta dari ${member.gen || 'JKT48'}.`;
+    }
+
+    // Media Sosial Resmi
+    const elSocials = document.getElementById("drawer-socials");
+    if (elSocials) {
+      elSocials.innerHTML = "";
+      const soc = member.socialMedia || {};
+      
+      const socialsList = [
+        { icon: "fa-brands fa-instagram", name: "Instagram", val: soc.instagram, color: "#e1306c" },
+        { icon: "fa-brands fa-x-twitter", name: "X (Twitter)", val: soc.twitter, color: "#ffffff" },
+        { icon: "fa-brands fa-tiktok", name: "TikTok", val: soc.tiktok, color: "#00f2fe" }
+      ];
+
+      socialsList.forEach(s => {
+        if (s.val) {
+          const a = document.createElement("a");
+          a.className = "drawer-social-item";
+          a.href = "#";
+          a.onclick = (e) => { e.preventDefault(); };
+          a.innerHTML = `
+            <div class="drawer-social-left">
+              <i class="${s.icon}" style="color: ${s.color}; font-size: 14px;"></i>
+              <span>${s.name}</span>
+            </div>
+            <span style="color: #94a3b8; font-weight: 600;">${s.val}</span>
+          `;
+          elSocials.appendChild(a);
+        }
       });
-      drawerGallery.appendChild(item);
-    });
+    }
   }
 
   // ==========================================================================
@@ -997,12 +1060,25 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    btnOpenProfileDrawer.addEventListener("click", () => {
-      profileDrawer.classList.add("active");
-    });
-    btnCloseDrawer.addEventListener("click", () => {
-      profileDrawer.classList.remove("active");
-    });
+    if (btnOpenProfileDrawer) {
+      btnOpenProfileDrawer.addEventListener("click", () => {
+        openProfileDrawer(activeMember);
+      });
+    }
+
+    const headerMemberInfo = document.getElementById("header-member-info");
+    if (headerMemberInfo) {
+      headerMemberInfo.addEventListener("click", (e) => {
+        if (e.target.closest("#btn-header-back-lobby")) return;
+        openProfileDrawer(activeMember);
+      });
+    }
+
+    if (btnCloseDrawer) {
+      btnCloseDrawer.addEventListener("click", () => {
+        closeProfileDrawer();
+      });
+    }
 
     btnClearCurrentChat.addEventListener("click", () => {
       if (confirm(`Hapus seluruh riwayat chat dengan ${activeMember.name}?`)) {

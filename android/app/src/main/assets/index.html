@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- App Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=2.1">
+  <link rel="stylesheet" href="css/style.css?v=3.0">
 </head>
 <body>
 
@@ -192,39 +192,86 @@
     </div>
 
     <!-- ==========================================================================
-         MEMBER PROFILE DRAWER (Right Sidebar)
+         MEMBER PROFILE DRAWER (Full Biodata & Official Information)
          ========================================================================== -->
     <div class="profile-drawer" id="profile-drawer">
       <div class="drawer-header">
-        <h3>Profil Oshi</h3>
-        <button class="btn-close-modal" id="btn-close-drawer">
+        <div class="drawer-title-wrap">
+          <i class="fa-solid fa-id-card-clip" style="color: #ff1744;"></i>
+          <h3>Biodata Resmi Oshi</h3>
+        </div>
+        <button class="btn-close-modal" id="btn-close-drawer" title="Tutup Biodata">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       <div class="drawer-body">
+        <!-- Hero: Avatar, Nama, Generasi, Status -->
         <div class="drawer-profile-hero">
-          <img src="" alt="Avatar" class="drawer-avatar" id="drawer-avatar">
+          <div class="drawer-avatar-ring">
+            <img src="" alt="Avatar" class="drawer-avatar" id="drawer-avatar">
+            <span class="drawer-online-dot"></span>
+          </div>
           <div class="drawer-hero-name" id="drawer-name">Freya Jayawardana</div>
-          <div class="drawer-hero-sub" id="drawer-gen">Generasi 7 JKT48</div>
+          <div class="drawer-hero-fullname" id="drawer-fullname">Freyana Jayawardana</div>
+          <div class="drawer-hero-badge" id="drawer-gen">Generasi 7 • JKT48</div>
         </div>
 
-        <div class="drawer-section-title">Jikoshoukai (Catchphrase)</div>
-        <div class="welcome-banner" style="margin-bottom: 18px; padding: 14px;">
-          <p id="drawer-jiko" style="font-size: 13px; color: #fda4af; font-style: italic;"></p>
+        <!-- Jikoshoukai Box -->
+        <div class="drawer-section-title"><i class="fa-solid fa-quote-left"></i> Jikoshoukai Resmi</div>
+        <div class="drawer-jiko-box">
+          <p id="drawer-jiko"></p>
         </div>
 
-        <div class="drawer-section-title">Karakteristik & Minat</div>
+        <!-- Biodata Lengkap Grid -->
+        <div class="drawer-section-title"><i class="fa-solid fa-user-tag"></i> Informasi Pribadi & Biodata</div>
+        <div class="drawer-biodata-grid">
+          <div class="bio-item">
+            <span class="bio-label"><i class="fa-solid fa-cake-candles"></i> Tanggal Lahir</span>
+            <span class="bio-value" id="drawer-birthdate">-</span>
+          </div>
+          <div class="bio-item">
+            <span class="bio-label"><i class="fa-solid fa-location-dot"></i> Tempat Lahir</span>
+            <span class="bio-value" id="drawer-birthplace">-</span>
+          </div>
+          <div class="bio-item">
+            <span class="bio-label"><i class="fa-solid fa-star"></i> Zodiak</span>
+            <span class="bio-value" id="drawer-zodiac">-</span>
+          </div>
+          <div class="bio-item">
+            <span class="bio-label"><i class="fa-solid fa-droplet"></i> Gol. Darah</span>
+            <span class="bio-value" id="drawer-bloodtype">-</span>
+          </div>
+          <div class="bio-item">
+            <span class="bio-label"><i class="fa-solid fa-ruler-vertical"></i> Tinggi Badan</span>
+            <span class="bio-value" id="drawer-height">-</span>
+          </div>
+          <div class="bio-item">
+            <span class="bio-label"><i class="fa-solid fa-users"></i> Generasi</span>
+            <span class="bio-value" id="drawer-generation">-</span>
+          </div>
+        </div>
+
+        <!-- Karakteristik & Minat -->
+        <div class="drawer-section-title"><i class="fa-solid fa-heart"></i> Karakteristik & Minat</div>
         <div class="drawer-tags-wrap" id="drawer-tags">
           <!-- Injected via JS -->
         </div>
 
-        <div class="drawer-section-title">Galeri Foto & PAP Member</div>
-        <div class="pap-gallery-grid" id="drawer-gallery">
+        <!-- Bio / Trivia Singkat -->
+        <div class="drawer-section-title"><i class="fa-solid fa-circle-info"></i> Tentang Oshi</div>
+        <div class="drawer-bio-desc" id="drawer-bio-desc">
           <!-- Injected via JS -->
         </div>
 
-        <div class="drawer-section-title" style="margin-top: 24px;">Kelola Obrolan</div>
-        <button class="btn-secondary" id="btn-clear-current-chat" style="width: 100%; color: #f87171; border-color: rgba(239, 68, 68, 0.3);">
+        <!-- Media Sosial Resmi -->
+        <div class="drawer-section-title"><i class="fa-solid fa-hashtag"></i> Media Sosial Resmi</div>
+        <div class="drawer-social-grid" id="drawer-socials">
+          <!-- Injected via JS -->
+        </div>
+
+        <!-- Kelola Obrolan -->
+        <div class="drawer-section-title" style="margin-top: 24px;"><i class="fa-solid fa-gear"></i> Kelola Obrolan</div>
+        <button class="btn-secondary" id="btn-clear-current-chat" style="width: 100%; color: #f87171; border-color: rgba(239, 68, 68, 0.3); margin-top: 8px;">
           <i class="fa-solid fa-trash-can"></i> Hapus Riwayat Chat Ini
         </button>
       </div>
@@ -442,10 +489,10 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/sound.js?v=2.3"></script>
-  <script src="js/members.js?v=2.3"></script>
-  <script src="js/groq-api.js?v=2.3"></script>
-  <script src="js/app.js?v=2.3"></script>
+  <script src="js/sound.js?v=3.0"></script>
+  <script src="js/members.js?v=3.0"></script>
+  <script src="js/groq-api.js?v=3.0"></script>
+  <script src="js/app.js?v=3.0"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

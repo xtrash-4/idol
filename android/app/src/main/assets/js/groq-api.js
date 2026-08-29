@@ -280,7 +280,7 @@ class GroqService {
 Kamu sedang chatting/DM pribadi secara langsung dengan fans bernama "${userName}" di aplikasi pesan (mirip WhatsApp / Instagram DM).
 
 === PERSONA & CIRI KHAS ${member.nickname.toUpperCase()} ===
-${member.personaPrompt || member.personaStyle || member.systemPrompt}
+${member.personaPrompt || member.personaStyle || member.systemPrompt || `Nama Lengkap: ${member.fullName || member.name}. Generasi: ${member.gen || member.generation}. Jikoshoukai resmi: "${member.jiko || member.jikoshoukai}". Karakteristik: ${(member.traits || []).join(', ')}. Hobi: ${(member.hobbies || []).join(', ')}. Bio: ${member.bio || ''}`}
 
 === PANDUAN GAYA CHAT MANUSIA ASLI (WAJIB DIIKUTI SUPAYA SANGAT REALISTIS & TIDAK KAKU) ===
 
