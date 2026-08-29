@@ -1,7 +1,7 @@
 /**
- * MPRUYY HALU - Core Application Logic
- * Mengatur interaksi UI, state member, pengiriman pesan via Groq API,
- * 24-Hour Instagram Story Player, efek suara, galeri PAP, dan manajemen chat storage.
+ * MPRUYY HALU - Ultra-Natural Conversational Engine & Media System
+ * Mengatur interaksi UI, state member, pengiriman pesan kontekstual anti-template,
+ * 24-Hour Instagram Story Player, efek suara, galeri PAP dinamis, dan voice notes.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -98,505 +98,244 @@ document.addEventListener("DOMContentLoaded", () => {
   const lightboxCaption = document.getElementById("lightbox-caption");
   const btnSoundToggle = document.getElementById("btn-sound-toggle");
   const btnAttachPap = document.getElementById("btn-attach-pap");
-  const toastEl = document.getElementById("toast-notification");
-  const toastMsg = document.getElementById("toast-message");
 
-  // Story Player Elements
+  // Story Elements
   const storyPlayerModal = document.getElementById("story-player-modal");
-  const storyPlayerBackdrop = document.getElementById("story-player-backdrop");
   const storyProgressContainer = document.getElementById("story-progress-container");
   const storyAuthorAvatar = document.getElementById("story-author-avatar");
   const storyAuthorName = document.getElementById("story-author-name");
   const storyTimestamp = document.getElementById("story-timestamp");
-  const btnStoryClose = document.getElementById("btn-story-close");
   const storyMainImage = document.getElementById("story-main-image");
-  const storyTapPrev = document.getElementById("story-tap-prev");
-  const storyTapNext = document.getElementById("story-tap-next");
   const storyLocationText = document.getElementById("story-location-text");
   const storyMusicText = document.getElementById("story-music-text");
-  const storyTimeBadge = document.getElementById("story-sticker-time");
+  const storyTimeBadge = document.getElementById("story-sticker-time") || document.getElementById("story-time-badge");
   const storyCaptionText = document.getElementById("story-caption-text");
   const storyReplyInput = document.getElementById("story-reply-input");
-  const btnStorySendReply = document.getElementById("btn-story-send-reply");
+  const btnSendStoryReply = document.getElementById("btn-story-send-reply") || document.getElementById("btn-send-story-reply");
+  const btnCloseStory = document.getElementById("btn-story-close") || document.getElementById("btn-close-story");
+  const storyPrevTouch = document.getElementById("story-tap-prev") || document.getElementById("story-prev-touch");
+  const storyNextTouch = document.getElementById("story-tap-next") || document.getElementById("story-next-touch");
 
-  // State Filter Lobby
-  let activeGroup = "JKT48"; // Default grup: JKT48
-  let activeSubFilter = "all";
-  let activeSearchQuery = "";
-
-  const groupSwitcherTabs = document.getElementById("group-switcher-tabs");
-
-  // Story Player State
   let currentStoryMember = null;
   let currentStorySlideIndex = 0;
   let currentStorySlides = [];
   let storyTimer = null;
-  const STORY_DURATION = 5000; // 5s per slide
+  const STORY_DURATION = 5500; // 5.5 detik per slide
 
-  // Services
-  const groqService = new GroqService();
-  const sounds = (typeof SoundEngine !== 'undefined') ? new SoundEngine() : { playClick:()=>{}, playSend:()=>{}, playReceive:()=>{}, toggle:()=>true };
+  // ==========================================================================
+  // INITIALIZATION & VIEW CONTROLS
+  // ==========================================================================
 
   function init() {
-    updateUserProfileDisplay();
-    renderGroupFilterPills();
-    renderLobbyGrid();
+    updateUserBadgeDisplay();
+    renderLobby(members);
     setupEventListeners();
+    setupSoundToggles();
 
-    // Default: Tampilkan Lobby Screen
-    showLobby();
+    // Auto-select initial idol if specified in URL or state
+    if (members.length > 0) {
+      setActiveMember(members[0]);
+    }
   }
 
-  // ==========================================================================
-  // VIEW SWITCHING (LOBBY <-> CHAT)
-  // ==========================================================================
+  function updateUserBadgeDisplay() {
+    if (lobbyUserName) {
+      lobbyUserName.textContent = userName || "Fans Setia";
+    }
+  }
 
   function showLobby() {
-    if (lobbyView && chatLayout) {
-      chatLayout.classList.add("hidden");
-      lobbyView.classList.remove("hidden");
-      renderGroupFilterPills();
-      renderLobbyGrid(activeSearchQuery);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    lobbyView.classList.remove("hidden");
+    chatLayout.classList.add("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function showChat(member) {
-    if (lobbyView && chatLayout) {
-      lobbyView.classList.add("hidden");
-      chatLayout.classList.remove("hidden");
-      selectMember(member || activeMember);
-    }
+  function showChat() {
+    lobbyView.classList.add("hidden");
+    chatLayout.classList.remove("hidden");
+    scrollToBottom();
   }
 
-  // ==========================================================================
-  // RENDER FUNCTIONS (LOBBY SELECTION & GROUP SEPARATION)
-  // ==========================================================================
+  function setActiveMember(member) {
+    if (!member) return;
+    activeMember = member;
 
-  function renderGroupFilterPills() {
-    if (!lobbyFilterPills) return;
-    lobbyFilterPills.innerHTML = "";
+    // Header updates
+    activeHeaderAvatar.src = member.avatar;
+    activeHeaderName.textContent = member.name;
+    activeHeaderGen.textContent = member.generation;
+    activeHeaderStatus.textContent = member.status || "Online";
 
-    let pills = [];
-    if (activeGroup === "JKT48") {
-      pills = [
-        { label: "Semua JKT48", val: "all" },
-        { label: "Gen 7", val: "Gen 7" },
-        { label: "Gen 11", val: "Gen 11" },
-        { label: "Gen 3", val: "Gen 3" },
-        { label: "Gen 10", val: "Gen 10" },
-        { label: "Gen 6", val: "Gen 6" },
-        { label: "Gen 9", val: "Gen 9" }
-      ];
-    } else {
-      pills = [
-        { label: "Semua NewJeans", val: "all" },
-        { label: "Minji (Leader)", val: "minji" },
-        { label: "Hanni", val: "hanni" },
-        { label: "Danielle", val: "danielle" },
-        { label: "Haerin", val: "haerin" },
-        { label: "Hyein (Maknae)", val: "hyein" }
-      ];
-    }
+    // Drawer updates
+    drawerAvatar.src = member.avatar;
+    drawerName.textContent = member.name;
+    drawerGen.textContent = member.generation;
+    drawerJiko.textContent = member.jikoshoukai || "-";
 
-    pills.forEach(p => {
-      const btn = document.createElement("button");
-      btn.className = `filter-pill ${p.val === activeSubFilter ? "active" : ""}`;
-      btn.dataset.sub = p.val;
-      btn.textContent = p.label;
-      btn.type = "button";
-      btn.addEventListener("click", () => {
-        sounds.playClick();
-        activeSubFilter = p.val;
-        document.querySelectorAll(".filter-pill").forEach(el => el.classList.remove("active"));
-        btn.classList.add("active");
-        renderLobbyGrid(activeSearchQuery);
-      });
-      lobbyFilterPills.appendChild(btn);
+    // Drawer tags
+    drawerTags.innerHTML = "";
+    (member.tags || []).forEach(tag => {
+      const sp = document.createElement("span");
+      sp.className = "drawer-tag";
+      sp.textContent = tag;
+      drawerTags.appendChild(sp);
     });
+
+    // Drawer gallery
+    renderDrawerGallery(member);
+
+    // Quick prompts
+    renderQuickPrompts(member);
+
+    // Load message history
+    loadChatHistory(member.id);
   }
 
-  function renderLobbyGrid(query = "") {
-    if (!lobbyGrid) return;
+  // ==========================================================================
+  // LOBBY RENDERING
+  // ==========================================================================
+
+  function renderLobby(list) {
     lobbyGrid.innerHTML = "";
 
-    const q = query.toLowerCase().trim();
-    const filtered = members.filter(m => {
-      const isNewJeans = (m.group === "NewJeans") || m.generation?.includes("NewJeans");
-      if (activeGroup === "JKT48" && isNewJeans) return false;
-      if (activeGroup === "NewJeans" && !isNewJeans) return false;
-
-      if (activeSubFilter !== "all") {
-        if (activeGroup === "JKT48") {
-          if (!m.generation.includes(activeSubFilter)) return false;
-        } else if (activeGroup === "NewJeans") {
-          if (m.id !== activeSubFilter) return false;
-        }
-      }
-
-      if (q) {
-        const matchQuery = 
-          m.name.toLowerCase().includes(q) || 
-          m.nickname.toLowerCase().includes(q) ||
-          m.generation.toLowerCase().includes(q) ||
-          (m.tags && m.tags.some(t => t.toLowerCase().includes(q)));
-        if (!matchQuery) return false;
-      }
-
-      return true;
-    });
-
-    if (filtered.length === 0) {
+    if (!list || list.length === 0) {
       lobbyGrid.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
-          <i class="fa-solid fa-user-slash" style="font-size: 32px; margin-bottom: 12px; color: var(--text-faint);"></i>
-          <p>Tidak ada member ${activeGroup} yang cocok dengan pencarian "<strong>${escapeHtml(query)}</strong>"</p>
+        <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-muted);">
+          <div style="font-size: 2.5rem; margin-bottom: 12px;">🔍</div>
+          <h3 style="color: var(--text-primary); margin-bottom: 6px;">Member Tidak Ditemukan</h3>
+          <p style="font-size: 0.85rem;">Coba cari nama lain atau pilih kategori 'Semua'.</p>
         </div>
       `;
       return;
     }
 
-    filtered.forEach(member => {
+    list.forEach(member => {
       const card = document.createElement("div");
       card.className = "lobby-card";
-      
-      const groupName = member.group || (member.generation.includes("NewJeans") ? "NewJeans" : "JKT48");
-      
-      const tagsHtml = (member.tags || ["Idol"])
-        .slice(0, 3)
-        .map(tag => `<span class="lobby-tag">${escapeHtml(tag)}</span>`)
-        .join("");
+      card.dataset.id = member.id;
+
+      const history = getMemberChatHistory(member.id);
+      const lastMsg = history.length > 0 ? history[history.length - 1] : null;
+      let previewText = "Mulai obrolan seru sekarang ✨";
+      let previewTime = "";
+
+      if (lastMsg) {
+        previewText = lastMsg.content || (lastMsg.pap ? "📷 Mengirim foto selfie" : (lastMsg.audio ? "🎤 Pesan suara" : "Obrolan"));
+        previewTime = lastMsg.time || "";
+      }
 
       card.innerHTML = `
-        <div class="lobby-card-avatar-wrap story-ring-wrap" title="Klik avatar untuk melihat Story 24 Jam ${escapeHtml(member.nickname || member.name)}">
-          <div class="story-ring-active">
-            <img src="${member.avatar}" alt="${member.name}" class="lobby-card-avatar" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400'">
+        <div class="lobby-card-avatar-wrapper">
+          <div class="story-ring-wrapper" data-member-id="${member.id}">
+            <img src="${member.avatar}" alt="${member.name}" class="lobby-card-avatar" loading="lazy">
           </div>
-          <div class="lobby-card-online-dot" title="Online"></div>
+          <span class="lobby-online-dot"></span>
         </div>
-        <h3 class="lobby-card-name">${escapeHtml(member.name)}</h3>
-        <div class="lobby-card-meta">
-          <span class="lobby-card-group-tag ${groupName}">${groupName}</span>
-          <span class="lobby-card-gen">${escapeHtml(member.generation.replace("Generasi ", "Gen "))}</span>
-          <span class="lobby-card-fandom">${escapeHtml(member.fandom || "Fans")}</span>
+        <div class="lobby-card-info">
+          <div class="lobby-card-top">
+            <h4 class="lobby-card-name">${member.nickname || member.name}</h4>
+            <span class="lobby-card-time">${previewTime}</span>
+          </div>
+          <p class="lobby-card-gen">${member.group || "JKT48"} • ${member.generation}</p>
+          <p class="lobby-card-last-msg">${escapeHtml(previewText)}</p>
         </div>
-        <p class="lobby-card-jiko">"${escapeHtml(member.jikoshoukai)}"</p>
-        <div class="lobby-card-tags">
-          ${tagsHtml}
-        </div>
-        <button class="btn-lobby-chat-start" type="button">
-          <i class="fa-regular fa-comment-dots"></i> Chat Sekarang
-        </button>
       `;
 
-      // Klik avatar untuk buka Instagram Story
-      const avatarWrap = card.querySelector(".lobby-card-avatar-wrap");
-      avatarWrap.addEventListener("click", (e) => {
-        e.stopPropagation();
-        sounds.playClick();
-        openStory(member);
-      });
-
-      // Klik kartu / tombol chat untuk masuk ke room chat
-      card.addEventListener("click", () => {
-        sounds.playClick();
-        showChat(member);
+      // Click card to open chat
+      card.addEventListener("click", (e) => {
+        if (e.target.closest(".story-ring-wrapper")) {
+          // Open 24-Hour Story
+          openStory(member);
+        } else {
+          setActiveMember(member);
+          showChat();
+        }
       });
 
       lobbyGrid.appendChild(card);
     });
   }
 
-  function refreshMemberViews() {
+  // ==========================================================================
+  // CHAT RENDERING & STORAGE
+  // ==========================================================================
+
+  function getMemberChatHistory(memberId) {
     try {
-      renderLobbyGrid(activeSearchQuery);
-    } catch (error) {
-      console.warn("Gagal memperbarui daftar idol:", error);
+      return JSON.parse(localStorage.getItem(`idolchat_history_${memberId}`) || "[]");
+    } catch (e) {
+      return [];
     }
   }
 
-  function selectMember(member) {
-    activeMember = member;
-
-    // Update Header
-    activeHeaderAvatar.src = member.avatar;
-    activeHeaderName.innerHTML = `${escapeHtml(member.name)} <span class="member-badge" id="active-header-gen">${escapeHtml(member.generation)}</span>`;
-    activeHeaderStatus.textContent = "Online";
-    typingLabelEl.textContent = `${escapeHtml(member.nickname || member.name)} sedang mengetik...`;
-
-    // Render Chat Messages for selected idol
-    renderChatMessages();
+  function saveMessageToHistory(memberId, msgObj) {
+    try {
+      const history = getMemberChatHistory(memberId);
+      history.push(msgObj);
+      if (history.length > 80) history.shift();
+      localStorage.setItem(`idolchat_history_${memberId}`, JSON.stringify(history));
+    } catch (e) {
+      console.warn("Save history error:", e);
+    }
   }
 
-  function renderChatMessages() {
+  function loadChatHistory(memberId) {
     chatMessagesEl.innerHTML = "";
-
-    // Welcome Banner (Hanya Nama Member Bersih & Jikoshoukai)
-    const banner = document.createElement("div");
-    banner.className = "welcome-banner";
-    banner.innerHTML = `
-      <img src="${activeMember.avatar}" alt="${activeMember.name}" class="welcome-avatar">
-      <div class="welcome-content">
-        <h3>${escapeHtml(activeMember.name)}</h3>
-        <p class="jikoshoukai-quote">"${escapeHtml(activeMember.jikoshoukai)}"</p>
-        <span class="fandom-pill"><i class="fa-solid fa-star"></i> Fandom: ${escapeHtml(activeMember.fandom || 'Fans')}</span>
-      </div>
-    `;
-    chatMessagesEl.appendChild(banner);
-
-    // Date divider
-    const dateDiv = document.createElement("div");
-    dateDiv.className = "date-divider";
-    dateDiv.innerHTML = `<span class="date-badge">Hari Ini</span>`;
-    chatMessagesEl.appendChild(dateDiv);
-
-    // Render Saved Messages
-    const history = getMemberChatHistory(activeMember.id);
+    const history = getMemberChatHistory(memberId);
 
     if (history.length === 0) {
-      const emptyStarter = document.createElement("div");
-      emptyStarter.className = "chat-empty-starter";
-      emptyStarter.id = "chat-empty-starter";
-      emptyStarter.innerHTML = `
-        <div class="empty-starter-icon"><i class="fa-regular fa-paper-plane"></i></div>
-        <h4>Mulai Obrolan Pertama</h4>
-        <p>Kirim sapaan atau obrolan santai ke <strong>${escapeHtml(activeMember.nickname || activeMember.name)}</strong> di bawah!</p>
+      // Welcome banner
+      const banner = document.createElement("div");
+      banner.className = "chat-welcome-banner";
+      banner.innerHTML = `
+        <div class="welcome-avatar-wrapper">
+          <img src="${activeMember.avatar}" alt="${activeMember.name}" class="welcome-avatar">
+        </div>
+        <h3 class="welcome-title">${activeMember.name}</h3>
+        <p class="welcome-jiko">"${activeMember.jikoshoukai || "Halo, selamat datang!"}"</p>
+        <div class="welcome-badges">
+          <span class="welcome-badge">${activeMember.group || "JKT48"}</span>
+          <span class="welcome-badge">${activeMember.generation}</span>
+          <span class="welcome-badge">⭐ ${activeMember.fandom || "Fans"}</span>
+        </div>
+        <p class="welcome-hint">Kirim pesan pertama kamu atau pilih tombol interaksi cepat di bawah 👇</p>
       `;
-      chatMessagesEl.appendChild(emptyStarter);
+      chatMessagesEl.appendChild(banner);
     } else {
       history.forEach(msg => {
-        appendMessageToUI(msg);
+        appendMessageToUI(msg, false);
       });
     }
 
     scrollToBottom();
   }
 
-  // ==========================================================================
-  // WHATSAPP-STYLE INTERACTIVE VOICE NOTE (VN) ENGINE
-  // ==========================================================================
-
-  const usedVnMap = {};
-
-  function getVariedVoiceNote(member, text = "") {
-    const t = (text || "").toLowerCase();
-    
-    if (member.id === 'michie') {
-      const pool = [
-        { url: "audio/voice_notes/michie/michie_vn_asli_1.mp3", caption: "Suara Asli Michie" },
-        { url: "audio/voice_notes/michie/michie_vn_sapaan.mp3", caption: "Sapaan Ceria Michie" },
-        { url: "audio/voice_notes/michie/michie_vn_salting.mp3", caption: "Michie Salting" },
-        { url: "audio/voice_notes/michie/michie_vn_semangat.mp3", caption: "Semangat dari Michie" },
-        { url: "audio/voice_notes/michie/michie_vn_night.mp3", caption: "Good Night Michie" }
-      ];
-
-      if (/salting|cantik|gombal|manis|lucu/i.test(t)) {
-        return pool[2];
-      }
-      if (/semangat|capek|tugas|kerja|lelah/i.test(t)) {
-        return pool[3];
-      }
-      if (/tidur|malem|night/i.test(t)) {
-        return pool[4];
-      }
-      if (/asli|showroom|rekaman/i.test(t)) {
-        return pool[0];
-      }
-
-      if (!usedVnMap['michie']) usedVnMap['michie'] = [];
-      const unused = pool.filter((_, idx) => !usedVnMap['michie'].includes(idx));
-      const chosenPool = unused.length > 0 ? unused : pool;
-      const selected = chosenPool[Math.floor(Math.random() * chosenPool.length)];
-      const idx = pool.indexOf(selected);
-      usedVnMap['michie'].push(idx);
-      if (usedVnMap['michie'].length >= pool.length) usedVnMap['michie'] = [];
-      return selected;
-    }
-
-    if (member.id === 'freya') {
-      const pool = [
-        { url: "audio/voice_notes/freya/freya_vn_sapaan.mp3", caption: "Sapaan Freya" },
-        { url: "audio/voice_notes/freya/freya_vn_salting.mp3", caption: "Freya Salting" },
-        { url: "audio/voice_notes/freya/freya_vn_semangat.mp3", caption: "Semangat Freya" }
-      ];
-      return pool[Math.floor(Math.random() * pool.length)];
-    }
-
-    return { url: "audio/voice_notes/minji/minji_vn_sapaan.mp3", caption: "Minji Voice Greeting" };
-  }
-
-  function createVoiceNotePlayerElement(audioObj) {
-    const card = document.createElement("div");
-    card.className = "vn-card";
-
-    // Generate 24 dynamic waveform bars
-    const barHeights = [40, 65, 30, 85, 100, 75, 45, 90, 60, 35, 80, 95, 70, 50, 85, 60, 40, 75, 90, 55, 35, 70, 80, 45];
-    const waveformBarsHtml = barHeights.map(h => `<div class="vn-bar" style="height: ${h}%;"></div>`).join("");
-
-    card.innerHTML = `
-      <div class="vn-avatar-wrap">
-        <img src="${activeMember.avatar}" alt="Avatar" class="vn-avatar">
-        <div class="vn-mic-badge"><i class="fa-solid fa-microphone"></i></div>
-      </div>
-      <div class="vn-player-body">
-        <div class="vn-controls-row">
-          <button class="btn-vn-play" type="button" aria-label="Play Voice Note">
-            <i class="fa-solid fa-play"></i>
-          </button>
-          <div class="vn-track-wrap">
-            <div class="vn-waveform-bars">
-              ${waveformBarsHtml}
-            </div>
-          </div>
-        </div>
-        <div class="vn-meta-row">
-          <span class="vn-time-display">0:00</span>
-          <button class="btn-vn-speed" type="button">1.0x</button>
-        </div>
-      </div>
-      <audio src="${audioObj.url}" preload="metadata" class="vn-audio-element"></audio>
-    `;
-
-    const btnPlay = card.querySelector(".btn-vn-play");
-    const audioEl = card.querySelector(".vn-audio-element");
-    const timeDisplay = card.querySelector(".vn-time-display");
-    const btnSpeed = card.querySelector(".btn-vn-speed");
-    const trackWrap = card.querySelector(".vn-track-wrap");
-    const bars = card.querySelectorAll(".vn-bar");
-
-    const speeds = [1.0, 1.5, 2.0];
-    let speedIdx = 0;
-
-    btnSpeed.addEventListener("click", (e) => {
-      e.stopPropagation();
-      speedIdx = (speedIdx + 1) % speeds.length;
-      const spd = speeds[speedIdx];
-      audioEl.playbackRate = spd;
-      btnSpeed.textContent = `${spd.toFixed(1)}x`;
-    });
-
-    audioEl.addEventListener("loadedmetadata", () => {
-      const dur = Math.round(audioEl.duration) || 5;
-      const mins = Math.floor(dur / 60);
-      const secs = String(dur % 60).padStart(2, "0");
-      timeDisplay.textContent = `${mins}:${secs}`;
-    });
-
-    btnPlay.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (audioEl.paused) {
-        document.querySelectorAll(".vn-audio-element").forEach(a => {
-          if (a !== audioEl) {
-            a.pause();
-            const parent = a.closest(".vn-card");
-            if (parent) {
-              const pPlay = parent.querySelector(".btn-vn-play");
-              if (pPlay) pPlay.innerHTML = '<i class="fa-solid fa-play"></i>';
-            }
-          }
-        });
-        audioEl.play().then(() => {
-          btnPlay.innerHTML = '<i class="fa-solid fa-pause"></i>';
-        }).catch(err => console.warn("Audio play failed:", err));
-      } else {
-        audioEl.pause();
-        btnPlay.innerHTML = '<i class="fa-solid fa-play"></i>';
-      }
-    });
-
-    audioEl.addEventListener("timeupdate", () => {
-      if (audioEl.duration) {
-        const cur = audioEl.currentTime;
-        const dur = audioEl.duration;
-        const ratio = cur / dur;
-        const playedCount = Math.floor(ratio * bars.length);
-
-        bars.forEach((b, idx) => {
-          if (idx <= playedCount) {
-            b.classList.add("played");
-          } else {
-            b.classList.remove("played");
-          }
-        });
-
-        const mins = Math.floor(cur / 60);
-        const secs = String(Math.floor(cur % 60)).padStart(2, "0");
-        timeDisplay.textContent = `${mins}:${secs}`;
-      }
-    });
-
-    audioEl.addEventListener("ended", () => {
-      btnPlay.innerHTML = '<i class="fa-solid fa-play"></i>';
-      bars.forEach(b => b.classList.remove("played"));
-      const dur = Math.round(audioEl.duration) || 5;
-      const mins = Math.floor(dur / 60);
-      const secs = String(dur % 60).padStart(2, "0");
-      timeDisplay.textContent = `${mins}:${secs}`;
-    });
-
-    trackWrap.addEventListener("click", (e) => {
-      const rect = trackWrap.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const ratio = Math.max(0, Math.min(1, clickX / rect.width));
-      if (audioEl.duration) {
-        audioEl.currentTime = ratio * audioEl.duration;
-      }
-    });
-
-    return card;
-  }
-
-  function appendMessageToUI(msg) {
-    const emptyStarter = document.getElementById("chat-empty-starter");
-    if (emptyStarter) {
-      emptyStarter.remove();
-    }
-
+  function appendMessageToUI(msg, animate = true) {
     const isUser = msg.role === "user";
-    const roleClass = isUser ? "user" : "idol";
+    const msgRow = document.createElement("div");
+    msgRow.className = `msg-row ${isUser ? "user" : "idol"}`;
+    if (animate) msgRow.classList.add("animate-in");
 
-    // Cek apakah pesan terakhir di DOM berasal dari pengirim yang SAMA
-    const lastGroup = chatMessagesEl.querySelector(".message-group:last-of-type");
-    let targetGroup = null;
+    const avatarDiv = document.createElement("div");
+    avatarDiv.className = "msg-avatar";
 
-    if (lastGroup && lastGroup.classList.contains(roleClass)) {
-      targetGroup = lastGroup;
+    if (isUser) {
+      // Pure Initial Avatar
+      const userInitial = (userName || "P").trim().charAt(0).toUpperCase() || "P";
+      avatarDiv.innerHTML = `<div class="user-pure-initial">${userInitial}</div>`;
     } else {
-      targetGroup = document.createElement("div");
-      targetGroup.className = `message-group ${roleClass}`;
-
-      const avatarHtml = isUser
-        ? ``
-        : `<img src="${activeMember.avatar}" alt="Avatar" class="group-avatar">`;
-
-      const senderNameHtml = isUser
-        ? ``
-        : `<span class="group-sender-name">${escapeHtml(activeMember.nickname || activeMember.name)}</span>`;
-
-      targetGroup.innerHTML = `
-        ${avatarHtml}
-        <div class="group-content">
-          ${senderNameHtml}
-          <div class="group-bubbles"></div>
-          <span class="group-time">${msg.time || getCurrentTime()}</span>
-        </div>
-      `;
-      chatMessagesEl.appendChild(targetGroup);
+      avatarDiv.innerHTML = `<img src="${activeMember.avatar}" alt="${activeMember.name}">`;
     }
 
-    const bubblesContainer = targetGroup.querySelector(".group-bubbles");
-    const timeEl = targetGroup.querySelector(".group-time");
-    if (timeEl) timeEl.textContent = msg.time || getCurrentTime();
+    const contentDiv = document.createElement("div");
+    contentDiv.className = "msg-content";
 
-    // 1. Render PAP jika ada
+    const bubblesContainer = document.createElement("div");
+    bubblesContainer.className = "msg-bubbles";
+
+    // 1. Render PAP / Foto jika ada
     if (msg.pap) {
-      const papCard = document.createElement("div");
-      papCard.className = "pap-card";
-      papCard.onclick = () => openLightbox(msg.pap.url, msg.pap.caption || '');
-      papCard.innerHTML = `
-        <div class="pap-badge"><i class="fa-solid fa-camera"></i> Idol PAP</div>
-        <img src="${msg.pap.url}" alt="${escapeHtml(msg.pap.caption || 'Idol PAP')}" loading="lazy">
-      `;
+      const papCard = createPapElement(msg.pap);
       bubblesContainer.appendChild(papCard);
     }
 
@@ -613,6 +352,92 @@ document.addEventListener("DOMContentLoaded", () => {
       bubble.innerHTML = escapeHtml(msg.content);
       bubblesContainer.appendChild(bubble);
     }
+
+    const timeDiv = document.createElement("div");
+    timeDiv.className = "msg-time";
+    timeDiv.textContent = msg.time || getCurrentTime();
+
+    contentDiv.appendChild(bubblesContainer);
+    contentDiv.appendChild(timeDiv);
+
+    msgRow.appendChild(avatarDiv);
+    msgRow.appendChild(contentDiv);
+
+    chatMessagesEl.appendChild(msgRow);
+  }
+
+  function createPapElement(pap) {
+    const card = document.createElement("div");
+    card.className = "pap-card";
+    card.innerHTML = `
+      <div class="pap-img-container">
+        <img src="${pap.url}" alt="${pap.caption || 'Foto Selfie'}" class="pap-img" loading="lazy">
+        <div class="pap-overlay-badge">📷 PAP Spesial</div>
+      </div>
+      ${pap.caption ? `<div class="pap-caption">${escapeHtml(pap.caption)}</div>` : ""}
+    `;
+
+    card.addEventListener("click", () => {
+      openLightbox(pap.url, pap.caption);
+    });
+
+    return card;
+  }
+
+  function createVoiceNotePlayerElement(audioSrc) {
+    const vnContainer = document.createElement("div");
+    vnContainer.className = "vn-player-card";
+    vnContainer.innerHTML = `
+      <div class="vn-play-btn" id="vn-btn">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </div>
+      <div class="vn-waveforms">
+        <div class="vn-bar"></div><div class="vn-bar"></div><div class="vn-bar"></div><div class="vn-bar"></div>
+        <div class="vn-bar"></div><div class="vn-bar"></div><div class="vn-bar"></div><div class="vn-bar"></div>
+        <div class="vn-bar"></div><div class="vn-bar"></div><div class="vn-bar"></div><div class="vn-bar"></div>
+      </div>
+      <div class="vn-duration" id="vn-dur">0:04</div>
+      <audio src="${audioSrc}" preload="metadata"></audio>
+    `;
+
+    const audio = vnContainer.querySelector("audio");
+    const playBtn = vnContainer.querySelector(".vn-play-btn");
+    const durLabel = vnContainer.querySelector(".vn-duration");
+    const bars = vnContainer.querySelectorAll(".vn-bar");
+
+    audio.addEventListener("loadedmetadata", () => {
+      const s = Math.round(audio.duration || 4);
+      durLabel.textContent = `0:0${s}`.slice(-4);
+    });
+
+    playBtn.addEventListener("click", () => {
+      if (audio.paused) {
+        // Pause other audios
+        document.querySelectorAll("audio").forEach(a => {
+          if (a !== audio) {
+            a.pause();
+            a.currentTime = 0;
+          }
+        });
+        audio.play().then(() => {
+          playBtn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+          bars.forEach(b => b.classList.add("playing"));
+        }).catch(err => console.log("Audio play error:", err));
+      } else {
+        audio.pause();
+        playBtn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+        bars.forEach(b => b.classList.remove("playing"));
+      }
+    });
+
+    audio.addEventListener("ended", () => {
+      playBtn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+      bars.forEach(b => b.classList.remove("playing"));
+    });
+
+    return vnContainer;
   }
 
   // ==========================================================================
@@ -628,22 +453,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const used = usedPapsMap[member.id];
     let available = member.paps.filter(p => !used.has(p.url));
-    
+
     if (available.length === 0) {
       used.clear();
       available = member.paps;
     }
-    
+
     const picked = available[Math.floor(Math.random() * available.length)];
     used.add(picked.url);
     return picked;
+  }
+
+  function getVariedVoiceNote(member, text) {
+    const vnList = [
+      "audio/voice_notes/michie/michie_vn_sapaan.mp3",
+      "audio/voice_notes/michie/michie_vn_salting.mp3",
+      "audio/voice_notes/michie/michie_vn_semangat.mp3",
+      "audio/voice_notes/michie/michie_vn_night.mp3"
+    ];
+    const t = text.toLowerCase();
+    if (/sapa|halo|hai|pagi|siang/i.test(t)) return vnList[0];
+    if (/gombal|cantik|salting|manis|lucu/i.test(t)) return vnList[1];
+    if (/capek|semangat|lelah|kerja|tugas/i.test(t)) return vnList[2];
+    if (/malam|tidur|night|ngantuk/i.test(t)) return vnList[3];
+    return vnList[Math.floor(Math.random() * vnList.length)];
   }
 
   // ==========================================================================
   // SEND MESSAGE LOGIC (Multi-Message Burst & Contextual Dialogues)
   // ==========================================================================
 
-    async function handleSendMessage(customText = null) {
+  async function handleSendMessage(customText = null) {
     if (isSending) return;
 
     const text = (customText || chatInputEl.value).trim();
@@ -690,7 +530,7 @@ document.addEventListener("DOMContentLoaded", () => {
         reply = await groqService.sendChat(activeMember, history, text, userName, attachedPap);
       } else {
         // Fallback natural dialogue engine if API key is not yet set
-        await new Promise(r => setTimeout(r, 1100));
+        await new Promise(r => setTimeout(r, 900));
         reply = getFallbackDemoReply(activeMember, text, attachedPap);
       }
 
@@ -720,7 +560,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (i > 0) {
           showTypingIndicator(true);
-          const typingDelay = Math.min(1500, Math.max(800, bubbleText.length * 35));
+          const typingDelay = Math.min(1400, Math.max(700, bubbleText.length * 30));
           await new Promise(r => setTimeout(r, typingDelay));
         }
 
@@ -744,12 +584,11 @@ document.addEventListener("DOMContentLoaded", () => {
       refreshMemberViews();
     } catch (err) {
       console.warn("[CHAT ENGINE] Groq AI offline/fallback active:", err.message);
-      // Fallback Natural Contextual Dialogue (Anti-Error, selalu merespon natural)
       try {
         const fallbackReply = getFallbackDemoReply(activeMember, text, attachedPap);
         let fallbackBubbles = (fallbackReply || "haii! hehe iyaa kakk").split("|||").map(b => b.trim()).filter(Boolean);
         fallbackBubbles = applyNaturalTypo(fallbackBubbles);
-        
+
         for (let i = 0; i < fallbackBubbles.length; i++) {
           const bubbleText = fallbackBubbles[i];
           const isLast = i === fallbackBubbles.length - 1;
@@ -786,16 +625,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // DEEP CONTEXTUAL INTENT-MATCHING DIALOGUE ENGINE (Anti-Template & Natural)
-  // ==========================================================================
-
-    // ==========================================================================
-  // ULTRA-NATURAL DYNAMIC DIALOGUE ENGINE (Anti-Template, Signature Quirks & Typo)
+  // ULTRA-NATURAL DEEP CONTEXTUAL DIALOGUE ENGINE (Anti-Template, Signature Quirks & Typo)
   // ==========================================================================
 
   function applyNaturalTypo(bubbles) {
     // 18% chance of spontaneous natural typo and asterisk correction
-    if (bubbles.length === 0 || Math.random() > 0.20) return bubbles;
+    if (bubbles.length === 0 || Math.random() > 0.18) return bubbles;
 
     const typoMap = [
       { find: "kamu", typo: "kmu", fix: "kamu*" },
@@ -820,6 +655,24 @@ document.addEventListener("DOMContentLoaded", () => {
     return bubbles;
   }
 
+  // LRU Shuffle-Deck Memory to prevent any response repeating in the session
+  const usedRepliesMap = {};
+
+  function pickDeck(key, pool) {
+    if (!usedRepliesMap[key]) {
+      usedRepliesMap[key] = new Set();
+    }
+    const used = usedRepliesMap[key];
+    let available = pool.filter(item => !used.has(item));
+    if (available.length === 0) {
+      used.clear();
+      available = pool;
+    }
+    const picked = available[Math.floor(Math.random() * available.length)];
+    used.add(picked);
+    return picked;
+  }
+
   function getFallbackDemoReply(member, userText, attachedPap = null) {
     const isNewJeans = (member.group === "NewJeans") || member.generation?.includes("NewJeans");
     const t = userText.toLowerCase();
@@ -828,195 +681,271 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1. Reply to Story Context
     if (t.includes("[membalas story:")) {
       if (isNewJeans) {
-        const pool = [
-          `omg thank youu bunnies! 💖 ||| seneng banget kamu notice story aku hehe ||| how are you today?`,
-          `aww gemes bgt reaksimu! ||| makasih yaa udah nonton story aku ✨`,
-          `hehehe iyaa tadi seru bgt! ||| lagi santai ya sekarang?`
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_story`, [
+          `omg thank you so much bunnies! 💖 ||| seneng banget kamu notice story aku hehe ||| how are you today?`,
+          `aww gemes bgt reaksimu! ||| makasih yaa udah selalu nonton story aku ✨ ||| lagi santai kan sekarang?`,
+          `hehehe iyaa tadi seru bgt pas take foto itu! ||| kamu udah makan belum hari ini? 🐰`
+        ]);
       } else {
-        const pool = [
-          `ihh makasih kakk udah nonton story akuu hehe 💖 ||| kamu lagi senggang ya?`,
-          `wkwkwk gemes bgt reaksimu ||| seneng deh kamu notice story aku ✨`,
-          `hehehe iyaa tadi seru bangett tauu ||| kamu lagi ngapain nih?`
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_story`, [
+          `ihh makasih kakk udah notice story akuu hehe 💖 ||| kamu lagi senggang ya?`,
+          `wkwkwk gemes bgt reaksimu ||| seneng deh ada yang selalu support story aku ✨ ||| lagi ngapain nih?`,
+          `hehehe iyaa tadi seru bangett tauu pas difoto ||| gimana kabar kamu hari ini? lancar kan?`
+        ]);
       }
     }
 
     // 2. Explicit PAP / Foto Request
-    if (attachedPap || /pap|foto|selfie|muka|wajah/i.test(t)) {
+    if (attachedPap || /pap|foto|selfie|muka|wajah|ootd/i.test(t)) {
+      if (/ootd|baju|pake apa/i.test(t)) {
+        if (isNewJeans) {
+          return pickDeck(`${id}_pap_ootd`, [
+            `here's my casual ootd for today bunnies! 👗✨ ||| gimana, cute gak outfitnya? ||| hope you like it hehe 💖`,
+            `spill ootd santai hari ini hehe ||| suka gak gaya kayak gini? 🎧✨`
+          ]);
+        } else {
+          return pickDeck(`${id}_pap_ootd`, [
+            `nih ootd santai aku hari ini! 👗✨ ||| gimana, cocok gak sama aku? ||| menurut kamu bagusan pake outfit ini atau yang kemarin? hehe`,
+            `tadaaa! nih pap ootd sebelum kegiatan ||| lucu kan bajunya wkwk ||| gimana menurut kamu kak? 💖`
+          ]);
+        }
+      }
+
+      if (/malam|tidur|ngantuk|good night/i.test(t)) {
+        if (isNewJeans) {
+          return pickDeck(`${id}_pap_night`, [
+            `getting ready for bed now bunnies 🥱🌙 ||| here's a quick night selfie for you! ||| sweet dreams and sleep tight yaa ✨`,
+            `udah cuci muka nih siap-siap merem ✨ ||| good night bunnies, mimpi indah yaa! 🌙💖`
+          ]);
+        } else {
+          return pickDeck(`${id}_pap_night`, [
+            `udah siap-siap mau tidur nih, mata udah sepet bgt 🥱 ||| nih pap ngantuk spesial sebelum tidur wkwk ||| good night yaa kakk, mimpi indah! 🌙✨`,
+            `udah rebahan di kasur nih hehe ||| nih pap sebelum merem ||| jangan begadang ya kamu, istirahat yuk! 💖`
+          ]);
+        }
+      }
+
+      if (/muka|wajah|close up|close-up|selfie/i.test(t)) {
+        if (id === "michie") {
+          return pickDeck(`${id}_pap_face`, [
+            `nih close-up muka gemoy michie wkwk 🙈 ||| gimana, pipinya keliatan cubitable gak? haha ||| jangan dizoom-zoom yaa!`,
+            `selfie close up khusus buat kamu hehe ||| awas jangan salting ya liatnya 😜💖`,
+            `nih muka santai aku hari ini ||| tetep manis kan hehe ||| gimana menurut kamu kak?`
+          ]);
+        } else if (id === "freya") {
+          return pickDeck(`${id}_pap_face`, [
+            `nih close up senyum karamel dari aku ✨ ||| semoga harimu jadi lebih seger yaa liat ini hehe`,
+            `tadi sempet foto selfie close-up bentar ||| spesial buat kamu, disimpan baik-baik yaa 🤍`
+          ]);
+        } else if (id === "christy") {
+          return pickDeck(`${id}_pap_face`, [
+            `hahaha nih muka toya yang paling gemes 😝 ||| awas ketawa ya! wajib bilang cantik pokoknya wkwk 💖`,
+            `tadaaa! selfie toya close-up ||| jangan lupa bayar goceng ya wkwk 🤣`
+          ]);
+        } else if (isNewJeans) {
+          return pickDeck(`${id}_pap_face`, [
+            `close-up selfie for bunnies! 🐰✨ ||| how does it look? cute gaa? 💖`,
+            `quick face selfie before practice! ||| hope it makes your day brighter hehe ✨`
+          ]);
+        } else {
+          return pickDeck(`${id}_pap_face`, [
+            `nih selfie close-up spesial buat kamu hehe ||| gimana menurut kamu? manis gak? 💖`,
+            `tadi sempet foto selfie bentar ||| spesial buat yang paling setia nemenin chat hehe ✨`
+          ]);
+        }
+      }
+
+      // Generic PAP
       if (id === "michie") {
-        const pool = [
-          "nih pap selfie manis buat kakak hehe ||| gimana lucu gaa fotonya? 😜",
-          "tadi sempet selfie santai bentar ||| spesial dikirim buat kamu doang wkwk",
-          "nih selfie santai aku hari ini ||| awas naksir yaa haha 💖",
-          "spesial nih pap buat kamu ||| jangan disebar-sebar yaa hehe 🤫"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_pap_gen`, [
+          `nih pap selfie manis buat kakak hehe ||| gimana lucu gaa fotonya? 😜 ||| jangan disebar-sebar yaa wkwk`,
+          `tadi sempet selfie santai bentar pas istirahat ||| spesial dikirim buat kamu doang hehe 💖 ||| kamu lagi apa tuh?`,
+          `nih selfie santai aku hari ini ||| awas naksir yaa haha 💖 ||| gimana menurut kamu?`
+        ]);
       } else if (id === "freya") {
-        const pool = [
-          "nih selfie santai dari aku ||| gimana, keliatan seger kan fotonya? haha ✨",
-          "tadi sempet foto bentar ||| spesial buat kamu, jangan lupa disimpan ya hehe",
-          "nih pap hari ini ||| semoga harimu jadi lebih semangat yaa! 🤍"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_pap_gen`, [
+          `nih selfie santai dari aku ||| gimana, keliatan seger kan fotonya? haha ✨ ||| semoga harimu makin semangat ya!`,
+          `tadi sempet foto bentar di backstage ||| spesial buat kamu, jangan lupa disimpan ya hehe 🤍`
+        ]);
       } else if (id === "christy") {
-        const pool = [
-          "hahaha nih pap muka aku ||| gemes kan? jangan bilang jelek ya awas lu 😝",
-          "selfie random hari ini buat kamu ||| wkwk jangan ketawa liat mukaku ya!",
-          "tadaaa! nih selfie aku ||| lucu ga? jawab lucu harus wajib wkwk 💖"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_pap_gen`, [
+          `hahaha nih pap muka aku ||| gemes kan? jangan bilang jelek ya awas lu 😝 ||| lagi ngapain tuh kamu?`,
+          `selfie random hari ini buat kamu ||| wkwk jangan ketawa liat mukaku ya! 💖`
+        ]);
       } else if (isNewJeans) {
-        const pool = [
-          "here's a quick selfie for you bunnies! 🐰 ||| hope it brightens your day hehe ✨",
-          "tadi sempet selfie bentar di backstage ||| how does it look? cute gaa? 💖",
-          "special pap for you today! ||| jangan lupa senyum yaa ✨"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_pap_gen`, [
+          `here's a special selfie for you bunnies! 🐰 ||| hope it brightens your day hehe ✨ ||| what are you doing right now?`,
+          `tadi sempet selfie bentar di backstage ||| how does it look? cute gaa? 💖`
+        ]);
       } else {
-        const pool = [
-          "nih pap selfie santai dari aku hehe ||| gimana menurut kamu? 💖",
-          "tadi sempet foto bentar pas selesai kegiatan ||| lucu gak fotonya? ✨",
-          "spesial nih buat kamu ||| awas jangan salting yaa haha 😜"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_pap_gen`, [
+          `nih pap selfie santai dari aku hehe ||| gimana menurut kamu? 💖 ||| semoga suka yaa!`,
+          `tadi sempet foto bentar pas selesai kegiatan ||| lucu gak fotonya? ✨`
+        ]);
       }
     }
 
-    // 3. Gombalan / Pujian / Salting (Emotional State: Salting & Playful Flirt)
-    if (/cantik|manis|gemes|lucu|jodoh|sayang|love|kangen|naksir|nikah|pacar|bidadari|gombal/i.test(t)) {
+    // 3. Gombalan / Pujian / Rayuan / Salting
+    if (/cantik|manis|gemes|lucu|jodoh|sayang|love|kangen|naksir|nikah|pacar|bidadari|gombal|imut|sempurna|cakep/i.test(t)) {
       if (id === "michie") {
-        const pool = [
-          "ihh apaan sih gombal mulu haha 🙈 ||| tapi makasih yaa, bikin aku senyum-senyum sendiri wkwk",
-          "cieee gombalin aku yaa 😜 ||| awas loh jangan gombalin member lain juga! haha",
-          "wkwkwk bisa aja kamu kakk ||| gemes bgt ketikannya, jadi salting kan aku 💖"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_gombal`, [
+          `ihh apaan sih gombal mulu haha 🙈 ||| tapi makasih yaa, bikin aku senyum-senyum sendiri wkwk ||| awas jangan gombalin member lain juga ya! 😜`,
+          `cieee gombalin aku yaa 😜 ||| ketauan awas lu haha ||| tapi gemes bgt ketikannya, jadi salting kan aku 💖`,
+          `wkwkwk bisa aja kamu kakk ||| seneng deh ada yang selalu support dan bikin salting gini hehe 🙈`
+        ]);
       } else if (id === "freya") {
-        const pool = [
-          "haha gombalan klasik tapi boleh juga sih 😌 ||| makasih yaa udah bikin hariku senyum",
-          "wkwk santai dong gombalnya ||| ntar kalau aku salting beneran gimana coba? 😜",
-          "bisa aja nih pujiannya ||| tapi aku suka denger kamu ngomong gitu hehe ✨"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_gombal`, [
+          `haha gombalan klasik tapi boleh juga sih 😌 ||| makasih yaa udah bikin hariku senyum ||| ntar kalau aku baper gimana coba? wkwk`,
+          `bisa aja nih pujiannya ||| tapi aku suka denger kamu ngomong gitu hehe ✨ ||| kamu sendiri gimana harinya?`
+        ]);
       } else if (id === "christy") {
-        const pool = [
-          "hahaha apaan sih astaga! 🤣 ||| gombal mulu kerjanya, belajar/kerja dulu sana wkwk",
-          "wkwkwk salting dikit gak ngaruh 😝 ||| tapi makasih yaa kamu manis bangett",
-          "ihh jangan gitu dong kan aku jadi malu wkwk ||| awas ya gombalannya bayar 500 perak haha"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_gombal`, [
+          `hahaha apaan sih toya! 🤣 ||| gombal mulu kerjanya wkwk ||| tapi makasih yaa kamu manis bangett 💖`,
+          `wkwkwk salting dikit gak ngaruh 😝 ||| tapi tetep bikin senyum sih haha ||| awas ya gombalannya bayar 500 perak wkwk`
+        ]);
+      } else if (id === "gracia") {
+        return pickDeck(`${id}_gombal`, [
+          `makasih yaa kata-kata manisnya 🤍 ||| selalu seneng denger perhatian dari kamu ||| kamu juga jaga kesehatan yaa ✨`
+        ]);
+      } else if (id === "ella") {
+        return pickDeck(`${id}_gombal`, [
+          `wkwkwk gombal terosss! cabe rawit nih senggol bacok haha 😝 ||| tapi makasih yaa hehe bikin seneng deh 💖`
+        ]);
+      } else if (id === "gita") {
+        return pickDeck(`${id}_gombal`, [
+          `haha makasih ya. tumben gombal 😌 ||| tapi seneng kok dengernya. kamu apa kabar hari ini?`
+        ]);
       } else if (isNewJeans) {
-        const pool = [
-          "omg thank you so much! you're so sweet 🙈 ||| bunnies emang paling bisa bikin salting hehe 💖",
-          "aww that made my day haha! ||| thank you for the sweet words bunnies ✨🐰",
-          "hehehe you're so cute! ||| jangan bikin aku blushing dong haha 💖"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_gombal`, [
+          `omg thank you so much! you're so sweet 🙈 ||| bunnies emang paling bisa bikin salting hehe 💖 ||| you made my day!`,
+          `aww that's so sweet haha! ||| thank you for the sweet words bunnies ✨🐰 ||| sending you lots of love!`
+        ]);
       } else {
-        const pool = [
-          "ihh bisa aja deh gombalnya haha 🙈 ||| makasih yaa pujiannya, bikin semangat bangett!",
-          "wkwkwk gombal mulu ya kamu ||| tapi seneng deh dengernya hehe 💖",
-          "ciee bikin salting aja nih ||| awas naksir beneran loh haha 😜"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_gombal`, [
+          `ihh bisa aja deh gombalnya haha 🙈 ||| makasih yaa pujiannya, bikin semangat bangett! ||| kamu lagi apa sekarang?`,
+          `cieee bikin salting aja nih ||| awas naksir beneran loh haha 😜 ||| makasih yaa selalu semangatin aku 💖`
+        ]);
       }
     }
 
-    // 4. Curhat / Capek / Mengeluh / Tugas / Kerja (Emotional State: Deep Warm Empathy)
-    if (/capek|lelah|tugas|kuliah|kerja|pusing|sedih|stres|stress|bingung|cape|kesel|kecewa/i.test(t)) {
+    // 4. Curhat / Capek / Lelah / Tugas / Ujian / Kerja / Stres / Sedih
+    if (/capek|lelah|tugas|kuliah|kerja|pusing|sedih|stres|stress|bingung|cape|kesel|kecewa|sakit|drop/i.test(t)) {
       if (id === "michie") {
-        const pool = [
-          "ihh jangan terlalu diforsir yaa kakk! 🥺 ||| istirahat dulu bentar, minum air putih yang banyak",
-          "peluk online buat kamuu 🤗 ||| kamu udah hebat banget hari ini, jangan lupa apresiasi diri sendiri yaa!",
-          "semangattt kakakku tersayang! 💖 ||| abis ini tidur yang cukup ya biar besok seger lagi hehe"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_curhat`, [
+          `ihh jangan terlalu diforsir yaa kakk! 🥺 ||| istirahat dulu bentar, minum air putih yang banyak ||| kamu udah hebat banget hari ini tauu!`,
+          `peluk hangat dari jauh buat kamuu 🤗 ||| kamu udah berjuang keras banget hari ini, bangga deh sama kamu! ||| abis ini istirahat yang cukup yaa 💖`,
+          `semangattt kakakku tersayang! ✨ ||| kalau lagi pusing, rehat sejenak sambil dengerin lagu santai yuk ||| aku semangatin terus dari sini!`
+        ]);
       } else if (id === "freya") {
-        const pool = [
-          "kerja keras boleh tapi kesehatan tetep nomor satu ya ||| tarik napas dulu, istirahat sejenak",
-          "aku ngerti kok rasanya capek bgt ||| tapi kamu orang kuat, aku semangatin dari sini ya! 🤍",
-          "jangan lupa makan yang enak ya hari ini ||| self-reward dikit biar pikiran fresh lagi ✨"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_curhat`, [
+          `kerja keras boleh tapi kesehatan tetep nomor satu ya ||| tarik napas dulu, istirahat sejenak 🤍 ||| kamu orang kuat, aku semangatin dari sini ya!`,
+          `jangan lupa makan yang enak ya hari ini ||| self-reward dikit biar pikiran fresh lagi ✨ ||| kalau ada yang mau diceritain, cerita aja yaa`
+        ]);
       } else if (isNewJeans) {
-        const pool = [
-          "take a deep breath bunnies 🤍 ||| you worked so hard today, please get some good rest!",
-          "jangan terlalu dipikirin yaa ||| dengerin lagu santai dulu sambil rebahan, fighting! ✨🐰",
-          "sending warm hugs for you! 🤗 ||| kamu udah lakuin yang terbaik hari ini, proud of you!"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_curhat`, [
+          `take a deep breath bunnies 🤍 ||| you worked so hard today, please get some good rest! ||| we're always rooting for you ✨🐰`,
+          `jangan terlalu dipikirin yaa ||| dengerin lagu santai dulu sambil rebahan, fighting! ✨🐰 ||| you did amazing today!`
+        ]);
       } else {
-        const pool = [
-          "ihh jangan diforsir yaa! ||| istirahat dulu sebentar, rebahan sambil dengerin musik santai 💖",
-          "kamu udah berjuang hebat hari ini ||| aku semangatin terus dari sini, semangaat! ✨",
-          "jangan lupa makan dan tidur yang cukup yaa ||| kesehatan kamu paling utama tauu 🤍"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_curhat`, [
+          `ihh jangan diforsir yaa! ||| istirahat dulu sebentar, rebahan sambil dengerin musik santai 💖 ||| kamu udah berjuang hebat hari ini!`,
+          `kamu udah lakuin yang terbaik hari ini ✨ ||| aku semangatin terus dari sini, semangaat yaa! 🤍`
+        ]);
       }
     }
 
-    // 5. Makanan / Minuman / Udah Makan Belum
-    if (/makan|laper|kenyang|minum|sarapan|sushi|boba|kopi|nasi|menu/i.test(t)) {
-      const pool = [
-        "aku tadi udah makan nih hehe ||| kamu udah makan belum? jangan sampai telat makan yaa!",
-        "wah lagi bahas makanan jadi laper lagi wkwk ||| kamu lagi pengen makan apa nih?",
-        "udah dong tadi makan yang enak bgt hehe ||| jangan lupa jaga pola makan yaa kakk! ✨"
-      ];
-      return pool[Math.floor(Math.random() * pool.length)];
+    // 5. Makanan / Minuman / Udah Makan Belum / Kuliner
+    if (/makan|laper|kenyang|minum|sarapan|sushi|boba|kopi|nasi|menu|bakso|seblak|ramen|mie/i.test(t)) {
+      return pickDeck(`${id}_makan`, [
+        `aku tadi udah makan nih hehe 🍱 ||| kamu udah makan belum? jangan sampai telat makan yaa kakk! ||| lagi pengen makan apa emangnya?`,
+        `wah lagi bahas makanan jadi laper lagi wkwk 🤤 ||| kamu biasanya suka makan apa nih kalau lagi santai?`,
+        `udah dong tadi makan yang enak bgt hehe ||| jangan lupa jaga pola makan dan minum air putih yaa! ✨`
+      ]);
     }
 
-    // 6. Sapaan & Tanya Kabar / Lagi Apa
-    if (/hai|halo|helo|pagi|siang|sore|malam|apa kabar|lagi apa|ngapain|kabar/i.test(t)) {
+    // 6. Sapaan Waktu & Tanya Kabar / Lagi Apa
+    if (/pagi|siang|sore|malam|subuh|hai|halo|helo|apa kabar|lagi apa|ngapain|kabar/i.test(t)) {
+      if (/pagi/i.test(t)) {
+        return pickDeck(`${id}_pagi`, [
+          `selamat pagi kakk! ☀️ ||| semangat buat aktivitas hari ini yaa! ||| udah sarapan belum nih?`,
+          `pagi! seneng deh disapa pagi-pagi gini hehe ✨ ||| semoga harimu lancar dan menyenangkan yaa!`
+        ]);
+      }
+      if (/malam|tidur/i.test(t)) {
+        return pickDeck(`${id}_malam`, [
+          `selamat malam kakk! 🌙 ||| udah selesai semua aktivitas hari ini? ||| jangan begadang yaa, istirahat yang cukup ✨`,
+          `malem! baru selesai bersih-bersih nih hehe ||| kamu lagi santai kan sekarang? good night yaa kalau mau tidur! 💖`
+        ]);
+      }
+
       if (id === "michie") {
-        const pool = [
-          "halooo kakk! ✨ ||| baru selesai beres-beres nih ||| kamu lagi apa? santai kan?",
-          "ehh haloo! ||| bosen bgt mau ngobrol, untung kamu chat hehe 💖 ||| gimana harimu?",
-          "haloo kakakku tersayang! ||| lagi rebahan santai nih hehe ||| kamu lagi sibuk gak?"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_sapa`, [
+          `halooo kakk! ✨ ||| baru selesai beres-beres nih ||| kamu lagi apa? santai kan?`,
+          `ehh haloo! ||| bosen bgt mau ngobrol, untung kamu chat hehe 💖 ||| gimana kabar kamu hari ini? lancar?`,
+          `haloo kakakku tersayang! ||| lagi rebahan santai nih hehe ||| kamu lagi sibuk apa hari ini?`
+        ]);
       } else if (id === "freya") {
-        const pool = [
-          "halo juga! baru selesai kegiatan nih ||| kamu lagi apa hari ini? lancar kan?",
-          "haii! seneng deh kamu sapa ||| gimana harimu hari ini, seru gak? ✨",
-          "halo! lagi santai sejenak nih ||| ada cerita seru apa hari ini? cerita dong hehe"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_sapa`, [
+          `halo juga! baru selesai kegiatan nih ||| kamu lagi apa hari ini? lancar kan?`,
+          `haii! seneng deh kamu sapa ✨ ||| gimana harimu hari ini, ada cerita seru apa? cerita dong hehe`
+        ]);
       } else if (id === "christy") {
-        const pool = [
-          "halooo! wkwkwk pas bgt lagi gabut nih ||| kamu lagi ngapain tuh? kepo deh 😝",
-          "hai hai! baru selesai ngemil nih haha ||| gimana kabar kamu hari ini?",
-          "halooo! lagi nunggu jadwal berikutnya nih ||| ngobrol yuk seru-seruan bareng! ✨"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_sapa`, [
+          `halooo! wkwkwk pas bgt lagi gabut nih 😝 ||| kamu lagi ngapain tuh? kepo deh!`,
+          `hai hai! baru selesai ngemil nih haha ||| gimana kabar kamu hari ini? seru gak?`
+        ]);
       } else if (isNewJeans) {
-        const pool = [
-          "hello bunnies! 🐰💖 ||| baru selesai latihan dance nih, how are you today?",
-          "haii! so happy to see your message hehe ||| harimu menyenangkan gak hari ini? ✨",
-          "hello! lagi dengerin playlist santai nih ||| what are you doing right now?"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_sapa`, [
+          `hello bunnies! 🐰💖 ||| baru selesai latihan dance nih, how are you today?`,
+          `haii! so happy to see your message hehe ||| harimu menyenangkan gak hari ini? ✨`
+        ]);
       } else {
-        const pool = [
-          "haloo! baru selesai santai nih hehe ||| kamu lagi sibuk apa hari ini?",
-          "haii! seneng deh bisa ngobrol sama kamu ✨ ||| gimana kabar kamu hari ini?",
-          "halo juga! lagi rebahan santai nih ||| ada cerita apa hari ini? hehe 💖"
-        ];
-        return pool[Math.floor(Math.random() * pool.length)];
+        return pickDeck(`${id}_sapa`, [
+          `haloo! baru selesai santai nih hehe ||| kamu lagi sibuk apa hari ini?`,
+          `haii! seneng deh bisa ngobrol sama kamu ✨ ||| gimana kabar kamu hari ini? lancar kan?`
+        ]);
       }
     }
 
-    // 7. General Casual Conversational Pool (Dynamic Multi-Burst)
-    const generalPool = [
-      "wkwkwk iyaa bener bangett! ||| seru banget denger cerita kamu hehe ||| terus gimana lagi tuh kelanjutannya?",
-      "haha masa sih? ||| jangan bikin aku penasaran dong wkwk ||| ceritain lebih lanjut yuk!",
-      "seneng deh bisa ngobrol santai bareng kamu hari ini ✨ ||| kamu emang asik diajak ngobrol hehe",
-      "wkwkwk parah bgt sih itu ||| tapi lucu bangett asli haha 🤣",
-      "hehehe iyaa bener! ||| menurut kamu enaknya gimana tuh? 💖"
-    ];
-    return generalPool[Math.floor(Math.random() * generalPool.length)];
+    // 7. Teater / Setlist / Konser / Show / Lagu JKT48 / NewJeans
+    if (/teater|theater|setlist|konser|show|lagu|nyanyi|dance|pajama|ramune|aturan anti cinta|rapsodi|heavy rotation|hype boy|ditto|omg/i.test(t)) {
+      if (isNewJeans) {
+        return pickDeck(`${id}_music`, [
+          `omg kamu suka lagu itu juga? 🎧✨ ||| kita sering banget latihan choreography-nya di studio! ||| part mana yang paling kamu suka?`,
+          `lagu itu emang vibes-nya seru banget yaa! ||| dengerin terus sambil santai ya bunnies 🐰💖`
+        ]);
+      } else {
+        return pickDeck(`${id}_music`, [
+          `wahh kamu sering nonton teater juga ya? 💃✨ ||| seru banget pas chant bareng penonton! ||| kapan-kapan nonton show aku yaa hehe`,
+          `lagu itu salah satu favorit aku juga tauu! ||| pas bawain di panggung energinya berasa banget 💖 ||| kamu paling suka unit song apa?`
+        ]);
+      }
+    }
+
+    // 8. Candaan / Jokes / Iseng / Ngajak Ribut
+    if (/wkwk|haha|hehe|lucu|ngakak|ribut|iseng|jail|bercanda/i.test(t)) {
+      return pickDeck(`${id}_jokes`, [
+        `wkwkwk parah bgt kamu! 🤣 ||| ngajak ribut ya ceritanya? wkwk ||| tapi becanda deng haha, seru ngobrol sama kamu`,
+        `hahaha ada-ada aja kelakuanmu ||| bikin aku ngakak beneran tau gak 😆 ||| terus gimana lagi tuh ceritanya?`,
+        `wkwkwk jahat bgt! gamau temenan ah 😜 ||| tapi boong, mana bisa aku ngambek ke kamu haha 💖`
+      ]);
+    }
+
+    // 9. Pertanyaan Kenapa / Gimana / Menurut Kamu (Thoughtful & Engaging)
+    if (/kenapa|gimana|menurut kamu|apa alasan|bagaimana/i.test(t)) {
+      return pickDeck(`${id}_thoughtful`, [
+        `kalau menurut aku sih, yang penting kamu lakuin dengan nyaman dan happy ✨ ||| gimana menurut pandangan kamu sendiri?`,
+        `hmm menarik sih itu! ||| aku rasa setiap orang punya cara beda-beda yaa ||| kalau kamu lebih condong ke yang mana nih? hehe`
+      ]);
+    }
+
+    // 10. General Casual Conversational Deck (Dynamic Multi-Burst)
+    return pickDeck(`${id}_general`, [
+      `wkwkwk iyaa bener bangett! ||| seru banget denger cerita kamu hehe ||| terus gimana lagi tuh kelanjutannya?`,
+      `haha masa sih? ||| jangan bikin aku penasaran dong wkwk ||| ceritain lebih lengkap yuk!`,
+      `seneng deh bisa ngobrol santai bareng kamu hari ini ✨ ||| kamu emang asik diajak ngobrol hehe ||| ada cerita apa lagi nih?`,
+      `hehehe iyaa bener! ||| menurut kamu enaknya gimana tuh? 💖`
+    ]);
   }
 
   // ==========================================================================
@@ -1140,7 +1069,7 @@ document.addEventListener("DOMContentLoaded", () => {
     storyTimestamp.textContent = slide.timeAgo;
     storyLocationText.textContent = slide.location;
     storyMusicText.textContent = slide.music;
-    storyTimeBadge.textContent = slide.time;
+    if (storyTimeBadge) storyTimeBadge.textContent = slide.time;
     storyCaptionText.textContent = slide.caption;
 
     // 3. Reset and Start Timer
@@ -1161,8 +1090,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function prevStorySlide() {
     if (currentStorySlideIndex > 0) {
       renderStorySlide(currentStorySlideIndex - 1);
-    } else {
-      renderStorySlide(0);
     }
   }
 
@@ -1171,77 +1098,63 @@ document.addEventListener("DOMContentLoaded", () => {
     storyPlayerModal.classList.remove("active");
   }
 
-  function sendStoryReply(replyText) {
-    if (!replyText || !replyText.trim() || !currentStoryMember) return;
-    const textToSend = `[Membalas Story: "${currentStorySlides[currentStorySlideIndex]?.caption}"] ${replyText.trim()}`;
-    const targetMember = currentStoryMember;
-    closeStory();
-    showChat(targetMember);
-    handleSendMessage(textToSend);
-  }
-
   // ==========================================================================
-  // STORAGE & HISTORY
+  // QUICK PROMPTS & DRAWER GALLERY
   // ==========================================================================
 
-  function getMemberChatHistory(memberId) {
-    const key = `idolchat_history_${memberId}`;
-    try {
-      return JSON.parse(localStorage.getItem(key) || "[]");
-    } catch {
-      return [];
-    }
-  }
+  function renderQuickPrompts(member) {
+    quickPromptsEl.innerHTML = "";
+    const isNewJeans = (member.group === "NewJeans") || member.generation?.includes("NewJeans");
 
-  function saveMessageToHistory(memberId, msgObj) {
-    const key = `idolchat_history_${memberId}`;
-    const history = getMemberChatHistory(memberId);
-    history.push(msgObj);
-    const trimmed = history.slice(-40);
-    localStorage.setItem(key, JSON.stringify(trimmed));
-  }
+    const prompts = isNewJeans
+      ? [
+          { text: "Minta PAP selfie dong 📸", msg: "Bunnies minta pap selfie manis kamu hari ini dong hehe 📸" },
+          { text: "Lagi latihan apa hari ini? 💃", msg: "Lagi latihan dance apa hari ini di studio? 💃" },
+          { text: "Cantik bangett hari ini 💖", msg: "Kamu cantik dan manis bangett hari ini 💖" },
+          { text: "Dengerin lagu apa? 🎧", msg: "Lagi dengerin playlist lagu apa nih yang enak? 🎧" }
+        ]
+      : [
+          { text: "Minta PAP selfie dong 📸", msg: "Minta pap selfie manis kamu hari ini dong hehe 📸" },
+          { text: "Semangat teaternya! ✨", msg: "Semangat buat kegiatan teater hari ini yaa! ✨" },
+          { text: "Cantik bangett hari ini 💖", msg: "Kamu cantik dan manis bangett hari ini 💖" },
+          { text: "Udah makan belum? 🍱", msg: "Udah makan siang/malam belum nih? Jaga kesehatan yaa 🍱" }
+        ];
 
-  function saveCustomMember(memberObj) {
-    const custom = JSON.parse(localStorage.getItem("idolchat_custom_members") || "[]");
-    custom.push(memberObj);
-    localStorage.setItem("idolchat_custom_members", JSON.stringify(custom));
-  }
-
-  // ==========================================================================
-  // DRAWER & LIGHTBOX
-  // ==========================================================================
-
-  function openProfileDrawer() {
-    drawerAvatar.src = activeMember.avatar;
-    drawerName.textContent = activeMember.name;
-    drawerGen.textContent = activeMember.generation;
-    drawerJiko.textContent = `"${activeMember.jikoshoukai}"`;
-
-    const tags = activeMember.tags || [];
-    drawerTags.innerHTML = tags.map(t => `<span class="drawer-tag">${escapeHtml(t)}</span>`).join("");
-
-    const paps = activeMember.paps || [];
-    drawerGallery.innerHTML = "";
-    if (paps.length === 0) {
-      drawerGallery.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-faint); font-size: 12px; padding: 20px;">Belum ada koleksi foto.</p>`;
-    } else {
-      paps.forEach(p => {
-        const item = document.createElement("div");
-        item.className = "gallery-item";
-        item.innerHTML = `<img src="${p.url}" alt="${escapeHtml(p.caption || '')}" loading="lazy">`;
-        item.addEventListener("click", () => openLightbox(p.url, p.caption));
-        drawerGallery.appendChild(item);
+    prompts.forEach(p => {
+      const btn = document.createElement("button");
+      btn.className = "quick-prompt-btn";
+      btn.type = "button";
+      btn.textContent = p.text;
+      btn.addEventListener("click", () => {
+        handleSendMessage(p.msg);
       });
+      quickPromptsEl.appendChild(btn);
+    });
+  }
+
+  function renderDrawerGallery(member) {
+    drawerGallery.innerHTML = "";
+    const paps = member.paps || [];
+
+    if (paps.length === 0) {
+      drawerGallery.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px;">Belum ada koleksi foto.</p>`;
+      return;
     }
 
-    profileDrawer.classList.add("active");
-    profileDrawer.classList.add("open");
+    paps.forEach(p => {
+      const item = document.createElement("div");
+      item.className = "drawer-gallery-item";
+      item.innerHTML = `<img src="${p.url}" alt="${p.caption || 'Foto'}" loading="lazy">`;
+      item.addEventListener("click", () => {
+        openLightbox(p.url, p.caption);
+      });
+      drawerGallery.appendChild(item);
+    });
   }
 
-  function closeProfileDrawer() {
-    profileDrawer.classList.remove("active");
-    profileDrawer.classList.remove("open");
-  }
+  // ==========================================================================
+  // LIGHTBOX & SOUND TOGGLE
+  // ==========================================================================
 
   function openLightbox(url, caption) {
     lightboxImg.src = url;
@@ -1253,63 +1166,50 @@ document.addEventListener("DOMContentLoaded", () => {
     lightboxModal.classList.remove("active");
   }
 
+  function setupSoundToggles() {
+    const isMuted = sounds.isMuted();
+    updateSoundBtnState(btnSoundToggle, isMuted);
+    updateSoundBtnState(btnLobbySound, isMuted);
+  }
+
+  function updateSoundBtnState(btn, isMuted) {
+    if (!btn) return;
+    if (isMuted) {
+      btn.classList.add("muted");
+      btn.title = "Suara Nonaktif (Klik untuk aktifkan)";
+    } else {
+      btn.classList.remove("muted");
+      btn.title = "Suara Aktif (Klik untuk nonaktifkan)";
+    }
+  }
+
+  function toggleSoundGlobal() {
+    const muted = sounds.toggleMute();
+    updateSoundBtnState(btnSoundToggle, muted);
+    updateSoundBtnState(btnLobbySound, muted);
+  }
+
   // ==========================================================================
   // EVENT LISTENERS SETUP
   // ==========================================================================
 
   function setupEventListeners() {
-    // 1. Group Switcher Tabs (JKT48 vs NewJeans)
-    if (groupSwitcherTabs) {
-      const tabBtns = groupSwitcherTabs.querySelectorAll(".group-tab-btn");
-      tabBtns.forEach(btn => {
-        btn.addEventListener("click", () => {
-          sounds.playClick();
-          tabBtns.forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
-          activeGroup = btn.dataset.group;
-          activeSubFilter = "all";
-          renderGroupFilterPills();
-          renderLobbyGrid(activeSearchQuery);
-        });
-      });
-    }
+    // Navigation
+    btnHeaderBackLobby.addEventListener("click", () => {
+      showLobby();
+      refreshMemberViews();
+    });
 
-    // 2. Search Input
-    if (lobbySearchInput) {
-      lobbySearchInput.addEventListener("input", (e) => {
-        activeSearchQuery = e.target.value;
-        renderLobbyGrid(activeSearchQuery);
-      });
-    }
-
-    // 3. Navigation Header Back to Lobby
-    if (btnHeaderBackLobby) {
-      btnHeaderBackLobby.addEventListener("click", () => {
-        sounds.playClick();
-        showLobby();
-      });
-    }
-
-    // 4. Click Chat Header Avatar to Open 24h Story
-    if (activeHeaderAvatar) {
-      activeHeaderAvatar.parentElement.addEventListener("click", () => {
-        sounds.playClick();
-        openStory(activeMember);
-      });
-    }
-
-    // 5. Send Chat Form
+    // Chat Form Submit
     chatFormEl.addEventListener("submit", (e) => {
       e.preventDefault();
       handleSendMessage();
     });
 
-        // Focus scroll for mobile keyboard
-    chatInputEl.addEventListener("focus", () => {
-      setTimeout(() => {
-        scrollToBottom();
-        chatInputEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
-      }, 250);
+    // Auto-expand textarea
+    chatInputEl.addEventListener("input", () => {
+      chatInputEl.style.height = "auto";
+      chatInputEl.style.height = Math.min(chatInputEl.scrollHeight, 120) + "px";
     });
 
     chatInputEl.addEventListener("keydown", (e) => {
@@ -1319,322 +1219,195 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    chatInputEl.addEventListener("input", () => {
-      chatInputEl.style.height = "auto";
-      chatInputEl.style.height = Math.min(chatInputEl.scrollHeight, 120) + "px";
-    });
-
-    // Quick Prompts Chips (Support both .quick-chip and .prompt-chip)
-    const quickChips = document.querySelectorAll(".quick-chip, .prompt-chip");
-    quickChips.forEach(chip => {
-      chip.addEventListener("click", () => {
-        sounds.playClick();
-        const text = chip.dataset.prompt || chip.dataset.text || chip.textContent.trim();
-        handleSendMessage(text);
-      });
-    });
-
-    // Request PAP Buttons
+    // Request PAP buttons
     if (btnRequestPap) {
       btnRequestPap.addEventListener("click", () => {
-        sounds.playClick();
-        handleSendMessage("minta pap foto kamu dong");
+        handleSendMessage("Boleh minta pap selfie manis kamu sekarang dong? 📸");
       });
     }
+
     if (btnAttachPap) {
       btnAttachPap.addEventListener("click", () => {
-        sounds.playClick();
-        handleSendMessage("pap foto kamu yang paling gemes dong");
+        handleSendMessage("Pap selfie hari ini dong hehe 📸");
       });
     }
-
-    // Reset Chat Buttons (Header & Drawer)
-    const resetChatBtns = [
-      document.getElementById("btn-reset-chat"),
-      document.getElementById("btn-header-reset-chat"),
-      document.getElementById("btn-clear-current-chat")
-    ].filter(Boolean);
-
-    resetChatBtns.forEach(btn => {
-      btn.addEventListener("click", () => {
-        sounds.playClick();
-        if (confirm(`Hapus seluruh riwayat chat dengan ${activeMember.name}?`)) {
-          localStorage.removeItem(`idolchat_history_${activeMember.id}`);
-          renderChatMessages();
-          closeProfileDrawer();
-          showToast("Riwayat chat berhasil dibersihkan.");
-        }
-      });
-    });
 
     // Profile Drawer
-    if (btnOpenProfileDrawer) {
-      btnOpenProfileDrawer.addEventListener("click", () => {
-        sounds.playClick();
-        openProfileDrawer();
-      });
-    }
-    if (btnCloseDrawer) {
-      btnCloseDrawer.addEventListener("click", () => {
-        sounds.playClick();
-        closeProfileDrawer();
-      });
-    }
+    btnOpenProfileDrawer.addEventListener("click", () => {
+      profileDrawer.classList.add("active");
+    });
+    btnCloseDrawer.addEventListener("click", () => {
+      profileDrawer.classList.remove("active");
+    });
 
-    // Story Player Navigation Listeners
-    if (btnStoryClose) btnStoryClose.addEventListener("click", closeStory);
-    if (storyPlayerBackdrop) storyPlayerBackdrop.addEventListener("click", closeStory);
-    if (storyTapPrev) storyTapPrev.addEventListener("click", prevStorySlide);
-    if (storyTapNext) storyTapNext.addEventListener("click", nextStorySlide);
+    // Clear Chat
+    btnClearCurrentChat.addEventListener("click", () => {
+      if (confirm(`Hapus seluruh riwayat chat dengan ${activeMember.name}?`)) {
+        localStorage.removeItem(`idolchat_history_${activeMember.id}`);
+        loadChatHistory(activeMember.id);
+        profileDrawer.classList.remove("active");
+        refreshMemberViews();
+      }
+    });
 
-    if (btnStorySendReply) {
-      btnStorySendReply.addEventListener("click", () => {
-        sendStoryReply(storyReplyInput.value);
-      });
-    }
-    if (storyReplyInput) {
-      storyReplyInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          sendStoryReply(storyReplyInput.value);
+    // Lightbox
+    lightboxModal.addEventListener("click", (e) => {
+      if (e.target === lightboxModal || e.target.classList.contains("lightbox-close")) {
+        closeLightbox();
+      }
+    });
+
+    // Story Navigation
+    if (btnCloseStory) btnCloseStory.addEventListener("click", closeStory);
+    if (storyPrevTouch) storyPrevTouch.addEventListener("click", prevStorySlide);
+    if (storyNextTouch) storyNextTouch.addEventListener("click", nextStorySlide);
+
+    if (btnSendStoryReply) {
+      btnSendStoryReply.addEventListener("click", () => {
+        const replyVal = storyReplyInput.value.trim();
+        if (!replyVal) return;
+        closeStory();
+        if (activeMember.id !== currentStoryMember.id) {
+          setActiveMember(currentStoryMember);
         }
+        showChat();
+        handleSendMessage(`[Membalas Story: "${currentStorySlides[currentStorySlideIndex]?.caption || 'Story'}"] ${replyVal}`);
       });
     }
 
-    // Quick Emoji Reactions in Story
-    const emojiBtns = document.querySelectorAll(".btn-story-emoji");
-    emojiBtns.forEach(btn => {
+    storyReplyInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        if (btnSendStoryReply) btnSendStoryReply.click();
+      }
+    });
+
+    // Emoji reactions on story
+    document.querySelectorAll(".btn-story-emoji").forEach(btn => {
       btn.addEventListener("click", () => {
-        const emoji = btn.dataset.emoji || btn.textContent.trim();
-        sendStoryReply(emoji);
+        const emoji = btn.dataset.emoji || "💖";
+        closeStory();
+        if (activeMember.id !== currentStoryMember.id) {
+          setActiveMember(currentStoryMember);
+        }
+        showChat();
+        handleSendMessage(`[Membalas Story: "${currentStorySlides[currentStorySlideIndex]?.caption || 'Story'}"] ${emoji}`);
       });
     });
 
-    // Sound Toggle
-    if (btnLobbySound) {
-      btnLobbySound.addEventListener("click", () => {
-        const isEnabled = sounds.toggle();
-        btnLobbySound.innerHTML = isEnabled ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark"></i>';
-        showToast(isEnabled ? "🔊 Efek suara diaktifkan" : "🔇 Efek suara dibisukan");
-      });
-    }
+    // Sound Toggles
+    if (btnSoundToggle) btnSoundToggle.addEventListener("click", toggleSoundGlobal);
+    if (btnLobbySound) btnLobbySound.addEventListener("click", toggleSoundGlobal);
 
-    if (btnSoundToggle) {
-      btnSoundToggle.addEventListener("click", () => {
-        const isEnabled = sounds.toggle();
-        btnSoundToggle.innerHTML = isEnabled ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark"></i>';
-        showToast(isEnabled ? "🔊 Efek suara diaktifkan" : "🔇 Efek suara dibisukan");
+    // Lobby Search & Filter
+    lobbySearchInput.addEventListener("input", () => {
+      filterLobbyMembers();
+    });
+
+    lobbyFilterPills.querySelectorAll(".pill").forEach(pill => {
+      pill.addEventListener("click", () => {
+        lobbyFilterPills.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        filterLobbyMembers();
       });
-    }
+    });
 
     // Settings Modal
-    if (btnOpenSettings) btnOpenSettings.addEventListener("click", openSettingsModal);
-    if (btnLobbySettings) btnLobbySettings.addEventListener("click", openSettingsModal);
-    const btnHeaderSettings = document.getElementById("btn-header-settings");
-    if (btnHeaderSettings) {
-      btnHeaderSettings.addEventListener("click", openSettingsModal);
-    }
-    if (btnCloseSettings) btnCloseSettings.addEventListener("click", closeSettingsModal);
+    const openSettings = () => {
+      inputGroqKey.value = groqService.getApiKey();
+      populateModelDropdown();
+      modalSettings.classList.add("active");
+    };
 
-    // Test API Key Button
-    const btnTestApiKey = document.getElementById("btn-test-api-key");
-    if (btnTestApiKey) {
-      btnTestApiKey.addEventListener("click", async () => {
-        const key = inputGroqKey.value.trim();
-        const model = selectGroqModel.value;
-        if (!key) {
-          alert("Silakan masukkan API Key Groq terlebih dahulu!");
-          return;
-        }
-        btnTestApiKey.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mendeteksi Model...';
-        try {
-          const result = await groqService.testConnection(key, model);
-          btnTestApiKey.innerHTML = '<i class="fa-solid fa-check" style="color:#10b981;"></i> Terhubung!';
-          
-          populateModelSelect(result.availableModels, result.activeModel);
+    if (btnOpenSettings) btnOpenSettings.addEventListener("click", openSettings);
+    if (btnLobbySettings) btnLobbySettings.addEventListener("click", openSettings);
+    if (btnCloseSettings) btnCloseSettings.addEventListener("click", () => modalSettings.classList.remove("active"));
 
-          showToast(`🎉 Terhubung ke model: ${result.activeModel}`);
-          setTimeout(() => {
-            btnTestApiKey.innerHTML = '<i class="fa-solid fa-bolt"></i> Tes Koneksi';
-          }, 3000);
-        } catch (err) {
-          btnTestApiKey.innerHTML = '<i class="fa-solid fa-xmark" style="color:#ef4444;"></i> Gagal';
-          alert(`❌ Gagal terhubung ke Groq API!\n\nDetail: ${err.message}`);
-          setTimeout(() => {
-            btnTestApiKey.innerHTML = '<i class="fa-solid fa-bolt"></i> Tes Koneksi';
-          }, 3000);
-        }
-      });
-    }
-    const btnSaveSettings = document.getElementById("btn-save-settings");
     if (btnSaveSettings) {
       btnSaveSettings.addEventListener("click", () => {
-        const key = inputGroqKey ? inputGroqKey.value.trim() : "";
-        const model = selectGroqModel ? selectGroqModel.value : "llama-3.3-70b-versatile";
-        if (key && key.length < 10) {
-          alert("API Key terlalu pendek. Pastikan Anda menyalin kuncinya dengan lengkap.");
-          return;
-        }
+        const key = inputGroqKey.value.trim();
+        const model = selectGroqModel.value;
         groqService.setApiKey(key);
         groqService.setModel(model);
-        closeSettingsModal();
-        showToast("✅ Pengaturan API berhasil disimpan!");
+        modalSettings.classList.remove("active");
+        alert("Pengaturan API AI berhasil disimpan!");
       });
     }
 
-    const btnRemoveApiKey = document.getElementById("btn-remove-api-key");
     if (btnRemoveApiKey) {
       btnRemoveApiKey.addEventListener("click", () => {
         groqService.setApiKey("");
-        if (inputGroqKey) inputGroqKey.value = "";
-        closeSettingsModal();
-        showToast("🗑️ API Key berhasil dihapus.");
+        inputGroqKey.value = "";
+        alert("API Key berhasil dihapus. Aplikasi kembali ke mode Offline Natural Dialogue!");
       });
     }
 
-    const btnOpenAddMemberEl = document.getElementById("btn-open-add-member");
-    if (btnOpenAddMemberEl) {
-      btnOpenAddMemberEl.addEventListener("click", () => {
-        resetAddMemberForm();
-        if (modalAddMember) modalAddMember.classList.add("active");
-      });
-    }
-    const btnCloseAddMemberEl = document.getElementById("btn-close-add-member");
-    if (btnCloseAddMemberEl && modalAddMember) btnCloseAddMemberEl.addEventListener("click", () => modalAddMember.classList.remove("active"));
-    const btnCancelAddMemberEl = document.getElementById("btn-cancel-add-member");
-    if (btnCancelAddMemberEl && modalAddMember) btnCancelAddMemberEl.addEventListener("click", () => modalAddMember.classList.remove("active"));
-    const btnSaveCustomMemberEl = document.getElementById("btn-save-custom-member");
-    if (btnSaveCustomMemberEl) btnSaveCustomMemberEl.addEventListener("click", handleSaveCustomMember);
-
-    const btnOpenUserProfileEl = document.getElementById("btn-open-user-profile");
-    if (btnOpenUserProfileEl && modalUserProfile) {
-      btnOpenUserProfileEl.addEventListener("click", () => {
-        if (inputUserName) inputUserName.value = userName;
-        modalUserProfile.classList.add("active");
-      });
-    }
-    const btnCloseUserProfileEl = document.getElementById("btn-close-user-profile");
-    if (btnCloseUserProfileEl && modalUserProfile) btnCloseUserProfileEl.addEventListener("click", () => modalUserProfile.classList.remove("active"));
-    const btnSaveUserProfileEl = document.getElementById("btn-save-user-profile");
-    if (btnSaveUserProfileEl && modalUserProfile) {
-      btnSaveUserProfileEl.addEventListener("click", () => {
-        if (inputUserName) {
-          const val = inputUserName.value.trim();
-          if (val) {
-            userName = val;
-            localStorage.setItem("idolchat_user_name", userName);
-            showToast(`Profil diperbarui: Halo kak ${userName}! 👋`);
-          }
-        }
-        modalUserProfile.classList.remove("active");
-      });
-    }
-
-    // Lightbox Modal
-    if (lightboxModal) lightboxModal.addEventListener("click", closeLightbox);
-  }
-
-  // ==========================================================================
-  // CUSTOM MEMBER HANDLER
-  // ==========================================================================
-
-  function handleSaveCustomMember() {
-    const name = document.getElementById("custom-name").value.trim();
-    const nickname = document.getElementById("custom-nickname").value.trim();
-    const gen = document.getElementById("custom-gen").value.trim();
-    const avatar = document.getElementById("custom-avatar").value.trim();
-    const jiko = document.getElementById("custom-jiko").value.trim();
-    const persona = document.getElementById("custom-persona").value.trim();
-
-    if (!name || !nickname || !jiko || !persona) {
-      alert("Mohon lengkapi semua data member!");
-      return;
-    }
-
-    const newMember = {
-      id: "custom_" + Date.now(),
-      name: name,
-      nickname: nickname,
-      generation: gen || "Member JKT48",
-      color: "#e11d48",
-      avatar: avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400",
-      status: `Online • ${nickname} ✨`,
-      statusBio: `Halo aku ${nickname} JKT48! Senang kenalan denganmu 💖`,
-      jikoshoukai: jiko,
-      fandom: `${nickname} Lovers`,
-      tags: ["Custom Oshi", "JKT48", gen],
-      paps: [
-        {
-          url: avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600",
-          caption: `Selfie perdana dari ${nickname} buat kamu! 🤍✨`
-        }
-      ],
-      personaPrompt: `Kamu adalah ${name} (${nickname}), member ${gen} dari JKT48.
-Karakteristik & Gaya:
-${persona}
-
-Aturan Ketikan:
-- Chat santai kasual khas WhatsApp tanpa tanda titik kaku di setiap kalimat.
-- Tanpa format tebal (**), tanpa simbol berlebihan, maksimal 0-1 emoji.
-- Selalu nyambung dengan pesan terakhir yang dikirim fans.`
+    // User Profile Modal
+    const openUserProfile = () => {
+      inputUserName.value = userName;
+      modalUserProfile.classList.add("active");
     };
 
-    saveCustomMember(newMember);
-    members = getMembers();
-    refreshMemberViews();
-    selectMember(newMember);
-
-    modalAddMember.classList.remove("active");
-    document.getElementById("custom-member-form").reset();
-    showToast(`🎉 Berhasil menambahkan ${name} ke daftar Oshi!`);
+    if (btnLobbyUser) btnLobbyUser.addEventListener("click", openUserProfile);
+    if (btnCloseUserProfile) btnCloseUserProfile.addEventListener("click", () => modalUserProfile.classList.remove("active"));
+    if (btnSaveUserProfile) {
+      btnSaveUserProfile.addEventListener("click", () => {
+        const val = inputUserName.value.trim() || "Fans Setia";
+        userName = val;
+        localStorage.setItem("jkt48_user_name", userName);
+        updateUserBadgeDisplay();
+        modalUserProfile.classList.remove("active");
+        refreshMemberViews();
+      });
+    }
   }
 
-  // ==========================================================================
-  // UTILITIES
-  // ==========================================================================
+  function filterLobbyMembers() {
+    const q = (lobbySearchInput.value || "").toLowerCase().trim();
+    const activePill = lobbyFilterPills.querySelector(".pill.active");
+    const groupFilter = activePill ? activePill.dataset.filter : "all";
 
-  function populateModelSelect(models, selectedModel) {
-    if (!Array.isArray(models) || models.length === 0) return;
+    const filtered = members.filter(m => {
+      const matchQuery = (m.name || "").toLowerCase().includes(q) ||
+                         (m.nickname || "").toLowerCase().includes(q) ||
+                         (m.generation || "").toLowerCase().includes(q);
+
+      const mGroup = (m.group || (m.generation?.includes("NewJeans") ? "NewJeans" : "JKT48")).toLowerCase();
+      let matchGroup = true;
+      if (groupFilter === "jkt48") matchGroup = mGroup.includes("jkt");
+      else if (groupFilter === "newjeans") matchGroup = mGroup.includes("newjeans");
+
+      return matchQuery && matchGroup;
+    });
+
+    renderLobby(filtered);
+  }
+
+  function populateModelDropdown() {
     selectGroqModel.innerHTML = "";
-    models.forEach(model => {
-      const option = document.createElement("option");
-      option.value = model;
-      option.textContent = model + (model === selectedModel ? " (Aktif)" : "");
-      option.selected = model === selectedModel;
-      selectGroqModel.appendChild(option);
+    const current = groqService.getModel();
+    const models = groqService.availableModels || ["openai/gpt-oss-120b", "qwen/qwen3.6-27b", "openai/gpt-oss-20b"];
+
+    models.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m;
+      opt.textContent = m;
+      if (m === current) opt.selected = true;
+      selectGroqModel.appendChild(opt);
     });
   }
 
-  async function openSettingsModal() {
-    inputGroqKey.value = groqService.getApiKey();
-    const selectedModel = groqService.getModel();
-    populateModelSelect(groqService.availableModels, selectedModel);
-    modalSettings.classList.add("active");
-
-    if (groqService.hasApiKey()) {
-      try {
-        const models = await groqService.fetchModels(undefined, true);
-        const activeModel = models.includes(selectedModel) ? selectedModel : models[0];
-        populateModelSelect(models, activeModel);
-      } catch (error) {
-        console.warn("Tidak dapat memperbarui daftar model:", error);
-      }
-    }
-  }
-
-  function closeSettingsModal() {
-    modalSettings.classList.remove("active");
-  }
-
-  function updateUserProfileDisplay() {
-    if (lobbyUserName) {
-      lobbyUserName.textContent = userName;
-    }
+  function refreshMemberViews() {
+    members = getMembers();
+    filterLobbyMembers();
   }
 
   function showTypingIndicator(show) {
-    typingIndicatorEl.classList.toggle("active", show);
-    if (show) scrollToBottom();
+    if (show) {
+      typingLabelEl.textContent = `${activeMember.nickname || activeMember.name} sedang mengetik...`;
+      typingIndicatorEl.classList.add("active");
+    } else {
+      typingIndicatorEl.classList.remove("active");
+    }
   }
 
   function scrollToBottom() {
@@ -1645,15 +1418,7 @@ Aturan Ketikan:
 
   function getCurrentTime() {
     const now = new Date();
-    return now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-  }
-
-  function showToast(message) {
-    toastMsg.textContent = message;
-    toastEl.classList.add("show");
-    setTimeout(() => {
-      toastEl.classList.remove("show");
-    }, 4000);
+    return now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }).replace(".", ":");
   }
 
   function escapeHtml(str) {
@@ -1666,6 +1431,6 @@ Aturan Ketikan:
       .replace(/'/g, "&#039;");
   }
 
-  // Start the App
+  // Run App!
   init();
 });
