@@ -2,14 +2,19 @@ package com.mpruyy.idolchat;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 
 public class MainActivity extends Activity {
 
@@ -20,11 +25,13 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Adjust resize when soft keyboard opens
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
         // Immersive Fullscreen Dark View
         getWindow().getDecorView().setSystemUiVisibility(
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE
             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         );
 
         webView = new WebView(this);
@@ -36,6 +43,9 @@ public class MainActivity extends Activity {
         webView.setVerticalScrollBarEnabled(false);
 
         setContentView(webView);
+
+        // Assist keyboard resize for fullscreen layout
+        AndroidBug5497Workaround.assistActivity(this);
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -71,5 +81,52 @@ public class MainActivity extends Activity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    // Helper for keyboard resizing in fullscreen Android activities
+    public static class AndroidBug5497Workaround {
+        public static void assistActivity(Activity activity) {
+            new AndroidBug5497Workaround(activity);
+        }
+
+        private View mChildOfContent;
+        private int usableHeightPrevious;
+        private ViewGroup.LayoutParams frameLayoutParams;
+
+        private AndroidBug5497Workaround(Activity activity) {
+            FrameLayout content = (FrameLayout) activity.findViewById(android.R.id.content);
+            mChildOfContent = content.getChildAt(0);
+            if (mChildOfContent != null) {
+                mChildOfContent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    public void onGlobalLayout() {
+                        possiblyResizeChildOfContent();
+                    }
+                });
+                frameLayoutParams = mChildOfContent.getLayoutParams();
+            }
+        }
+
+        private void possiblyResizeChildOfContent() {
+            int usableHeightNow = computeUsableHeight();
+            if (usableHeightNow != usableHeightPrevious && frameLayoutParams != null) {
+                int usableHeightSansKeyboard = mChildOfContent.getRootView().getHeight();
+                int heightDifference = usableHeightSansKeyboard - usableHeightNow;
+                if (heightDifference > (usableHeightSansKeyboard / 4)) {
+                    // keyboard probably showing
+                    frameLayoutParams.height = usableHeightSansKeyboard - heightDifference;
+                } else {
+                    // keyboard probably hidden
+                    frameLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                }
+                mChildOfContent.requestLayout();
+                usableHeightPrevious = usableHeightNow;
+            }
+        }
+
+        private int computeUsableHeight() {
+            Rect r = new Rect();
+            mChildOfContent.getWindowVisibleDisplayFrame(r);
+            return (r.bottom - r.top);
+        }
     }
 }

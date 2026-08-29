@@ -1114,6 +1114,14 @@ document.addEventListener("DOMContentLoaded", () => {
       handleSendMessage();
     });
 
+        // Focus scroll for mobile keyboard
+    chatInputEl.addEventListener("focus", () => {
+      setTimeout(() => {
+        scrollToBottom();
+        chatInputEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }, 250);
+    });
+
     chatInputEl.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
