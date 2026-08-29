@@ -10,7 +10,7 @@ const DEFAULT_MEMBERS = [
     "nickname": "Freya",
     "gen": "Generasi 7",
     "avatar": "member_photos/freya/avatar.jpg",
-    "jiko": "Gadis koleris yang suka berimajinasi, terangi harimu dengan senyuman karamelku. Halo semuanya, aku Freya!",
+    "jiko": "Gadis koleris yang suka berimajinasi, terangi harimu dengan senyuman karamelku. Halo, aku Freya!",
     "color": "#ec4899",
     "badge": "Oshi Manis",
     "bio": "Member JKT48 Generasi 7 • Si manis karamel yang imajinatif, suka anime & baca novel 🍮✨",
@@ -842,7 +842,7 @@ const DEFAULT_MEMBERS = [
       }
     ],
     "generation": "Generasi 7",
-    "jikoshoukai": "Gadis koleris yang suka berimajinasi, terangi harimu dengan senyuman karamelku. Halo semuanya, aku Freya!",
+    "jikoshoukai": "Gadis koleris yang suka berimajinasi, terangi harimu dengan senyuman karamelku. Halo, aku Freya!",
     "group": "JKT48",
     "status": "Online"
   },
@@ -852,7 +852,7 @@ const DEFAULT_MEMBERS = [
     "nickname": "Michie",
     "gen": "Generasi 11",
     "avatar": "member_photos/michie/avatar.jpg",
-    "jiko": "Always loving and full of blessings, halo semuanya aku Michie!",
+    "jiko": "Always your number one, till infinity and beyond. Hello everyone, it's Michie!",
     "color": "#e11d48",
     "badge": "Michiesta",
     "bio": "Member JKT48 Generasi 11 • Always loving and full of blessings ✨🎀",
@@ -2036,7 +2036,7 @@ const DEFAULT_MEMBERS = [
       }
     ],
     "generation": "Generasi 11",
-    "jikoshoukai": "Always loving and full of blessings, halo semuanya aku Michie!",
+    "jikoshoukai": "Always your number one, till infinity and beyond. Hello everyone, it's Michie!",
     "group": "JKT48",
     "status": "Online"
   },
@@ -2564,7 +2564,7 @@ const DEFAULT_MEMBERS = [
     "nickname": "Marsha",
     "gen": "Generasi 9",
     "avatar": "member_photos/marsha/avatar.jpg",
-    "jiko": "Manis seperti permen kapas dan hangat seperti matahari, halo semuanya aku Marsha!",
+    "jiko": "Seperti pizza yang selalu dinanti-nantikan semua orang, selalu nantikan aku ya! Halo semuanya, aku Marsha!",
     "color": "#10b981",
     "badge": "Marshadict",
     "bio": "Member JKT48 Generasi 9 • Manis permen kapas, suka kucing & aesthetic 🍬🐱",
@@ -3220,7 +3220,7 @@ const DEFAULT_MEMBERS = [
       }
     ],
     "generation": "Generasi 9",
-    "jikoshoukai": "Manis seperti permen kapas dan hangat seperti matahari, halo semuanya aku Marsha!",
+    "jikoshoukai": "Seperti pizza yang selalu dinanti-nantikan semua orang, selalu nantikan aku ya! Halo semuanya, aku Marsha!",
     "group": "JKT48",
     "status": "Online"
   },
@@ -3230,7 +3230,7 @@ const DEFAULT_MEMBERS = [
     "nickname": "Erine",
     "gen": "Generasi 12",
     "avatar": "member_photos/erine/avatar.jpg",
-    "jiko": "Seperti bunga yang mekar dengan indah, siap menyinari hari-harimu. Halo semuanya, aku Erine!",
+    "jiko": "Hadir dengan seribu kejutan, Checkmate! Siap memenangkan hatimu. Halo semuanya, aku Erine!",
     "color": "#8b5cf6",
     "badge": "Eriners",
     "bio": "Member JKT48 Generasi 12 • Si enerjik berpesona bunga yang mekar 🌸✨",
@@ -3850,7 +3850,7 @@ const DEFAULT_MEMBERS = [
       }
     ],
     "generation": "Generasi 12",
-    "jikoshoukai": "Seperti bunga yang mekar dengan indah, siap menyinari hari-harimu. Halo semuanya, aku Erine!",
+    "jikoshoukai": "Hadir dengan seribu kejutan, Checkmate! Siap memenangkan hatimu. Halo semuanya, aku Erine!",
     "group": "JKT48",
     "status": "Online"
   },
@@ -3860,7 +3860,7 @@ const DEFAULT_MEMBERS = [
     "nickname": "Oline",
     "gen": "Generasi 12",
     "avatar": "member_photos/oline/avatar.jpg",
-    "jiko": "Kecil-kecil cabe rawit, selalu ceria dan penuh energi! Halo semuanya, aku Oline!",
+    "jiko": "Semangatku full terus! Gas gas gas Oline! Halo semuanya, aku Oline!",
     "color": "#06b6d4",
     "badge": "Oliners",
     "bio": "Member JKT48 Generasi 12 • Si cabe rawit enerjik yang ceria dan humble 🌶️✨",
@@ -4348,7 +4348,7 @@ const DEFAULT_MEMBERS = [
       }
     ],
     "generation": "Generasi 12",
-    "jikoshoukai": "Kecil-kecil cabe rawit, selalu ceria dan penuh energi! Halo semuanya, aku Oline!",
+    "jikoshoukai": "Semangatku full terus! Gas gas gas Oline! Halo semuanya, aku Oline!",
     "group": "JKT48",
     "status": "Online"
   }

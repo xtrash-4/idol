@@ -1,12 +1,12 @@
-const CACHE_NAME = "idolchat-v2.2-6jkt48";
+const CACHE_NAME = "idolchat-v2.3-6jkt48";
 const ASSETS = [
   "./",
   "./index.html",
-  "./css/style.css?v=2.2",
-  "./js/sound.js?v=2.2",
-  "./js/members.js?v=2.2",
-  "./js/groq-api.js?v=2.2",
-  "./js/app.js?v=2.2",
+  "./css/style.css?v=2.3",
+  "./js/sound.js?v=2.3",
+  "./js/members.js?v=2.3",
+  "./js/groq-api.js?v=2.3",
+  "./js/app.js?v=2.3",
   "./manifest.json",
   "./jkt48 logo.png"
 ];
