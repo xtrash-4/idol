@@ -1,7 +1,7 @@
 /**
- * MPRUYY HALU - Ultra-Natural Conversational Engine & Media System
- * Interaksi UI, state member, pengiriman pesan kontekstual anti-template,
- * 24-Hour Instagram Story Player, galeri PAP dinamis non-repeat, dan tombol Mulai Chat.
+ * MPRUYY HALU - JKT48 Official Direct Message Experience
+ * 100% Focused on JKT48 Members with Official Jikoshoukai, Real HD Photos,
+ * 24-Hour Stories, and Non-Template Indonesian Idol Dialogue Engine.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // LOBBY RENDERING WITH CLEAR "MULAI CHAT" BUTTON
+  // LOBBY RENDERING WITH OFFICIAL JIKOSHOUKAI & "MULAI CHAT" BUTTON
   // ==========================================================================
 
   function renderLobby(list) {
@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-muted);">
           <div style="font-size: 2.5rem; margin-bottom: 12px;">🔍</div>
           <h3 style="color: var(--text-primary); margin-bottom: 6px;">Member Tidak Ditemukan</h3>
-          <p style="font-size: 0.85rem;">Coba cari nama lain atau pilih grup Semua.</p>
+          <p style="font-size: 0.85rem;">Coba cari nama atau panggilan member JKT48 lainnya.</p>
         </div>
       `;
       return;
@@ -207,16 +207,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const card = document.createElement("div");
       card.className = "lobby-card";
       card.dataset.id = member.id;
-
-      const history = getMemberChatHistory(member.id);
-      const lastMsg = history.length > 0 ? history[history.length - 1] : null;
-      let previewText = "Mulai obrolan seru sekarang ✨";
-      let previewTime = "";
-
-      if (lastMsg) {
-        previewText = lastMsg.content || (lastMsg.pap ? "📷 Mengirim foto selfie" : "Obrolan");
-        previewTime = lastMsg.time || "";
-      }
 
       card.innerHTML = `
         <div class="lobby-card-avatar-wrapper">
@@ -237,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
 
-      // Event listener: click avatar opens Story, click anywhere else or button opens Chat
+      // Event listener: click avatar opens Story, click button or card opens Chat
       card.addEventListener("click", (e) => {
         if (e.target.closest(".story-ring-wrapper")) {
           openStory(member);
@@ -373,7 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // SMART VARIED PAP POOL (100% Non-Repeating Across 35-85 Photos Per Member)
+  // SMART VARIED PAP POOL (100% Non-Repeating Across Curated Photos)
   // ==========================================================================
 
   const usedPapsMap = {};
@@ -526,7 +516,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // NATURAL CONTEXTUAL DIALOGUE ENGINE (NO ARTIFICIAL TYPO, RICH CASUAL TEXTING)
+  // NATURAL CONTEXTUAL DIALOGUE ENGINE (PURE CASUAL JKT48 TEXTING)
   // ==========================================================================
 
   const usedRepliesMap = {};
@@ -547,25 +537,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function getFallbackDemoReply(member, userText, attachedPap = null) {
-    const isNewJeans = (member.group === "NewJeans") || member.generation?.includes("NewJeans");
     const t = userText.toLowerCase();
     const id = member.id || "";
 
     // 1. Reply to Story Context
     if (t.includes("[membalas story:")) {
-      if (isNewJeans) {
-        return pickDeck(`${id}_story`, [
-          `thank you so much bunnies! 💖 ||| seneng banget kamu notice story aku hehe ||| how are you today?`,
-          `aww gemes banget reaksimu! ||| makasih yaa udah selalu nonton story aku ✨ ||| lagi santai kan sekarang?`,
-          `hehehe iyaa tadi seru banget pas take foto itu! ||| kamu udah makan belum hari ini? 🐰`
-        ]);
-      } else {
-        return pickDeck(`${id}_story`, [
-          `ihh makasih kakk udah notice story akuu hehe 💖 ||| kamu lagi senggang ya?`,
-          `wkwkwk gemes banget reaksimu ||| seneng deh ada yang selalu nonton story aku ✨ ||| lagi ngapain nih?`,
-          `hehehe iyaa tadi seru bangett tauu pas difoto ||| gimana hari kamu hari ini? lancar kan?`
-        ]);
-      }
+      return pickDeck(`${id}_story`, [
+        `ihh makasih kakk udah notice story akuu hehe 💖 ||| kamu lagi senggang ya?`,
+        `wkwkwk gemes banget reaksimu ||| seneng deh ada yang selalu nonton story aku ✨ ||| lagi ngapain nih?`,
+        `hehehe iyaa tadi seru bangett tauu ||| gimana hari kamu hari ini? lancar kan?`
+      ]);
     }
 
     // 2. PAP / Foto Requests (Pure, Authentic Idol Dialogue WITHOUT Guessing Locations/Activities)
@@ -616,12 +597,6 @@ document.addEventListener("DOMContentLoaded", () => {
           `nih senyuman mutiara hari ini buat kamu ☀️✨ ||| semoga harimu makin cerah yaa!`,
           `tadaaa! pap selfie manis dari aku ||| semangaat terus buat hari ini yaa 💖`
         ]);
-      } else if (isNewJeans) {
-        return pickDeck(`${id}_pap_gen`, [
-          `here's a special selfie for you bunnies! 🐰✨ ||| hope it makes your day brighter hehe 💖`,
-          `tadaaa! selfie hari ini buat kamu 🎧✨ ||| how does it look? cute gaa? 💖`,
-          `quick selfie for bunnies! ||| sweet smiles for you ✨🐰 ||| what are you doing right now?`
-        ]);
       } else {
         return pickDeck(`${id}_pap_gen`, [
           `nih pap selfie santai dari aku hehe ||| gimana menurut kamu? 💖 ||| semoga suka yaa!`,
@@ -661,11 +636,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return pickDeck(`${id}_gombal`, [
           `haha makasih ya. tumben gombal 😌 ||| tapi seneng kok dengernya. kamu apa kabar hari ini?`
         ]);
-      } else if (isNewJeans) {
-        return pickDeck(`${id}_gombal`, [
-          `omg thank you so much! you're so sweet 🙈 ||| bunnies emang paling bisa bikin salting hehe 💖 ||| you made my day!`,
-          `aww that's so sweet haha! ||| thank you for the sweet words bunnies ✨🐰 ||| sending you lots of love!`
-        ]);
       } else {
         return pickDeck(`${id}_gombal`, [
           `ihh bisa aja deh gombalnya haha 🙈 ||| makasih yaa pujiannya, bikin semangat bangett! ||| kamu lagi apa sekarang?`,
@@ -686,11 +656,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return pickDeck(`${id}_curhat`, [
           `kerja keras boleh tapi kesehatan tetep nomor satu ya ||| tarik napas dulu, istirahat sejenak 🤍 ||| kamu orang kuat, aku semangatin dari sini ya!`,
           `jangan lupa makan yang enak ya hari ini ||| self-reward dikit biar pikiran fresh lagi ✨ ||| kalau ada yang mau diceritain, cerita aja yaa`
-        ]);
-      } else if (isNewJeans) {
-        return pickDeck(`${id}_curhat`, [
-          `take a deep breath bunnies 🤍 ||| you worked so hard today, please get some good rest! ||| we're always rooting for you ✨🐰`,
-          `jangan terlalu dipikirin yaa ||| dengerin lagu santai dulu sambil rebahan, fighting! ✨🐰 ||| you did amazing today!`
         ]);
       } else {
         return pickDeck(`${id}_curhat`, [
@@ -740,11 +705,6 @@ document.addEventListener("DOMContentLoaded", () => {
           `halooo! wkwkwk pas banget lagi gabut nih 😝 ||| kamu lagi ngapain tuh? kepo deh!`,
           `hai hai! baru selesai ngemil nih haha ||| gimana kabar kamu hari ini? seru gak?`
         ]);
-      } else if (isNewJeans) {
-        return pickDeck(`${id}_sapa`, [
-          `hello bunnies! 🐰💖 ||| baru selesai latihan dance nih, how are you today?`,
-          `haii! so happy to see your message hehe ||| harimu menyenangkan gak hari ini? ✨`
-        ]);
       } else {
         return pickDeck(`${id}_sapa`, [
           `haloo! baru selesai santai nih hehe ||| kamu lagi sibuk apa hari ini?`,
@@ -754,18 +714,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 7. Teater / Lagu / Konser
-    if (/teater|theater|setlist|konser|show|lagu|nyanyi|dance|pajama|ramune|aturan anti cinta|rapsodi|heavy rotation|hype boy|ditto|omg/i.test(t)) {
-      if (isNewJeans) {
-        return pickDeck(`${id}_music`, [
-          `omg kamu suka lagu itu juga? 🎧✨ ||| kita sering banget latihan choreography-nya di studio! ||| part mana yang paling kamu suka?`,
-          `lagu itu emang vibes-nya seru banget yaa! ||| dengerin terus sambil santai ya bunnies 🐰💖`
-        ]);
-      } else {
-        return pickDeck(`${id}_music`, [
-          `wahh kamu sering nonton teater juga ya? 💃✨ ||| seru banget pas chant bareng penonton! ||| kapan-kapan nonton show aku yaa hehe`,
-          `lagu itu salah satu favorit aku juga tauu! ||| pas bawain di panggung energinya berasa banget 💖 ||| kamu paling suka unit song apa?`
-        ]);
-      }
+    if (/teater|theater|setlist|konser|show|lagu|nyanyi|dance|pajama|ramune|aturan anti cinta|rapsodi|heavy rotation/i.test(t)) {
+      return pickDeck(`${id}_music`, [
+        `wahh kamu sering nonton teater juga ya? 💃✨ ||| seru banget pas chant bareng penonton! ||| kapan-kapan nonton show aku yaa hehe`,
+        `lagu itu salah satu favorit aku juga tauu! ||| pas bawain di panggung energinya berasa banget 💖 ||| kamu paling suka unit song apa?`
+      ]);
     }
 
     // 8. Candaan / Jokes
@@ -787,36 +740,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ==========================================================================
-  // INSTAGRAM / WEVERSE 24-HOUR STORY PLAYER ENGINE
+  // JKT48 24-HOUR STORY PLAYER ENGINE
   // ==========================================================================
 
   function getMemberStories(member) {
     const paps = member.paps || [];
-    const isNewJeans = (member.group === "NewJeans") || member.generation?.includes("NewJeans");
-    const location = isNewJeans ? "HYBE Studio, Seoul" : "JKT48 Theater, FX Sudirman";
-    const songs = isNewJeans
-      ? ["Hype Boy • NewJeans", "Ditto • NewJeans", "Super Shy • NewJeans", "OMG • NewJeans", "How Sweet • NewJeans"]
-      : ["Heavy Rotation • JKT48", "Rapsodi • JKT48", "Fortune Cookie • JKT48", "Kimi no Koto ga Suki Dakara • JKT48", "Seventeen • JKT48"];
+    const location = "JKT48 Theater, FX Sudirman";
+    const songs = [
+      "Heavy Rotation • JKT48",
+      "Rapsodi • JKT48",
+      "Fortune Cookie • JKT48",
+      "Kimi no Koto ga Suki Dakara • JKT48",
+      "Seventeen • JKT48"
+    ];
 
     const song = songs[Math.floor(Math.random() * songs.length)];
 
-    const captionsPool = isNewJeans
-      ? [
-          `Bunnies! How's your day? Semoga harimu menyenangkan yaa ✨🐰`,
-          `Dance practice dulu hari ini, semangaat! 💃💖`,
-          `Dengerin playlist santai dulu sambil istirahat 🎧`,
-          `Nite nite bunnies, mimpi indah yaa semuanya! 🌙✨`,
-          `Spill ootd santai hari ini, gimana gemes ga? 😜🤍`,
-          `Selfie santai sebelum lanjut jadwal berikutnya ✨`
-        ]
-      : [
-          `Semangat buat hari ini semuanya, jangan lupa tersenyum yaa ✨💖`,
-          `GR teater hari ini seru bangett, sampai ketemu nanti malam! 💃✨`,
-          `Lagi istirahat bentar nih sambil santai, kalian lagi apa? ☕`,
-          `Selamat istirahat semuanya, terima kasih buat hari ini yaa 🌙🤍`,
-          `Selfie hari ini buat kalian hehe, gemes gaa? 😜✨`,
-          `Ootd santai sebelum ke teater nih hehe 👗✨`
-        ];
+    const captionsPool = [
+      `Semangat buat hari ini semuanya, jangan lupa tersenyum yaa ✨💖`,
+      `GR teater hari ini seru bangett, sampai ketemu nanti malam! 💃✨`,
+      `Lagi istirahat bentar nih sambil santai, kalian lagi apa? ☕`,
+      `Selamat istirahat semuanya, terima kasih buat hari ini yaa 🌙🤍`,
+      `Selfie hari ini buat kalian hehe, gemes gaa? 😜✨`,
+      `Ootd santai sebelum ke teater nih hehe 👗✨`
+    ];
 
     const shuffledPaps = [...paps].sort(() => Math.random() - 0.5);
     const shuffledCaptions = [...captionsPool].sort(() => Math.random() - 0.5);
@@ -846,7 +793,7 @@ document.addEventListener("DOMContentLoaded", () => {
       {
         image: slide3Img,
         caption: shuffledCaptions[2] || captionsPool[2],
-        location: isNewJeans ? "Seoul, South Korea" : "Jakarta, Indonesia",
+        location: "Jakarta, Indonesia",
         music: song,
         time: "16:30",
         timeAgo: "45 menit lalu"
@@ -941,21 +888,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderQuickPrompts(member) {
     quickPromptsEl.innerHTML = "";
-    const isNewJeans = (member.group === "NewJeans") || member.generation?.includes("NewJeans");
 
-    const prompts = isNewJeans
-      ? [
-          { text: "Minta PAP selfie dong 📸", msg: "Bunnies minta pap selfie manis kamu hari ini dong hehe 📸" },
-          { text: "Lagi latihan apa hari ini? 💃", msg: "Lagi latihan dance apa hari ini di studio? 💃" },
-          { text: "Cantik bangett hari ini 💖", msg: "Kamu cantik dan manis bangett hari ini 💖" },
-          { text: "Dengerin lagu apa? 🎧", msg: "Lagi dengerin playlist lagu apa nih yang enak? 🎧" }
-        ]
-      : [
-          { text: "Minta PAP selfie dong 📸", msg: "Minta pap selfie manis kamu hari ini dong hehe 📸" },
-          { text: "Semangat teaternya! ✨", msg: "Semangat buat kegiatan teater hari ini yaa! ✨" },
-          { text: "Cantik bangett hari ini 💖", msg: "Kamu cantik dan manis bangett hari ini 💖" },
-          { text: "Udah makan belum? 🍱", msg: "Udah makan siang/malam belum nih? Jaga kesehatan yaa 🍱" }
-        ];
+    const prompts = [
+      { text: "Minta PAP selfie dong 📸", msg: "Minta pap selfie manis kamu hari ini dong hehe 📸" },
+      { text: "Semangat teaternya! ✨", msg: "Semangat buat kegiatan teater hari ini yaa! ✨" },
+      { text: "Cantik bangett hari ini 💖", msg: "Kamu cantik dan manis bangett hari ini 💖" },
+      { text: "Udah makan belum? 🍱", msg: "Udah makan siang/malam belum nih? Jaga kesehatan yaa 🍱" }
+    ];
 
     prompts.forEach(p => {
       const btn = document.createElement("button");
@@ -1061,7 +1000,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnAttachPap) {
       btnAttachPap.addEventListener("click", () => {
-        handleSendMessage("Pap selfie hari ini dong hehe 📸");
+        handleSendMessage("Pap selfie manis hari ini dong hehe 📸");
       });
     }
 
@@ -1139,26 +1078,6 @@ document.addEventListener("DOMContentLoaded", () => {
       filterLobbyMembers();
     });
 
-    lobbyFilterPills.querySelectorAll(".pill").forEach(pill => {
-      pill.addEventListener("click", () => {
-        lobbyFilterPills.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
-        pill.classList.add("active");
-        filterLobbyMembers();
-      });
-    });
-
-    // Group Switcher Tabs
-    const groupSwitcher = document.getElementById("group-switcher-tabs");
-    if (groupSwitcher) {
-      groupSwitcher.querySelectorAll(".group-tab-btn").forEach(tab => {
-        tab.addEventListener("click", () => {
-          groupSwitcher.querySelectorAll(".group-tab-btn").forEach(t => t.classList.remove("active"));
-          tab.classList.add("active");
-          filterLobbyMembers();
-        });
-      });
-    }
-
     const openSettings = () => {
       inputGroqKey.value = groqService.getApiKey();
       populateModelDropdown();
@@ -1210,20 +1129,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function filterLobbyMembers() {
     const q = (lobbySearchInput.value || "").toLowerCase().trim();
-    const groupTab = document.querySelector("#group-switcher-tabs .group-tab-btn.active");
-    const activeGroup = groupTab ? groupTab.dataset.group : "ALL";
 
     const filtered = members.filter(m => {
-      const matchQuery = (m.name || "").toLowerCase().includes(q) ||
-                         (m.nickname || "").toLowerCase().includes(q) ||
-                         (m.generation || "").toLowerCase().includes(q);
-
-      const mGroup = (m.group || (m.generation?.includes("NewJeans") ? "NewJeans" : "JKT48"));
-      let matchGroup = true;
-      if (activeGroup === "JKT48") matchGroup = (mGroup.toUpperCase() === "JKT48");
-      else if (activeGroup === "NewJeans") matchGroup = (mGroup.toUpperCase() === "NEWJEANS");
-
-      return matchQuery && matchGroup;
+      return (m.name || "").toLowerCase().includes(q) ||
+             (m.nickname || "").toLowerCase().includes(q) ||
+             (m.generation || "").toLowerCase().includes(q);
     });
 
     renderLobby(filtered);

@@ -1,6 +1,6 @@
 /**
- * IDOLCHAT Database & Natural Conversational Persona Engine
- * Mendukung Member JKT48 & NewJeans dengan Jikoshoukai Resmi & Galeri Foto Resolusi Tinggi.
+ * IDOLCHAT Database - JKT48 Official Oshi Direct Message
+ * Hanya memuat 8 Member Resmi JKT48 dengan Jikoshoukai dan Foto Terverifikasi.
  */
 
 const DEFAULT_MEMBERS = [
@@ -175,7 +175,7 @@ const DEFAULT_MEMBERS = [
     "tags": [
       "Enerjik",
       "Ceria",
-      "Jaksel Slang"
+      "Manis"
     ],
     "paps": [
       {
@@ -678,16 +678,16 @@ const DEFAULT_MEMBERS = [
     "name": "Shania Gracia",
     "nickname": "Gracia",
     "generation": "Generasi 3 (Kapten)",
-    "color": "#845EC2",
+    "color": "#9b5de5",
     "avatar": "member_photos/gracia/avatar.jpg",
-    "status": "Online • Kapten",
+    "status": "Online • Gracia",
     "statusBio": "online",
     "jikoshoukai": "Senyumku akan terekam manis di pikiranmu seperti foto polaroid! Halo semuanya, aku Gracia!",
-    "fandom": "Graciaholic",
+    "fandom": "Graciaphile",
     "tags": [
       "Kapten",
       "Dewasa",
-      "Anggun"
+      "Hangat"
     ],
     "paps": [
       {
@@ -838,16 +838,16 @@ const DEFAULT_MEMBERS = [
     "name": "Gabriela Abigail",
     "nickname": "Ella",
     "generation": "Generasi 10",
-    "color": "#FF9671",
+    "color": "#f15bb5",
     "avatar": "member_photos/ella/avatar.jpg",
     "status": "Online • Ella",
     "statusBio": "online",
     "jikoshoukai": "Pra-pari-pum! Si cabe rawit yang siap membakar panggung! Halo semuanya, aku Ella!",
-    "fandom": "Ellalicious",
+    "fandom": "Ellanizer",
     "tags": [
       "Cabe Rawit",
-      "Kocak",
-      "Genit Lucu"
+      "Heboh",
+      "Lucu"
     ],
     "paps": [
       {
@@ -891,124 +891,120 @@ const DEFAULT_MEMBERS = [
         "caption": "Selfie manis hari ini 💖"
       },
       {
-        "url": "member_photos/ella/ella_bbab16c8.webp",
-        "caption": "Pose favorit ✌️"
-      },
-      {
         "url": "member_photos/ella/ella_bc9a649c.jpg",
-        "caption": "Senyum manis buat kamu ✨"
+        "caption": "Pose favorit ✌️"
       },
       {
         "url": "member_photos/ella/ella_c0046dcb.jpg",
-        "caption": "Foto selfie spesial 🤍"
+        "caption": "Senyum manis buat kamu ✨"
       },
       {
         "url": "member_photos/ella/ella_c8dc2712.jpg",
-        "caption": "Selfie manis hehe 🙈"
+        "caption": "Foto selfie spesial 🤍"
       },
       {
         "url": "member_photos/ella/ella_caa76cf6.jpg",
-        "caption": "Spesial buat kamu 💖"
+        "caption": "Selfie manis hehe 🙈"
       },
       {
         "url": "member_photos/ella/ella_cfdcff55.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
+        "caption": "Spesial buat kamu 💖"
       },
       {
         "url": "member_photos/ella/ella_e85b0c2c.jpg",
-        "caption": "Selfie manis spesial ✨"
+        "caption": "Tadaaa! Senyum hari ini ✨"
       },
       {
         "url": "member_photos/ella/ella_ee23df43.jpg",
-        "caption": "Selfie manis hari ini 💖"
+        "caption": "Selfie manis spesial ✨"
       },
       {
         "url": "member_photos/ella/ella_ef4ab937.jpg",
-        "caption": "Pose favorit ✌️"
+        "caption": "Selfie manis hari ini 💖"
       },
       {
         "url": "member_photos/ella/ella_f388b0b9.jpg",
-        "caption": "Senyum manis buat kamu ✨"
+        "caption": "Pose favorit ✌️"
       },
       {
         "url": "member_photos/ella/ella_pap_v5_032faea6.jpg",
-        "caption": "Foto selfie spesial 🤍"
+        "caption": "Senyum manis buat kamu ✨"
       },
       {
         "url": "member_photos/ella/ella_pap_v5_1bafd41c.jpg",
-        "caption": "Selfie manis hehe 🙈"
+        "caption": "Foto selfie spesial 🤍"
       },
       {
         "url": "member_photos/ella/ella_pap_v5_202938f0.jpg",
-        "caption": "Spesial buat kamu 💖"
+        "caption": "Selfie manis hehe 🙈"
       },
       {
         "url": "member_photos/ella/ella_pap_v5_33de8ec2.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
+        "caption": "Spesial buat kamu 💖"
       },
       {
         "url": "member_photos/ella/ella_pap_v5_3a3bcb39.jpg",
-        "caption": "Selfie manis spesial ✨"
+        "caption": "Tadaaa! Senyum hari ini ✨"
       },
       {
         "url": "member_photos/ella/ella_pap_v5_72ba610c.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/ella/ella_pap_v5_c42c88b3.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/ella/ella_pap_v5_c8bc30e3.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/ella/ella_pap_v5_d9e2325a.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/ella/ella_pap_v5_dc77683e.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/ella/ella_v4_06ef70f0.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/ella/ella_v4_0c902b56.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/ella/ella_v4_3b92799f.jpg",
         "caption": "Selfie manis spesial ✨"
       },
       {
-        "url": "member_photos/ella/ella_v4_8ca72603.jpg",
+        "url": "member_photos/ella/ella_pap_v5_c42c88b3.jpg",
         "caption": "Selfie manis hari ini 💖"
       },
       {
-        "url": "member_photos/ella/ella_v4_a53dff1a.jpg",
+        "url": "member_photos/ella/ella_pap_v5_c8bc30e3.jpg",
         "caption": "Pose favorit ✌️"
       },
       {
-        "url": "member_photos/ella/ella_v4_b30f0abf.jpg",
+        "url": "member_photos/ella/ella_pap_v5_d9e2325a.jpg",
         "caption": "Senyum manis buat kamu ✨"
       },
       {
-        "url": "member_photos/ella/ella_v4_c4908541.jpg",
+        "url": "member_photos/ella/ella_pap_v5_dc77683e.jpg",
         "caption": "Foto selfie spesial 🤍"
       },
       {
-        "url": "member_photos/ella/ella_v4_ec0b98d3.jpg",
+        "url": "member_photos/ella/ella_v4_06ef70f0.jpg",
         "caption": "Selfie manis hehe 🙈"
       },
       {
-        "url": "member_photos/ella/ella_v4_edcf7c30.jpg",
+        "url": "member_photos/ella/ella_v4_0c902b56.jpg",
         "caption": "Spesial buat kamu 💖"
       },
       {
-        "url": "member_photos/ella/ella_v4_efd3403f.jpg",
+        "url": "member_photos/ella/ella_v4_3b92799f.jpg",
         "caption": "Tadaaa! Senyum hari ini ✨"
+      },
+      {
+        "url": "member_photos/ella/ella_v4_8ca72603.jpg",
+        "caption": "Selfie manis spesial ✨"
+      },
+      {
+        "url": "member_photos/ella/ella_v4_a53dff1a.jpg",
+        "caption": "Selfie manis hari ini 💖"
+      },
+      {
+        "url": "member_photos/ella/ella_v4_b30f0abf.jpg",
+        "caption": "Pose favorit ✌️"
+      },
+      {
+        "url": "member_photos/ella/ella_v4_c4908541.jpg",
+        "caption": "Senyum manis buat kamu ✨"
+      },
+      {
+        "url": "member_photos/ella/ella_v4_ec0b98d3.jpg",
+        "caption": "Foto selfie spesial 🤍"
+      },
+      {
+        "url": "member_photos/ella/ella_v4_edcf7c30.jpg",
+        "caption": "Selfie manis hehe 🙈"
+      },
+      {
+        "url": "member_photos/ella/ella_v4_efd3403f.jpg",
+        "caption": "Spesial buat kamu 💖"
       }
     ]
   },
@@ -1018,16 +1014,16 @@ const DEFAULT_MEMBERS = [
     "name": "Gita Sekar Andarini",
     "nickname": "Gita",
     "generation": "Generasi 6",
-    "color": "#4D8076",
+    "color": "#00bbf9",
     "avatar": "member_photos/gita/avatar.jpg",
     "status": "Online • Gita",
     "statusBio": "online",
     "jikoshoukai": "Diam bukan berarti tak memperhatikan, halo aku Gita.",
-    "fandom": "Gitavision",
+    "fandom": "Gitavation",
     "tags": [
       "Cool",
-      "Aesthetic",
-      "Soft Tsundere"
+      "Elegan",
+      "Perhatian"
     ],
     "paps": [
       {
@@ -1198,16 +1194,16 @@ const DEFAULT_MEMBERS = [
     "name": "Marsha Lenathea",
     "nickname": "Marsha",
     "generation": "Generasi 9",
-    "color": "#58B19F",
+    "color": "#00f5d4",
     "avatar": "member_photos/marsha/avatar.jpg",
     "status": "Online • Marsha",
     "statusBio": "online",
     "jikoshoukai": "Manis seperti permen kapas, dan hangat seperti pelukan. Halo semuanya, aku Marsha!",
-    "fandom": "Marshmallow",
+    "fandom": "Marsharms",
     "tags": [
-      "Peri Matcha",
-      "Anime Vibes",
-      "Lembut"
+      "Matcha",
+      "Lembut",
+      "Permen Kapas"
     ],
     "paps": [
       {
@@ -1358,16 +1354,16 @@ const DEFAULT_MEMBERS = [
     "name": "Mutiara Azzahra",
     "nickname": "Muthe",
     "generation": "Generasi 7",
-    "color": "#D65DB1",
+    "color": "#fee440",
     "avatar": "member_photos/muthe/avatar.jpg",
     "status": "Online • Muthe",
     "statusBio": "online",
     "jikoshoukai": "Dengan senyuman secerah matahari, halo semuanya aku Muthe!",
-    "fandom": "Mutheation",
+    "fandom": "Mutheaholic",
     "tags": [
-      "Energik",
-      "Momo Lookalike",
-      "Ceria"
+      "Mutiara",
+      "Ceria",
+      "Energi Positif"
     ],
     "paps": [
       {
@@ -1508,938 +1504,6 @@ const DEFAULT_MEMBERS = [
       },
       {
         "url": "member_photos/muthe/muthe_v4_d4a780cb.jpg",
-        "caption": "Pose favorit ✌️"
-      }
-    ]
-  },
-  {
-    "id": "minji",
-    "group": "NewJeans",
-    "name": "Kim Minji",
-    "nickname": "Minji",
-    "generation": "NewJeans (Leader)",
-    "color": "#2C73D2",
-    "avatar": "member_photos/minji/avatar.jpg",
-    "status": "Online • Minji",
-    "statusBio": "online",
-    "jikoshoukai": "Classic visual & warm caring leader of NewJeans 🐰✨",
-    "fandom": "Bunnies",
-    "tags": [
-      "Leader",
-      "Y2K Aesthetic",
-      "Classic Visual"
-    ],
-    "paps": [
-      {
-        "url": "member_photos/minji/minji_1d1498e7.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_3f879ea6.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_413bc883.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/minji/minji_5568fb8a.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_69a219d9.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/minji/minji_6d4adc92.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/minji/minji_8ee26bab.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_926ceb2b.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_b2a13757.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_b82bc7ca.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_bbebf51f.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/minji/minji_bc2dc622.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_c5b8d6d4.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/minji/minji_c68422fc.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/minji/minji_dad8e677.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_f25c2941.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_f83f7788.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_fb4b4d19.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_fd62a447.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/minji/minji_fefd4753.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_0566e244.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_0c3d3dd2.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_13738907.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_18308117.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_38a01c49.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_7c29e769.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_8f5667ca.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_926e87a8.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_a8f0ef1a.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_be163617.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_d05b97c1.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_d514b8cf.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_d59a0613.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_ede61249.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_pap2_f9cee4b1.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_06cdc685.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_1e470357.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_583c28c6.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_5ed4d973.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_5f00d35a.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_70381653.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_7a30fe67.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_8125e98d.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_819ae0ad.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_aa3321e7.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_c3f71ffe.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_c89b4dec.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_d8014f28.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_ebd5fe01.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_fe710922.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_v5_50435ef1.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_v5_aa0b84cb.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_v5_b4984dc8.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_v5_c958e68c.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/minji/minji_pap_v5_d1697631.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_v4_0227546d.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_v4_0668aeb9.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_v4_3bfd4c6a.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_v4_6b4669e5.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/minji/minji_v4_74e5862c.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_v4_7fd7f42b.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/minji/minji_v4_921f2a6f.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/minji/minji_v4_98c2c984.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/minji/minji_v4_a38c3f2e.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/minji/minji_v4_fb5e6b56.jpg",
-        "caption": "Selfie manis spesial ✨"
-      }
-    ]
-  },
-  {
-    "id": "hanni",
-    "group": "NewJeans",
-    "name": "Hanni Pham",
-    "nickname": "Hanni",
-    "generation": "NewJeans",
-    "color": "#F39C12",
-    "avatar": "member_photos/hanni/avatar.jpg",
-    "status": "Online • Hanni",
-    "statusBio": "online",
-    "jikoshoukai": "Sunshine bubbly vocalist & all-rounder of NewJeans 🎧💖",
-    "fandom": "Bunnies",
-    "tags": [
-      "Vocalist",
-      "Bubbly",
-      "Cute Eyesmile"
-    ],
-    "paps": [
-      {
-        "url": "member_photos/hanni/hanni_0557668f.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/hanni/hanni_17ceaf06.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/hanni/hanni_1e2d2de2.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/hanni/hanni_3903be1c.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/hanni/hanni_3c452ff5.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/hanni/hanni_3e79a54a.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/hanni/hanni_65a6454d.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/hanni/hanni_77441051.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/hanni/hanni_774a3de2.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/hanni/hanni_7f577bfc.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/hanni/hanni_8cfc7e7b.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/hanni/hanni_9daf10c2.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/hanni/hanni_a1c4eff3.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/hanni/hanni_a29ce60b.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/hanni/hanni_a770f767.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/hanni/hanni_ca465cac.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/hanni/hanni_cd9e8016.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/hanni/hanni_d19fe948.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/hanni/hanni_da24962a.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/hanni/hanni_dbb3b11f.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/hanni/hanni_pap_v5_265020fc.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/hanni/hanni_pap_v5_2debf1c8.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/hanni/hanni_pap_v5_663fbc65.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/hanni/hanni_pap_v5_a0846673.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/hanni/hanni_pap_v5_e1232d59.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/hanni/hanni_v4_0eccef6e.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/hanni/hanni_v4_1c1b09a9.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/hanni/hanni_v4_2ec2a59b.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/hanni/hanni_v4_35d4406a.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/hanni/hanni_v4_779b7bdb.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/hanni/hanni_v4_90e4f265.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/hanni/hanni_v4_921ee579.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/hanni/hanni_v4_a345a08b.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/hanni/hanni_v4_abb792e8.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/hanni/hanni_v4_eef4c3ae.jpg",
-        "caption": "Pose favorit ✌️"
-      }
-    ]
-  },
-  {
-    "id": "danielle",
-    "group": "NewJeans",
-    "name": "Danielle Marsh",
-    "nickname": "Danielle",
-    "generation": "NewJeans",
-    "color": "#E67E22",
-    "avatar": "member_photos/danielle/avatar.jpg",
-    "status": "Online • Danielle",
-    "statusBio": "online",
-    "jikoshoukai": "Bright energy & lovely sunshine of NewJeans 🌻✨",
-    "fandom": "Bunnies",
-    "tags": [
-      "Sunshine",
-      "Princess Vibe",
-      "Sweet Smile"
-    ],
-    "paps": [
-      {
-        "url": "member_photos/danielle/danielle_028868ab.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/danielle/danielle_0729225e.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/danielle/danielle_173b6238.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/danielle/danielle_1bd3f2be.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/danielle/danielle_281c876b.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/danielle/danielle_2ae43c94.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/danielle/danielle_33de44de.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/danielle/danielle_341d5df9.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/danielle/danielle_555b86ed.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/danielle/danielle_66f9b6c7.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/danielle/danielle_708ea1b6.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/danielle/danielle_72e289c4.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/danielle/danielle_81ed8111.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/danielle/danielle_89b0d77d.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/danielle/danielle_a0312669.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/danielle/danielle_a151dbf2.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/danielle/danielle_a821bb1c.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/danielle/danielle_b1227094.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/danielle/danielle_b35bec20.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/danielle/danielle_eafa30f0.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/danielle/danielle_pap_v5_46de7cae.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/danielle/danielle_pap_v5_47c134c3.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/danielle/danielle_pap_v5_5fc47979.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/danielle/danielle_pap_v5_f24742a0.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/danielle/danielle_pap_v5_f35b14ce.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/danielle/danielle_v4_1d17196b.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/danielle/danielle_v4_25c879a0.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/danielle/danielle_v4_37978034.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/danielle/danielle_v4_59b0b792.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/danielle/danielle_v4_5df12eff.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/danielle/danielle_v4_8c11bcc6.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/danielle/danielle_v4_8dc262d5.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/danielle/danielle_v4_af35679f.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/danielle/danielle_v4_b7f393ee.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/danielle/danielle_v4_e5ba283d.jpg",
-        "caption": "Pose favorit ✌️"
-      }
-    ]
-  },
-  {
-    "id": "haerin",
-    "group": "NewJeans",
-    "name": "Kang Haerin",
-    "nickname": "Haerin",
-    "generation": "NewJeans",
-    "color": "#1ABC9C",
-    "avatar": "member_photos/haerin/avatar.jpg",
-    "status": "Online • Haerin",
-    "statusBio": "online",
-    "jikoshoukai": "Charming cat-like visual & dance powerhouse 🐱✨",
-    "fandom": "Bunnies",
-    "tags": [
-      "Cat Charm",
-      "Quiet Chic",
-      "Cute Kitty"
-    ],
-    "paps": [
-      {
-        "url": "member_photos/haerin/haerin_0b37a1b3.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_136d3b09.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/haerin/haerin_19ff6bf0.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/haerin/haerin_1dfc0b79.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_3caa75a1.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/haerin/haerin_49142d26.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/haerin/haerin_56f8cc94.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/haerin/haerin_67939375.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_8b6147d7.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_916c0001.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/haerin/haerin_9608e277.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/haerin/haerin_aba09be9.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_b23e21d2.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/haerin/haerin_cbeda730.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/haerin/haerin_cf744275.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/haerin/haerin_dcd446cd.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_dd0fe4f8.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_e7b69293.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/haerin/haerin_ea912bdb.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/haerin/haerin_ec2dfb3c.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_pap_v5_01fabcfc.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/haerin/haerin_pap_v5_1adf509a.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/haerin/haerin_pap_v5_36f282cc.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/haerin/haerin_pap_v5_3732c07b.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_pap_v5_708f7d57.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_pap_v5_82655f3a.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/haerin/haerin_pap_v5_90d51821.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/haerin/haerin_pap_v5_d6d02616.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_v4_117dd284.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/haerin/haerin_v4_3c329d91.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/haerin/haerin_v4_84552b15.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/haerin/haerin_v4_8589b5ce.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_v4_8c5ab91f.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_v4_9612e665.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/haerin/haerin_v4_c15b9baa.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/haerin/haerin_v4_e268bce0.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/haerin/haerin_v4_edb213fd.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/haerin/haerin_v4_f959e9e9.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      }
-    ]
-  },
-  {
-    "id": "hyein",
-    "group": "NewJeans",
-    "name": "Lee Hyein",
-    "nickname": "Hyein",
-    "generation": "NewJeans",
-    "color": "#9B59B6",
-    "avatar": "member_photos/hyein/avatar.jpg",
-    "status": "Online • Hyein",
-    "statusBio": "online",
-    "jikoshoukai": "Chic maknae with soulful vocals & golden style 💖✨",
-    "fandom": "Bunnies",
-    "tags": [
-      "Maknae",
-      "Model Vibe",
-      "Soulful"
-    ],
-    "paps": [
-      {
-        "url": "member_photos/hyein/hyein_28b85bcb.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/hyein/hyein_35c945b7.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/hyein/hyein_44de2ede.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/hyein/hyein_47a78de8.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/hyein/hyein_4cc481bb.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/hyein/hyein_51b5e83f.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/hyein/hyein_6a45bc31.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/hyein/hyein_6cbffdc7.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/hyein/hyein_70ece6d8.png",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/hyein/hyein_7e1aac07.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/hyein/hyein_86770fab.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/hyein/hyein_898477f6.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/hyein/hyein_8cdb536f.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/hyein/hyein_8f446551.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/hyein/hyein_9f57bd03.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/hyein/hyein_a1979157.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/hyein/hyein_a7dddfeb.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/hyein/hyein_ca4b76da.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/hyein/hyein_dd6f6455.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/hyein/hyein_fe587b66.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/hyein/hyein_pap_v5_003e7b4d.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/hyein/hyein_pap_v5_1d8bf0dc.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/hyein/hyein_pap_v5_7c66e27f.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/hyein/hyein_pap_v5_d552c5b4.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/hyein/hyein_pap_v5_e09b2ccd.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/hyein/hyein_v4_06d6b3a2.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/hyein/hyein_v4_11771078.jpg",
-        "caption": "Pose favorit ✌️"
-      },
-      {
-        "url": "member_photos/hyein/hyein_v4_12549b18.jpg",
-        "caption": "Senyum manis buat kamu ✨"
-      },
-      {
-        "url": "member_photos/hyein/hyein_v4_2ae3aecd.jpg",
-        "caption": "Foto selfie spesial 🤍"
-      },
-      {
-        "url": "member_photos/hyein/hyein_v4_3e8c30b8.jpg",
-        "caption": "Selfie manis hehe 🙈"
-      },
-      {
-        "url": "member_photos/hyein/hyein_v4_3fc3b501.jpg",
-        "caption": "Spesial buat kamu 💖"
-      },
-      {
-        "url": "member_photos/hyein/hyein_v4_4a59e399.jpg",
-        "caption": "Tadaaa! Senyum hari ini ✨"
-      },
-      {
-        "url": "member_photos/hyein/hyein_v4_7ec7c16d.jpg",
-        "caption": "Selfie manis spesial ✨"
-      },
-      {
-        "url": "member_photos/hyein/hyein_v4_8562de94.jpg",
-        "caption": "Selfie manis hari ini 💖"
-      },
-      {
-        "url": "member_photos/hyein/hyein_v4_aa6a3b2a.jpg",
         "caption": "Pose favorit ✌️"
       }
     ]
