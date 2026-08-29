@@ -563,7 +563,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return pickDeck(`${id}_pap_gen`, [
           `nih selfie santai dari aku ||| gimana, keliatan seger kan fotonya? haha ✨ ||| semoga harimu makin semangat ya!`,
           `tadi sempet foto selfie santai bentar ||| spesial buat kamu, jangan lupa disimpan ya hehe 🤍`,
-          `tadaaa! nih selfie manis hari ini ✨ ||| jangan lupa senyum juga ya kamu!`,
+          `tadaaa! nih selfie manis karamel hari ini ✨ ||| jangan lupa senyum juga ya kamu!`,
           `nih pap foto santai dari aku hehe ||| gimana menurut kamu? manis gak? 💖`
         ]);
       } else if (id === "christy") {
@@ -572,30 +572,21 @@ document.addEventListener("DOMContentLoaded", () => {
           `tadaaa! selfie toya hari ini buat kamu ||| lucu gak fotoku? wkwk 💖`,
           `nih pap selfie buat kamu! awas kangen ya wkwk 😜 ||| lagi apa kamu sekarang?`
         ]);
-      } else if (id === "gracia") {
-        return pickDeck(`${id}_pap_gen`, [
-          `nih selfie manis dari aku 🌻 ||| semoga senyuman ini bikin harimu makin ceria yaa! ✨`,
-          `spesial buat kamu yang selalu setia dukung aku 🤍 ||| disimpan baik-baik yaa hehe`
-        ]);
-      } else if (id === "ella") {
-        return pickDeck(`${id}_pap_gen`, [
-          `tadaaa! selfie cabe rawit siap menyemangati harimu 🌶️✨ ||| lucu kan wkwk 💖`,
-          `nih pap selfie santai dari aku hehe ||| gimana, imut gak fotonya? 😜`
-        ]);
-      } else if (id === "gita") {
-        return pickDeck(`${id}_pap_gen`, [
-          `nih foto selfie santai dari aku 🤍 ||| semoga harimu menyenangkan ya.`,
-          `tadi sempet selfie bentar ||| spesial buat kamu, disimpan ya. ✨`
-        ]);
       } else if (id === "marsha") {
         return pickDeck(`${id}_pap_gen`, [
           `nih selfie manis permen kapas buat kamu 🍬✨ ||| semoga suka yaa hehe 💖`,
-          `tadaaa! pap selfie santai dari aku ||| gemes gak menurut kamu? 🤍`
+          `tadaaa! pap selfie santai dari Marsha ||| gemes gak menurut kamu? 🤍`,
+          `nih selfie hangat permen kapas buat kamu ☀️ ||| jangan lupa senyum manis yaa!`
         ]);
-      } else if (id === "muthe") {
+      } else if (id === "erine") {
         return pickDeck(`${id}_pap_gen`, [
-          `nih senyuman mutiara hari ini buat kamu ☀️✨ ||| semoga harimu makin cerah yaa!`,
-          `tadaaa! pap selfie manis dari aku ||| semangaat terus buat hari ini yaa 💖`
+          `tadaaa! selfie bunga mekar spesial hari ini 🌸✨ ||| gemes dan seger kan fotonya? hehe 💜`,
+          `nih pap selfie enerjik dari Erine buat kamu! 📸 ||| semoga bikin harimu makin heboh positif yaa!`
+        ]);
+      } else if (id === "oline") {
+        return pickDeck(`${id}_pap_gen`, [
+          `tadaaa! selfie cabe rawit siap menyemangati harimu 🌶️✨ ||| lucu dan gemes kan wkwk 🔥`,
+          `nih pap selfie santai dari Oline hehe ||| gimana, kece gak fotonya? 😜 ||| jangan lupa jaga kesehatan yaa!`
         ]);
       } else {
         return pickDeck(`${id}_pap_gen`, [
@@ -624,17 +615,17 @@ document.addEventListener("DOMContentLoaded", () => {
           `hahaha apaan sih toya! 🤣 ||| gombal mulu kerjanya wkwk ||| tapi makasih yaa kamu manis bangett 💖`,
           `wkwkwk salting dikit gak ngaruh 😝 ||| tapi tetep bikin senyum sih haha ||| awas ya gombalannya bayar 500 perak wkwk`
         ]);
-      } else if (id === "gracia") {
+      } else if (id === "marsha") {
         return pickDeck(`${id}_gombal`, [
-          `makasih yaa kata-kata manisnya 🤍 ||| selalu seneng denger perhatian dari kamu ||| kamu juga jaga kesehatan yaa ✨`
+          `ihh permen kapasnya jadi meleleh nih haha 🍬🙈 ||| makasih yaa kata-kata manisnya 💖 ||| kamu emang selalu bikin hangat`
         ]);
-      } else if (id === "ella") {
+      } else if (id === "erine") {
         return pickDeck(`${id}_gombal`, [
-          `wkwkwk gombal terosss! cabe rawit nih senggol bacok haha 😝 ||| tapi makasih yaa hehe bikin seneng deh 💖`
+          `wkwkwk bisa aja kaka gombalnya! 🌸😆 ||| bikin bunga di hati langsung mekar hehee 💜 ||| makasih yaa kaka!`
         ]);
-      } else if (id === "gita") {
+      } else if (id === "oline") {
         return pickDeck(`${id}_gombal`, [
-          `haha makasih ya. tumben gombal 😌 ||| tapi seneng kok dengernya. kamu apa kabar hari ini?`
+          `wkwkwk gombal terosss! cabe rawit nih senggol bacok haha 🌶️😝 ||| tapi makasih yaa hehe bikin seneng deh 💙`
         ]);
       } else {
         return pickDeck(`${id}_gombal`, [
@@ -656,6 +647,22 @@ document.addEventListener("DOMContentLoaded", () => {
         return pickDeck(`${id}_curhat`, [
           `kerja keras boleh tapi kesehatan tetep nomor satu ya ||| tarik napas dulu, istirahat sejenak 🤍 ||| kamu orang kuat, aku semangatin dari sini ya!`,
           `jangan lupa makan yang enak ya hari ini ||| self-reward dikit biar pikiran fresh lagi ✨ ||| kalau ada yang mau diceritain, cerita aja yaa`
+        ]);
+      } else if (id === "christy") {
+        return pickDeck(`${id}_curhat`, [
+          `ihh jangan sedih atau pusing yaa! 🥺 ||| rebahan dulu bentar sambil nonton video lucu ||| toya semangatin dari sini kok! 🧸💖`
+        ]);
+      } else if (id === "marsha") {
+        return pickDeck(`${id}_curhat`, [
+          `istirahat dulu yaa, jangan dipaksain 🤍 ||| tarik napas pelan-pelan, minum teh hangat yaa 🍬 ||| kamu udah hebat banget hari ini`
+        ]);
+      } else if (id === "erine") {
+        return pickDeck(`${id}_curhat`, [
+          `semangat kaka! jangan patah semangat yaa 💪🌸 ||| habis capek-capek nanti ada hal manis yang nungguin kok! Erine dukung terus 💜`
+        ]);
+      } else if (id === "oline") {
+        return pickDeck(`${id}_curhat`, [
+          `capek wajar kok kakk! tapi jangan lupa isi energi lagi yaa 🔥🌶️ ||| istirahat dulu, nanti gaspol lagi! aku semangatin selalu 💙`
         ]);
       } else {
         return pickDeck(`${id}_curhat`, [
@@ -705,6 +712,21 @@ document.addEventListener("DOMContentLoaded", () => {
           `halooo! wkwkwk pas banget lagi gabut nih 😝 ||| kamu lagi ngapain tuh? kepo deh!`,
           `hai hai! baru selesai ngemil nih haha ||| gimana kabar kamu hari ini? seru gak?`
         ]);
+      } else if (id === "marsha") {
+        return pickDeck(`${id}_sapa`, [
+          `haloo~ baru selesai istirahat nih 🍬 ||| kamu apa kabar hari ini? lagi santai?`,
+          `hai hai! seneng deh disapa hehe ✨ ||| gimana hari kamu? seru?`
+        ]);
+      } else if (id === "erine") {
+        return pickDeck(`${id}_sapa`, [
+          `haloo kaka! 🌸 ||| baru selesai latihan nih, seru bangett! ||| kaka lagi sibuk apa sekarang?`,
+          `hai kaka! makasih udah nyapa Erine yaa 💜 ||| gimana harinya hari ini? lancar kan?`
+        ]);
+      } else if (id === "oline") {
+        return pickDeck(`${id}_sapa`, [
+          `haloo kakk! 🌶️🔥 ||| lagi istirahat santai nih hehe ||| kaka lagi ngapain sekarang?`,
+          `haii! pas banget nih lagi buka hp ✨ ||| apa kabar kaka hari ini? semangatt yaa!`
+        ]);
       } else {
         return pickDeck(`${id}_sapa`, [
           `haloo! baru selesai santai nih hehe ||| kamu lagi sibuk apa hari ini?`,
@@ -744,69 +766,31 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================================================================
 
   function getMemberStories(member) {
+    if (member && member.stories && Array.isArray(member.stories) && member.stories.length > 0) {
+      const times = ["10:15", "13:40", "16:25", "19:00"];
+      return member.stories.slice(0, 4).map((s, idx) => ({
+        image: s.media || s.image || member.avatar,
+        caption: s.caption || "Story spesial hari ini ✨",
+        location: "JKT48 Theater, FX Sudirman",
+        music: "Rapsodi • JKT48",
+        time: times[idx] || "Hari ini",
+        timeAgo: s.time || "2 jam lalu"
+      }));
+    }
+
     const paps = member.paps || [];
     const location = "JKT48 Theater, FX Sudirman";
-    const songs = [
-      "Heavy Rotation • JKT48",
-      "Rapsodi • JKT48",
-      "Fortune Cookie • JKT48",
-      "Kimi no Koto ga Suki Dakara • JKT48",
-      "Seventeen • JKT48"
-    ];
-
-    const song = songs[Math.floor(Math.random() * songs.length)];
-
-    const captionsPool = [
-      `Semangat buat hari ini semuanya, jangan lupa tersenyum yaa ✨💖`,
-      `GR teater hari ini seru bangett, sampai ketemu nanti malam! 💃✨`,
-      `Lagi istirahat bentar nih sambil santai, kalian lagi apa? ☕`,
-      `Selamat istirahat semuanya, terima kasih buat hari ini yaa 🌙🤍`,
-      `Selfie hari ini buat kalian hehe, gemes gaa? 😜✨`,
-      `Ootd santai sebelum ke teater nih hehe 👗✨`
-    ];
-
+    const song = "Rapsodi • JKT48";
     const shuffledPaps = [...paps].sort(() => Math.random() - 0.5);
-    const shuffledCaptions = [...captionsPool].sort(() => Math.random() - 0.5);
 
-    const slide1Img = shuffledPaps[0]?.url || member.avatar;
-    const slide2Img = shuffledPaps[1]?.url || member.avatar;
-    const slide3Img = shuffledPaps[2]?.url || member.avatar;
-    const slide4Img = shuffledPaps[3]?.url || member.avatar;
-
-    return [
-      {
-        image: slide1Img,
-        caption: shuffledCaptions[0] || captionsPool[0],
-        location: location,
-        music: song,
-        time: "11:20",
-        timeAgo: "4 jam lalu"
-      },
-      {
-        image: slide2Img,
-        caption: shuffledCaptions[1] || captionsPool[1],
-        location: location,
-        music: song,
-        time: "14:45",
-        timeAgo: "2 jam lalu"
-      },
-      {
-        image: slide3Img,
-        caption: shuffledCaptions[2] || captionsPool[2],
-        location: "Jakarta, Indonesia",
-        music: song,
-        time: "16:30",
-        timeAgo: "45 menit lalu"
-      },
-      {
-        image: slide4Img,
-        caption: shuffledCaptions[3] || captionsPool[3],
-        location: location,
-        music: song,
-        time: "18:10",
-        timeAgo: "Baru saja"
-      }
-    ];
+    return [0, 1, 2, 3].map(i => ({
+      image: shuffledPaps[i]?.url || member.avatar,
+      caption: `Story spesial hari ini dari ${member.nickname || member.name} ✨`,
+      location: location,
+      music: song,
+      time: ["10:15", "13:40", "16:25", "19:00"][i],
+      timeAgo: ["20 menit lalu", "2 jam lalu", "5 jam lalu", "Kemarin"][i]
+    }));
   }
 
   function openStory(member, startSlide = 0) {
