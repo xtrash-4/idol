@@ -21,11 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function getMembers() {
     try {
-      const custom = JSON.parse(localStorage.getItem("idolchat_custom_members") || "[]");
-      return [...(typeof DEFAULT_MEMBERS !== 'undefined' ? DEFAULT_MEMBERS : []), ...custom];
-    } catch (e) {
-      return typeof DEFAULT_MEMBERS !== 'undefined' ? [...DEFAULT_MEMBERS] : [];
-    }
+      localStorage.removeItem("idolchat_custom_members");
+      localStorage.removeItem("jkt48_members_cache");
+    } catch (e) {}
+    return typeof DEFAULT_MEMBERS !== 'undefined' ? [...DEFAULT_MEMBERS] : [];
   }
 
   // App State
@@ -157,18 +156,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Header updates
     activeHeaderAvatar.src = member.avatar;
     activeHeaderName.textContent = member.name;
-    activeHeaderGen.textContent = member.generation;
+    activeHeaderGen.textContent = member.gen || member.generation || "JKT48";
     activeHeaderStatus.textContent = member.status || "Online";
 
     // Drawer updates
     drawerAvatar.src = member.avatar;
     drawerName.textContent = member.name;
-    drawerGen.textContent = member.generation;
-    drawerJiko.textContent = member.jikoshoukai || "-";
+    drawerGen.textContent = member.gen || member.generation || "JKT48";
+    drawerJiko.textContent = member.jiko || member.jikoshoukai || "-";
 
     // Drawer tags
     drawerTags.innerHTML = "";
-    (member.tags || []).forEach(tag => {
+    (member.tags || [member.badge || "JKT48", member.gen || "Member"]).forEach(tag => {
       const sp = document.createElement("span");
       sp.className = "drawer-tag";
       sp.textContent = tag;
@@ -219,8 +218,8 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="lobby-card-top">
             <h4 class="lobby-card-name">${member.nickname || member.name}</h4>
           </div>
-          <span class="lobby-card-gen">${member.group || "JKT48"} • ${member.generation}</span>
-          <p class="lobby-card-jiko" title="${escapeHtml(member.jikoshoukai || '')}">"${escapeHtml(member.jikoshoukai || '')}"</p>
+          <span class="lobby-card-gen">${member.badge || "JKT48"} • ${member.gen || member.generation || "Member"}</span>
+          <p class="lobby-card-jiko" title="${escapeHtml(member.jiko || member.jikoshoukai || '')}">"${escapeHtml(member.jiko || member.jikoshoukai || '')}"</p>
           <button type="button" class="btn-lobby-chat-start">
             <i class="fa-solid fa-comment-dots"></i> Mulai Chat
           </button>
@@ -873,7 +872,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderQuickPrompts(member) {
     quickPromptsEl.innerHTML = "";
 
-    const prompts = [
+    const prompts = (member && member.suggestedPrompts) || [
       { text: "Minta PAP selfie dong 📸", msg: "Minta pap selfie manis kamu hari ini dong hehe 📸" },
       { text: "Semangat teaternya! ✨", msg: "Semangat buat kegiatan teater hari ini yaa! ✨" },
       { text: "Cantik bangett hari ini 💖", msg: "Kamu cantik dan manis bangett hari ini 💖" },
@@ -1117,7 +1116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const filtered = members.filter(m => {
       return (m.name || "").toLowerCase().includes(q) ||
              (m.nickname || "").toLowerCase().includes(q) ||
-             (m.generation || "").toLowerCase().includes(q);
+             (m.gen || m.generation || "").toLowerCase().includes(q);
     });
 
     renderLobby(filtered);

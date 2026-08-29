@@ -1,22 +1,21 @@
-const CACHE_NAME = "mpruyy-halu-v1";
+const CACHE_NAME = "idolchat-v2-6members";
 const ASSETS = [
   "./",
   "./index.html",
-  "./css/style.css",
-  "./js/sound.js",
-  "./js/members.js",
-  "./js/groq-api.js",
-  "./js/app.js",
+  "./css/style.css?v=2.1",
+  "./js/sound.js?v=2.1",
+  "./js/members.js?v=2.1",
+  "./js/groq-api.js?v=2.1",
+  "./js/app.js?v=2.1",
   "./manifest.json",
-  "./jkt48 logo.png",
-  "./newjeans logo.jpg"
+  "./jkt48 logo.png"
 ];
 
 self.addEventListener("install", (e) => {
+  self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
-  self.skipWaiting();
 });
 
 self.addEventListener("activate", (e) => {
@@ -32,8 +31,18 @@ self.addEventListener("activate", (e) => {
   self.clients.claim();
 });
 
+// Network-First strategy agar pembaruan data member & foto selalu tampil real-time
 self.addEventListener("fetch", (e) => {
+  if (e.request.method !== "GET") return;
   e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
+    fetch(e.request)
+      .then((networkRes) => {
+        if (networkRes && networkRes.status === 200) {
+          const resClone = networkRes.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, resClone));
+        }
+        return networkRes;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
