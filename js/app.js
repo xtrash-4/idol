@@ -372,6 +372,180 @@ document.addEventListener("DOMContentLoaded", () => {
     scrollToBottom();
   }
 
+  // ==========================================================================
+  // WHATSAPP-STYLE INTERACTIVE VOICE NOTE (VN) ENGINE
+  // ==========================================================================
+
+  const usedVnMap = {};
+
+  function getVariedVoiceNote(member, text = "") {
+    const t = (text || "").toLowerCase();
+    
+    if (member.id === 'michie') {
+      const pool = [
+        { url: "audio/voice_notes/michie/michie_vn_asli_1.mp3", caption: "Suara Asli Michie" },
+        { url: "audio/voice_notes/michie/michie_vn_sapaan.mp3", caption: "Sapaan Ceria Michie" },
+        { url: "audio/voice_notes/michie/michie_vn_salting.mp3", caption: "Michie Salting" },
+        { url: "audio/voice_notes/michie/michie_vn_semangat.mp3", caption: "Semangat dari Michie" },
+        { url: "audio/voice_notes/michie/michie_vn_night.mp3", caption: "Good Night Michie" }
+      ];
+
+      if (/salting|cantik|gombal|manis|lucu/i.test(t)) {
+        return pool[2];
+      }
+      if (/semangat|capek|tugas|kerja|lelah/i.test(t)) {
+        return pool[3];
+      }
+      if (/tidur|malem|night/i.test(t)) {
+        return pool[4];
+      }
+      if (/asli|showroom|rekaman/i.test(t)) {
+        return pool[0];
+      }
+
+      if (!usedVnMap['michie']) usedVnMap['michie'] = [];
+      const unused = pool.filter((_, idx) => !usedVnMap['michie'].includes(idx));
+      const chosenPool = unused.length > 0 ? unused : pool;
+      const selected = chosenPool[Math.floor(Math.random() * chosenPool.length)];
+      const idx = pool.indexOf(selected);
+      usedVnMap['michie'].push(idx);
+      if (usedVnMap['michie'].length >= pool.length) usedVnMap['michie'] = [];
+      return selected;
+    }
+
+    if (member.id === 'freya') {
+      const pool = [
+        { url: "audio/voice_notes/freya/freya_vn_sapaan.mp3", caption: "Sapaan Freya" },
+        { url: "audio/voice_notes/freya/freya_vn_salting.mp3", caption: "Freya Salting" },
+        { url: "audio/voice_notes/freya/freya_vn_semangat.mp3", caption: "Semangat Freya" }
+      ];
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    return { url: "audio/voice_notes/minji/minji_vn_sapaan.mp3", caption: "Minji Voice Greeting" };
+  }
+
+  function createVoiceNotePlayerElement(audioObj) {
+    const card = document.createElement("div");
+    card.className = "vn-card";
+
+    // Generate 24 dynamic waveform bars
+    const barHeights = [40, 65, 30, 85, 100, 75, 45, 90, 60, 35, 80, 95, 70, 50, 85, 60, 40, 75, 90, 55, 35, 70, 80, 45];
+    const waveformBarsHtml = barHeights.map(h => `<div class="vn-bar" style="height: ${h}%;"></div>`).join("");
+
+    card.innerHTML = `
+      <div class="vn-avatar-wrap">
+        <img src="${activeMember.avatar}" alt="Avatar" class="vn-avatar">
+        <div class="vn-mic-badge"><i class="fa-solid fa-microphone"></i></div>
+      </div>
+      <div class="vn-player-body">
+        <div class="vn-controls-row">
+          <button class="btn-vn-play" type="button" aria-label="Play Voice Note">
+            <i class="fa-solid fa-play"></i>
+          </button>
+          <div class="vn-track-wrap">
+            <div class="vn-waveform-bars">
+              ${waveformBarsHtml}
+            </div>
+          </div>
+        </div>
+        <div class="vn-meta-row">
+          <span class="vn-time-display">0:00</span>
+          <button class="btn-vn-speed" type="button">1.0x</button>
+        </div>
+      </div>
+      <audio src="${audioObj.url}" preload="metadata" class="vn-audio-element"></audio>
+    `;
+
+    const btnPlay = card.querySelector(".btn-vn-play");
+    const audioEl = card.querySelector(".vn-audio-element");
+    const timeDisplay = card.querySelector(".vn-time-display");
+    const btnSpeed = card.querySelector(".btn-vn-speed");
+    const trackWrap = card.querySelector(".vn-track-wrap");
+    const bars = card.querySelectorAll(".vn-bar");
+
+    const speeds = [1.0, 1.5, 2.0];
+    let speedIdx = 0;
+
+    btnSpeed.addEventListener("click", (e) => {
+      e.stopPropagation();
+      speedIdx = (speedIdx + 1) % speeds.length;
+      const spd = speeds[speedIdx];
+      audioEl.playbackRate = spd;
+      btnSpeed.textContent = `${spd.toFixed(1)}x`;
+    });
+
+    audioEl.addEventListener("loadedmetadata", () => {
+      const dur = Math.round(audioEl.duration) || 5;
+      const mins = Math.floor(dur / 60);
+      const secs = String(dur % 60).padStart(2, "0");
+      timeDisplay.textContent = `${mins}:${secs}`;
+    });
+
+    btnPlay.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (audioEl.paused) {
+        document.querySelectorAll(".vn-audio-element").forEach(a => {
+          if (a !== audioEl) {
+            a.pause();
+            const parent = a.closest(".vn-card");
+            if (parent) {
+              const pPlay = parent.querySelector(".btn-vn-play");
+              if (pPlay) pPlay.innerHTML = '<i class="fa-solid fa-play"></i>';
+            }
+          }
+        });
+        audioEl.play().then(() => {
+          btnPlay.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        }).catch(err => console.warn("Audio play failed:", err));
+      } else {
+        audioEl.pause();
+        btnPlay.innerHTML = '<i class="fa-solid fa-play"></i>';
+      }
+    });
+
+    audioEl.addEventListener("timeupdate", () => {
+      if (audioEl.duration) {
+        const cur = audioEl.currentTime;
+        const dur = audioEl.duration;
+        const ratio = cur / dur;
+        const playedCount = Math.floor(ratio * bars.length);
+
+        bars.forEach((b, idx) => {
+          if (idx <= playedCount) {
+            b.classList.add("played");
+          } else {
+            b.classList.remove("played");
+          }
+        });
+
+        const mins = Math.floor(cur / 60);
+        const secs = String(Math.floor(cur % 60)).padStart(2, "0");
+        timeDisplay.textContent = `${mins}:${secs}`;
+      }
+    });
+
+    audioEl.addEventListener("ended", () => {
+      btnPlay.innerHTML = '<i class="fa-solid fa-play"></i>';
+      bars.forEach(b => b.classList.remove("played"));
+      const dur = Math.round(audioEl.duration) || 5;
+      const mins = Math.floor(dur / 60);
+      const secs = String(dur % 60).padStart(2, "0");
+      timeDisplay.textContent = `${mins}:${secs}`;
+    });
+
+    trackWrap.addEventListener("click", (e) => {
+      const rect = trackWrap.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+      if (audioEl.duration) {
+        audioEl.currentTime = ratio * audioEl.duration;
+      }
+    });
+
+    return card;
+  }
+
   function appendMessageToUI(msg) {
     const emptyStarter = document.getElementById("chat-empty-starter");
     if (emptyStarter) {
@@ -426,7 +600,13 @@ document.addEventListener("DOMContentLoaded", () => {
       bubblesContainer.appendChild(papCard);
     }
 
-    // 2. Render Bubble Teks jika ada
+    // 2. Render Voice Note (VN) jika ada
+    if (msg.audio) {
+      const vnCard = createVoiceNotePlayerElement(msg.audio);
+      bubblesContainer.appendChild(vnCard);
+    }
+
+    // 3. Render Bubble Teks jika ada
     if (msg.content && msg.content.trim()) {
       const bubble = document.createElement("div");
       bubble.className = "bubble";
@@ -491,12 +671,14 @@ document.addEventListener("DOMContentLoaded", () => {
       let reply = "";
       let attachedPap = null;
 
-      // Cek apakah user meminta PAP secara eksplisit
+      // Cek apakah user meminta PAP atau VN secara eksplisit
       const isAskingPap = /pap|foto|selfie|liat muka|lihat muka|minta foto|kirim foto|fotoin|coba foto/i.test(text);
+      const isAskingVn = /vn|voice note|suara|rekaman|denger suara|ngomong dong|pesan suara/i.test(text);
 
       if (isAskingPap) {
         attachedPap = getVariedPap(activeMember);
       }
+      let attachedVn = isAskingVn ? getVariedVoiceNote(activeMember, text) : null;
 
       // Check if API Key exists
       if (groqService.hasApiKey()) {
@@ -540,11 +722,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         showTypingIndicator(false);
 
+        const msgAudio = isLast ? attachedVn : null;
         const idolMsgObj = {
           role: "assistant",
           content: bubbleText,
           time: getCurrentTime(),
-          pap: msgPap
+          pap: msgPap,
+          audio: msgAudio
         };
 
         appendMessageToUI(idolMsgObj);
@@ -573,11 +757,13 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           showTypingIndicator(false);
 
+          const msgAudio = isLast ? attachedVn : null;
           const idolMsgObj = {
             role: "assistant",
             content: bubbleText,
             time: getCurrentTime(),
-            pap: msgPap
+            pap: msgPap,
+            audio: msgAudio
           };
 
           appendMessageToUI(idolMsgObj);

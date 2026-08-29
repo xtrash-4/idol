@@ -41,7 +41,7 @@ for item in items_to_copy:
     if os.path.exists(src):
         shutil.copy2(src, dst)
 
-dirs_to_copy = ["css", "js", "member_photos"]
+dirs_to_copy = ["css", "js", "member_photos", "audio"]
 for d in dirs_to_copy:
     src = os.path.join(base_dir, d)
     dst = os.path.join(assets_dir, d)
