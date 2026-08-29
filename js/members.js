@@ -840,7 +840,11 @@ const DEFAULT_MEMBERS = [
         "url": "member_photos/freya/HQuuENwakAA7DDX.jpg",
         "caption": "PAP selfie spesial dari Freya ✨"
       }
-    ]
+    ],
+    "generation": "Generasi 7",
+    "jikoshoukai": "Gadis koleris yang suka berimajinasi, terangi harimu dengan senyuman karamelku. Halo semuanya, aku Freya!",
+    "group": "JKT48",
+    "status": "Online"
   },
   {
     "id": "michie",
@@ -2030,7 +2034,11 @@ const DEFAULT_MEMBERS = [
         "url": "member_photos/michie/HQzIiwtbkAAI_T3.jpg",
         "caption": "PAP selfie spesial dari Michie ✨"
       }
-    ]
+    ],
+    "generation": "Generasi 11",
+    "jikoshoukai": "Always loving and full of blessings, halo semuanya aku Michie!",
+    "group": "JKT48",
+    "status": "Online"
   },
   {
     "id": "christy",
@@ -2544,7 +2552,11 @@ const DEFAULT_MEMBERS = [
         "url": "member_photos/christy/HQOm0Ola4AAWuNu.jpg",
         "caption": "PAP selfie spesial dari Christy ✨"
       }
-    ]
+    ],
+    "generation": "Generasi 7",
+    "jikoshoukai": "Peduli dan berbaik hati, siapakah dia? Christy! Halo semuanya, aku Christy!",
+    "group": "JKT48",
+    "status": "Online"
   },
   {
     "id": "marsha",
@@ -3206,7 +3218,11 @@ const DEFAULT_MEMBERS = [
         "url": "member_photos/marsha/HQK9qKIbkAAN-6Q.jpg",
         "caption": "PAP selfie spesial dari Marsha ✨"
       }
-    ]
+    ],
+    "generation": "Generasi 9",
+    "jikoshoukai": "Manis seperti permen kapas dan hangat seperti matahari, halo semuanya aku Marsha!",
+    "group": "JKT48",
+    "status": "Online"
   },
   {
     "id": "erine",
@@ -3832,7 +3848,11 @@ const DEFAULT_MEMBERS = [
         "url": "member_photos/erine/HQQJunyaYAEae3v.jpg",
         "caption": "PAP selfie spesial dari Erine ✨"
       }
-    ]
+    ],
+    "generation": "Generasi 12",
+    "jikoshoukai": "Seperti bunga yang mekar dengan indah, siap menyinari hari-harimu. Halo semuanya, aku Erine!",
+    "group": "JKT48",
+    "status": "Online"
   },
   {
     "id": "oline",
@@ -4326,6 +4346,10 @@ const DEFAULT_MEMBERS = [
         "url": "member_photos/oline/HQVH0dQaQAAFj_3.jpg",
         "caption": "PAP selfie spesial dari Oline ✨"
       }
-    ]
+    ],
+    "generation": "Generasi 12",
+    "jikoshoukai": "Kecil-kecil cabe rawit, selalu ceria dan penuh energi! Halo semuanya, aku Oline!",
+    "group": "JKT48",
+    "status": "Online"
   }
 ];
