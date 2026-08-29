@@ -5,10 +5,11 @@
 ==============================================================================
 Membuka browser Google Chrome secara LANGSUNG dan TERLIHAT di layar Anda:
 1. Anda bisa melihat sendiri Chrome membuka Instagram resmi member.
-2. Melihat otomatis memutar Sorotan & seluruh Postingan Feed & Carousel.
-3. Mengunduh foto HD langsung dari server resmi Meta (cdninstagram.com).
-4. 100% Anti-Duplikat (MD5 Binary Hash) & Bebas Video.
-5. Otomatis pasang Avatar terbaik & update database js/members.js + Android assets.
+2. Menggunakan Persistent Browser Profile agar Instagram terbuka lancar tanpa block.
+3. Otomatis memutar Sorotan & seluruh Postingan Feed & Carousel.
+4. Mengunduh foto HD langsung dari server resmi Meta (cdninstagram.com).
+5. 100% Anti-Duplikat (MD5 Binary Hash) & Bebas Video.
+6. Otomatis pasang Avatar terbaik & update database js/members.js + Android assets.
 """
 
 import sys
@@ -30,6 +31,7 @@ MEMBERS_JS_PATH = os.path.join(BASE_DIR, "js", "members.js")
 ANDROID_MEMBERS_JS = os.path.join(BASE_DIR, "android", "app", "src", "main", "assets", "js", "members.js")
 MEMBER_PHOTOS_BASE = os.path.join(BASE_DIR, "member_photos")
 ANDROID_PHOTOS_BASE = os.path.join(BASE_DIR, "android", "app", "src", "main", "assets", "member_photos")
+SESSION_DIR = os.path.join(BASE_DIR, ".ig_session")
 
 MEMBERS_PRESET = {
     "1": {
@@ -65,7 +67,7 @@ MEMBERS_PRESET = {
     "7": {
         "id": "marsha",
         "name": "Marsha Lenathea",
-        "ig_url": "https://www.instagram.com/jkt48.marsha_/"
+        "ig_url": "https://www.instagram.com/jkt48.marsha/"
     },
     "8": {
         "id": "muthe",
@@ -124,6 +126,7 @@ def harvest_member(target):
     member_dir = os.path.join(MEMBER_PHOTOS_BASE, member_id)
     android_dir = os.path.join(ANDROID_PHOTOS_BASE, member_id)
     os.makedirs(member_dir, exist_ok=True)
+    os.makedirs(SESSION_DIR, exist_ok=True)
     
     seen_hashes = set()
     
@@ -153,13 +156,14 @@ def harvest_member(target):
     print(f"\n[2/4] 🌐 Membuka Google Chrome di layar Anda ke Instagram: {target['ig_url']} ...")
     try:
         with sync_playwright() as p:
-            # headless=False agar jendela browser Chrome muncul langsung di layar user!
-            browser = p.chromium.launch(headless=False)
-            context = browser.new_context(
+            # Persistent context agar Instagram tidak memblokir profil
+            context = p.chromium.launch_persistent_context(
+                user_data_dir=SESSION_DIR,
+                headless=False,
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
                 viewport={"width": 1280, "height": 800}
             )
-            page = context.new_page()
+            page = context.pages[0] if context.pages else context.new_page()
             
             # Response Interceptor murni CDN Meta
             def on_response(res):
@@ -172,7 +176,7 @@ def harvest_member(target):
                             
             page.on("response", on_response)
             page.goto(target['ig_url'], timeout=35000)
-            time.sleep(2.5)
+            time.sleep(3.0)
             
             # Tutup modal login jika muncul
             close_btn = page.locator("div[role='dialog'] svg[aria-label='Close'], div[role='dialog'] button, svg[aria-label='Close']")
@@ -188,7 +192,7 @@ def harvest_member(target):
             if first_highlight.count() > 0:
                 print("  --> Memutar SELURUH Sorotan (Story Highlights)...")
                 first_highlight.click()
-                time.sleep(1.8)
+                time.sleep(2.0)
                 for _ in range(90):
                     if "/stories/" not in page.url:
                         break
@@ -222,7 +226,7 @@ def harvest_member(target):
                     
             print(f"  [✓] Total Foto Murni Tertangkap dari Instagram: {len(raw_photo_urls)}")
             time.sleep(1.0)
-            browser.close()
+            context.close()
             
     except Exception as e:
         print("  [!] Browser notice:", e)
