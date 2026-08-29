@@ -33,8 +33,13 @@ export default async function handler(req, res) {
       });
     }
 
-    // Model fallback default yang aktif dan stabil di Groq
-    const targetModel = model || process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+    // Samakan fallback backend dengan daftar model modern di klien.
+    const targetModel = model || process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+    const reasoningOptions = targetModel.includes("gpt-oss")
+      ? { include_reasoning: false, reasoning_effort: "low" }
+      : targetModel.includes("qwen3")
+        ? { reasoning_effort: "none" }
+        : {};
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -45,8 +50,12 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: targetModel,
         messages: messages,
-        temperature: temperature !== undefined ? temperature : 0.85,
-        max_tokens: 450
+        temperature: temperature !== undefined ? temperature : 0.86,
+        max_tokens: 140,
+        top_p: 0.92,
+        presence_penalty: 0.25,
+        frequency_penalty: 0.2,
+        ...reasoningOptions
       })
     });
 

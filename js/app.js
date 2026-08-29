@@ -1,6 +1,6 @@
 /**
- * MPRUYY HALU - JKT48 Official Direct Message Experience
- * 100% Focused on JKT48 Members with Official Jikoshoukai, Real HD Photos,
+ * MPRUYY HALU - Fan-made JKT48 Chat Simulation
+ * Focused on JKT48 members with curated biodata and photo assets,
  * 24-Hour Stories, and Non-Template Indonesian Idol Dialogue Engine.
  */
 
@@ -25,6 +25,13 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.removeItem("jkt48_members_cache");
     } catch (e) {}
     return typeof DEFAULT_MEMBERS !== 'undefined' ? [...DEFAULT_MEMBERS] : [];
+  }
+
+  function getMemberAvatar(member) {
+    const avatar = member?.avatar || "";
+    return /\/avatar\.jpg$/i.test(avatar)
+      ? avatar.replace(/avatar\.jpg$/i, "avatar-thumb.jpg")
+      : avatar;
   }
 
   // App State
@@ -154,8 +161,9 @@ document.addEventListener("DOMContentLoaded", () => {
     activeMember = member;
 
     // Header updates
-    activeHeaderAvatar.src = member.avatar;
-    activeHeaderName.textContent = member.name;
+    activeHeaderAvatar.src = getMemberAvatar(member);
+    activeHeaderName.textContent = member.nickname || member.name;
+    activeHeaderName.title = member.name;
     activeHeaderGen.textContent = member.gen || member.generation || "JKT48";
     activeHeaderStatus.textContent = member.status || "Online";
 
@@ -195,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
       card.innerHTML = `
         <div class="lobby-card-avatar-wrapper">
           <div class="story-ring-wrapper" data-member-id="${member.id}" title="Klik untuk lihat Story 24 Jam">
-            <img src="${member.avatar}" alt="${member.name}" class="lobby-card-avatar" loading="lazy">
+            <img src="${getMemberAvatar(member)}" alt="${member.name}" class="lobby-card-avatar" loading="lazy" decoding="async">
           </div>
           <span class="lobby-online-dot"></span>
         </div>
@@ -249,6 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function loadChatHistory(memberId) {
+    showTypingIndicator(false);
     chatMessagesEl.innerHTML = "";
     const history = getMemberChatHistory(memberId);
 
@@ -258,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
       banner.className = "chat-welcome-banner";
       banner.innerHTML = `
         <div class="welcome-avatar-wrapper">
-          <img src="${activeMember.avatar}" alt="${activeMember.name}" class="welcome-avatar">
+          <img src="${getMemberAvatar(activeMember)}" alt="${activeMember.name}" class="welcome-avatar" decoding="async">
         </div>
         <h3 class="welcome-title">${activeMember.name}</h3>
         <p class="welcome-jiko">"${activeMember.jikoshoukai || "Halo, selamat datang!"}"</p>
@@ -281,19 +290,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function appendMessageToUI(msg, animate = true) {
     const isUser = msg.role === "user";
+    const role = isUser ? "user" : "idol";
+    const time = msg.time || getCurrentTime();
+    const previousRow = chatMessagesEl.lastElementChild;
+
+    // Bubble yang dikirim beruntun pada menit yang sama digabung seperti chat asli.
+    if ((msg.content?.trim() || msg.pap) && previousRow?.classList.contains("msg-row") &&
+        previousRow.dataset.role === role && previousRow.dataset.time === time) {
+      const bubblesContainer = previousRow.querySelector(".msg-bubbles");
+      if (bubblesContainer) {
+        if (msg.pap) {
+          const papCard = createPapElement(msg.pap);
+          bubblesContainer.appendChild(papCard);
+        }
+        if (msg.content && msg.content.trim()) {
+          const bubble = document.createElement("div");
+          bubble.className = "bubble";
+          bubble.innerHTML = escapeHtml(msg.content);
+          bubblesContainer.appendChild(bubble);
+        }
+        return;
+      }
+    }
+
     const msgRow = document.createElement("div");
-    msgRow.className = `msg-row ${isUser ? "user" : "idol"}`;
+    msgRow.className = `msg-row ${role}`;
+    msgRow.dataset.role = role;
+    msgRow.dataset.time = time;
     if (animate) msgRow.classList.add("animate-in");
 
     const avatarDiv = document.createElement("div");
     avatarDiv.className = "msg-avatar";
 
-    if (isUser) {
-      const userInitial = (userName || "P").trim().charAt(0).toUpperCase() || "P";
-      avatarDiv.innerHTML = `<div class="user-pure-initial">${userInitial}</div>`;
-    } else {
-      avatarDiv.innerHTML = `<img src="${activeMember.avatar}" alt="${activeMember.name}">`;
-    }
+    if (!isUser) avatarDiv.innerHTML = `<img src="${getMemberAvatar(activeMember)}" alt="${activeMember.name}" loading="lazy" decoding="async">`;
 
     const contentDiv = document.createElement("div");
     contentDiv.className = "msg-content";
@@ -317,12 +346,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const timeDiv = document.createElement("div");
     timeDiv.className = "msg-time";
-    timeDiv.textContent = msg.time || getCurrentTime();
+    timeDiv.textContent = time;
 
     contentDiv.appendChild(bubblesContainer);
     contentDiv.appendChild(timeDiv);
 
-    msgRow.appendChild(avatarDiv);
+    if (!isUser) msgRow.appendChild(avatarDiv);
     msgRow.appendChild(contentDiv);
 
     chatMessagesEl.appendChild(msgRow);
@@ -333,14 +362,13 @@ document.addEventListener("DOMContentLoaded", () => {
     card.className = "pap-card";
     card.innerHTML = `
       <div class="pap-img-container">
-        <img src="${pap.url}" alt="${pap.caption || 'Foto Selfie'}" class="pap-img" loading="lazy">
-        <div class="pap-overlay-badge">📷 PAP Spesial</div>
+        <img src="${pap.url}" alt="Foto yang dikirim ${escapeHtml(activeMember.nickname || activeMember.name)}" class="pap-img" loading="lazy" decoding="async">
+        <div class="pap-open-hint" aria-hidden="true"><i class="fa-solid fa-expand"></i></div>
       </div>
-      ${pap.caption ? `<div class="pap-caption">${escapeHtml(pap.caption)}</div>` : ""}
     `;
 
     card.addEventListener("click", () => {
-      openLightbox(pap.url, pap.caption);
+      openLightbox(pap.url, "");
     });
 
     return card;
@@ -370,6 +398,41 @@ document.addEventListener("DOMContentLoaded", () => {
     return picked;
   }
 
+  function getNaturalPapReply(member) {
+    const replies = {
+      freya: ["ini yaa 🤍", "nihh, buat kamu"],
+      michie: ["nihh hehe 📸", "buat kamu nihh"],
+      christy: ["nih wkwk", "tuhh, udah yaa 😝"],
+      marsha: ["nihh, buat kamu 🤍", "ini yaa"],
+      erine: ["tadaaa 📸", "nihh buat kamu"],
+      oline: ["nihh 🔥", "tuhh, buat kamu"],
+      ella: ["ini yaa 🤍", "nihh hehe"],
+      lily: ["nihh 📸", "buat kamu nih"],
+      fritzy: ["tadaaa ✨", "nihh"],
+      anindya: ["ini yaa 🤍", "nihh buat kamu"],
+      greesel: ["nihh 🤍", "ini buat kamu"],
+      cathy: ["tadaaa 🫶", "nihh hehe"],
+      aralie: ["ini yaa 🤍", "buat kamu nihh"],
+      delynn: ["nihh 📸", "ini yaa"],
+      trisha: ["nihh 🤍", "buat kamu"],
+      kimmy: ["tadaaa 🐹", "nihh hehe"],
+      maira: ["nihh wkwk", "tuhh 📸"],
+      ribka: ["ini yaa 🤍", "nihh, buat kamu"]
+    };
+
+    return pickDeck(`${member.id}_pap_short`, replies[member.id] || ["nihh 🤍", "buat kamu nihh"]);
+  }
+
+  function normalizeReplyBubbles(reply) {
+    const bubbles = String(reply || "")
+      .split("|||")
+      .map(part => part.trim())
+      .filter(Boolean)
+      .slice(0, 2);
+
+    return bubbles.length ? bubbles : ["bentar, aku belum nangkep. maksud kamu gimanaa?"];
+  }
+
   // ==========================================================================
   // SEND MESSAGE LOGIC (Multi-Message Burst & Contextual Dialogues)
   // ==========================================================================
@@ -385,6 +448,7 @@ document.addEventListener("DOMContentLoaded", () => {
     isSending = true;
 
     // 1. Add User Message
+    chatMessagesEl.querySelector(".chat-welcome-banner")?.remove();
     const userMsgObj = {
       role: "user",
       content: text,
@@ -408,12 +472,15 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       let reply = "";
 
-      if (groqService.hasApiKey()) {
+      // PAP tidak dikirim ke model agar teks tidak mendeskripsikan atau menebak isi foto.
+      if (attachedPap) {
+        reply = getNaturalPapReply(activeMember);
+      } else if (groqService.hasApiKey()) {
         const history = getMemberChatHistory(activeMember.id);
         reply = await groqService.sendChat(activeMember, history, text, userName, attachedPap);
       } else {
         await new Promise(r => setTimeout(r, 800));
-        reply = getFallbackDemoReply(activeMember, text, attachedPap);
+        reply = getFallbackDemoReply(activeMember, text, attachedPap, getMemberChatHistory(activeMember.id));
       }
 
       if (reply.includes("[PAP]")) {
@@ -423,14 +490,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      let bubbles = reply
-        .split("|||")
-        .map(s => s.trim())
-        .filter(Boolean);
-
-      if (bubbles.length === 0) {
-        bubbles = [reply.trim() || "iyaa kak hehe"];
-      }
+      const bubbles = normalizeReplyBubbles(reply);
 
       // Render Multi-Message Burst
       for (let i = 0; i < bubbles.length; i++) {
@@ -463,8 +523,10 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       console.warn("[CHAT ENGINE] Fallback active:", err.message);
       try {
-        const fallbackReply = getFallbackDemoReply(activeMember, text, attachedPap);
-        let fallbackBubbles = (fallbackReply || "haii! hehe iyaa kakk").split("|||").map(b => b.trim()).filter(Boolean);
+        const fallbackReply = attachedPap
+          ? getNaturalPapReply(activeMember)
+          : getFallbackDemoReply(activeMember, text, attachedPap, getMemberChatHistory(activeMember.id));
+        const fallbackBubbles = normalizeReplyBubbles(fallbackReply);
 
         for (let i = 0; i < fallbackBubbles.length; i++) {
           const bubbleText = fallbackBubbles[i];
@@ -520,7 +582,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return picked;
   }
 
-  function getFallbackDemoReply(member, userText, attachedPap = null) {
+  function getLegacyFallbackDemoReply(member, userText, attachedPap = null) {
     const t = userText.toLowerCase();
     const id = member.id || "";
 
@@ -745,35 +807,40 @@ document.addEventListener("DOMContentLoaded", () => {
     ]);
   }
 
+  // Fallback kontekstual saat API tidak tersedia.
+  function getFallbackDemoReply(member, userText, attachedPap = null, history = []) {
+    if (typeof naturalDialogueEngine !== "undefined") {
+      return naturalDialogueEngine.reply(member, userText, history, attachedPap);
+    }
+    return "aku belum nangkep. maksud kamu gimana?";
+  }
+
   // ==========================================================================
   // JKT48 24-HOUR STORY PLAYER ENGINE
   // ==========================================================================
 
   function getMemberStories(member) {
     if (member && member.stories && Array.isArray(member.stories) && member.stories.length > 0) {
-      const times = ["10:15", "13:40", "16:25", "19:00"];
-      return member.stories.slice(0, 4).map((s, idx) => ({
+      return member.stories.slice(0, 4).map(s => ({
         image: s.media || s.image || member.avatar,
-        caption: s.caption || "Story spesial hari ini ✨",
-        location: "JKT48 Theater, FX Sudirman",
-        music: "Rapsodi • JKT48",
-        time: times[idx] || "Hari ini",
-        timeAgo: s.time || "2 jam lalu"
+        caption: s.caption || "",
+        location: s.location || "",
+        music: s.music || "",
+        time: s.clock || "",
+        timeAgo: s.time || "Story"
       }));
     }
 
     const paps = member.paps || [];
-    const location = "JKT48 Theater, FX Sudirman";
-    const song = "Rapsodi • JKT48";
     const shuffledPaps = [...paps].sort(() => Math.random() - 0.5);
 
-    return [0, 1, 2, 3].map(i => ({
-      image: shuffledPaps[i]?.url || member.avatar,
-      caption: `Story spesial hari ini dari ${member.nickname || member.name} ✨`,
-      location: location,
-      music: song,
-      time: ["10:15", "13:40", "16:25", "19:00"][i],
-      timeAgo: ["20 menit lalu", "2 jam lalu", "5 jam lalu", "Kemarin"][i]
+    return shuffledPaps.slice(0, 4).map(pap => ({
+      image: pap.url || member.avatar,
+      caption: "",
+      location: "",
+      music: "",
+      time: "",
+      timeAgo: "Story"
     }));
   }
 
@@ -782,7 +849,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentStorySlides = getMemberStories(member);
     currentStorySlideIndex = startSlide;
 
-    storyAuthorAvatar.src = member.avatar;
+    storyAuthorAvatar.src = getMemberAvatar(member);
     storyAuthorName.textContent = member.name;
     storyReplyInput.placeholder = `Kirim balasan ke ${member.nickname || member.name}...`;
     storyReplyInput.value = "";
@@ -824,6 +891,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (storyTimeBadge) storyTimeBadge.textContent = slide.time;
     storyCaptionText.textContent = slide.caption;
 
+    const locationSticker = document.getElementById("story-sticker-location");
+    const musicSticker = document.getElementById("story-sticker-music");
+    const captionOverlay = document.getElementById("story-caption-overlay");
+    if (locationSticker) locationSticker.hidden = !slide.location;
+    if (musicSticker) musicSticker.hidden = !slide.music;
+    if (storyTimeBadge) storyTimeBadge.hidden = !slide.time;
+    if (captionOverlay) captionOverlay.hidden = !slide.caption;
+
     // 3. Reset and Start Timer
     if (storyTimer) clearTimeout(storyTimer);
     storyTimer = setTimeout(() => {
@@ -857,11 +932,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderQuickPrompts(member) {
     quickPromptsEl.innerHTML = "";
 
-    const prompts = (member && member.suggestedPrompts) || [
-      { text: "Minta PAP selfie dong 📸", msg: "Minta pap selfie manis kamu hari ini dong hehe 📸" },
-      { text: "Semangat teaternya! ✨", msg: "Semangat buat kegiatan teater hari ini yaa! ✨" },
-      { text: "Cantik bangett hari ini 💖", msg: "Kamu cantik dan manis bangett hari ini 💖" },
-      { text: "Udah makan belum? 🍱", msg: "Udah makan siang/malam belum nih? Jaga kesehatan yaa 🍱" }
+    // Prompt netral: tidak mengarang jadwal, lokasi, atau kegiatan idol.
+    const prompts = [
+      { text: "Lagi apa nih?", msg: "lagi apa nih?" },
+      { text: "Aku mau cerita", msg: "aku mau cerita boleh?" },
+      { text: "Minta PAP dong", msg: "boleh minta PAP dong?" },
+      { text: "Hari kamu gimana?", msg: "hari kamu gimana?" },
+      { text: "Mau ngobrol", msg: "temenin aku ngobrol dong" }
     ];
 
     prompts.forEach(p => {
@@ -1016,6 +1093,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================================================================
 
   function setupEventListeners() {
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", () => {
+        if (!chatLayout.classList.contains("hidden")) {
+          scrollToBottom();
+        }
+      });
+    }
+
     btnHeaderBackLobby.addEventListener("click", () => {
       showLobby();
       refreshMemberViews();

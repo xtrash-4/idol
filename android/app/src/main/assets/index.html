@@ -2,9 +2,9 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content, viewport-fit=cover">
-  <title>MPRUYY HALU ✨ — Chat Idol JKT48 & NewJeans</title>
-  <meta name="description" content="Aplikasi simulasi chat 1-on-1 idol JKT48 & NewJeans dengan Foto PAP HD & Instagram Story 24 Jam.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <title>MPRUYY HALU — Simulasi Chat Idol</title>
+  <meta name="description" content="Pengalaman simulasi chat idol fan-made dengan percakapan personal, Story, dan PAP.">
 
   <!-- Android & iOS PWA Meta Tags -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -13,19 +13,14 @@
   <meta name="theme-color" content="#070913">
   <meta name="application-name" content="MPRUYY HALU">
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" href="jkt48 logo.png">
-  <link rel="apple-touch-icon" href="jkt48 logo.png">
-
-  <!-- Google Fonts: Outfit & Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/jpeg" href="jkt48 logo.jpg">
+  <link rel="apple-touch-icon" href="jkt48 logo.jpg">
 
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- App Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=3.0">
+  <link rel="stylesheet" href="css/style.css?v=5.0">
 </head>
 <body>
 
@@ -51,7 +46,7 @@
             <div class="brand-logo" title="MPRUYY HALU"><i class="fa-solid fa-fire-flame-curved"></i></div>
             <div class="brand-info">
               <h1>MPRUYY HALU</h1>
-              <p>Official Direct Message (JKT48 Oshi Chat)</p>
+              <p>Fan-made idol chat experience</p>
             </div>
           </div>
 
@@ -67,9 +62,9 @@
 
         <!-- Lobby Hero Banner -->
         <div class="lobby-hero">
-          <div class="lobby-badge"><i class="fa-solid fa-sparkles"></i> JKT48 DIRECT MESSAGE</div>
+          <div class="lobby-badge"><i class="fa-solid fa-sparkles"></i> SIMULASI CHAT IDOL</div>
           <h2>Mau chat dengan oshi siapa hari ini?</h2>
-          <p>Pilih member JKT48 di bawah untuk mulai obrolan santai, lihat Story 24 jam, dan dapatkan foto PAP eksklusif.</p>
+          <p>Pilih karakter idol untuk mulai obrolan personal, lihat Story, dan minta PAP. Pengalaman ini fan-made dan bukan akun resmi idol.</p>
 
           <!-- Search & Sub-Filter Bar -->
           <div class="lobby-controls">
@@ -102,15 +97,15 @@
         <!-- Chat Header -->
         <header class="chat-header">
           <div class="chat-header-left" id="header-member-info">
-            <button class="btn-chat-back" id="btn-header-back-lobby" title="Kembali ke Pilihan Idol">
+            <button class="btn-chat-back" id="btn-header-back-lobby" title="Kembali ke Pilihan Idol" aria-label="Kembali ke pilihan idol">
               <i class="fa-solid fa-arrow-left"></i> <span>Ganti Idol</span>
             </button>
             <div class="header-avatar-wrap">
-              <img src="" alt="Avatar" class="header-avatar" id="active-header-avatar">
+              <img src="" alt="Avatar" class="header-avatar" id="active-header-avatar" decoding="async">
               <div class="online-dot"></div>
             </div>
             <div class="header-details">
-              <h2 id="active-header-name">Michelle Alexandra <span class="member-badge" id="active-header-gen">Gen 11</span></h2>
+              <h2><span id="active-header-name">Michelle Alexandra</span><span class="member-badge" id="active-header-gen">Gen 11</span></h2>
               <p>
                 <span class="header-status-indicator"></span>
                 <span id="active-header-status">Online</span>
@@ -119,16 +114,16 @@
           </div>
 
           <div class="chat-header-actions">
-            <button class="header-action-btn btn-pap" id="btn-request-pap" title="Minta Foto PAP dari Idol">
+            <button class="header-action-btn btn-pap" id="btn-request-pap" title="Minta Foto PAP dari Idol" aria-label="Minta PAP">
               <i class="fa-solid fa-camera"></i> <span>Minta PAP</span>
             </button>
-            <button class="header-action-btn" id="btn-reset-chat" title="Bersihkan Obrolan Ini">
+            <button class="header-action-btn" id="btn-reset-chat" title="Bersihkan Obrolan Ini" aria-label="Reset obrolan">
               <i class="fa-solid fa-rotate-right"></i> <span>Reset</span>
             </button>
-            <button class="header-action-btn" id="btn-open-profile-drawer" title="Profil Lengkap Idol & Galeri PAP">
+            <button class="header-action-btn" id="btn-open-profile-drawer" title="Profil Lengkap Idol & Galeri PAP" aria-label="Buka profil idol">
               <i class="fa-solid fa-circle-info"></i> <span>Profil</span>
             </button>
-            <button class="header-action-btn" id="btn-header-settings" title="Pengaturan Groq API Key">
+            <button class="header-action-btn" id="btn-header-settings" title="Pengaturan Groq API Key" aria-label="Pengaturan API">
               <i class="fa-solid fa-gear"></i>
             </button>
           </div>
@@ -178,7 +173,8 @@
               <textarea 
                 id="chat-input" 
                 class="chat-textarea" 
-                placeholder="Ketik pesan santai... (Enter untuk kirim)"
+                placeholder="Pesan..."
+                aria-label="Tulis pesan"
                 rows="1"
               ></textarea>
               <button type="submit" class="btn-send-message" id="btn-send" title="Kirim Pesan">
@@ -489,10 +485,11 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/sound.js?v=3.0"></script>
-  <script src="js/members.js?v=3.0"></script>
-  <script src="js/groq-api.js?v=3.0"></script>
-  <script src="js/app.js?v=3.0"></script>
+  <script src="js/sound.js?v=5.0"></script>
+  <script src="js/members.js?v=5.0"></script>
+  <script src="js/dialogue-engine.js?v=5.0"></script>
+  <script src="js/groq-api.js?v=5.0"></script>
+  <script src="js/app.js?v=5.0"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

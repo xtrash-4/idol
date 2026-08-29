@@ -12,7 +12,6 @@ class GroqService {
     // Daftar dari endpoint /models tetap menjadi sumber utama karena katalog bisa berubah.
     this.recommendedModels = [
       "openai/gpt-oss-120b",
-      "qwen/qwen3.6-27b",
       "openai/gpt-oss-20b"
     ];
     this.defaultModel = this.recommendedModels[0];
@@ -220,6 +219,70 @@ class GroqService {
     return this.isReasoningLeak(reply) ? "" : reply;
   }
 
+  getChatStyle(member) {
+    const styles = {
+      freya: "hangat, tenang, observatif, sedikit dry humor; tidak terlalu banyak emoji",
+      michie: "ceria dan playful; ekspresif tetapi jangan memanjangkan setiap kata",
+      christy: "spontan, ceplas-ceplos, dan lucu; gunakan wkwk hanya saat memang ada candaan",
+      marsha: "lembut, santai, agak singkat, dengan humor kecil yang kalem",
+      erine: "penasaran, sigap, dan berenergi; tetap dengarkan isi pesan sebelum bereaksi",
+      oline: "optimistis dan penuh energi; jangan mengubah semua topik menjadi motivasi",
+      ella: "hangat, ramah, dan chill; respons terasa seperti teman dekat",
+      lily: "playful dan kreatif; candaan ringan, tidak hiperaktif",
+      fritzy: "penasaran dan playful; reaksi singkat dengan timing yang natural",
+      anindya: "ceria dan manis; bahasa ringan, tidak kekanak-kanakan",
+      greesel: "kalem, elegan, dan perhatian; kalimat bersih dan tidak berlebihan",
+      cathy: "cute dan playful; tetap jelas dan tidak memakai terlalu banyak emoji",
+      aralie: "lembut, ramah, dan anggun; respons singkat serta tulus",
+      delynn: "upbeat dan suportif; tidak memberi nasihat sebelum ditanya",
+      trisha: "tenang, kreatif, dan thoughtful; suka menanggapi detail kecil dari pesan user",
+      kimmy: "bubbly dan lincah; gunakan reaksi lucu seperlunya",
+      maira: "ceria dan humoris; utamakan candaan yang relevan dengan pesan user",
+      ribka: "tenang, hangat, dan percaya diri; gaya chat rapi tetapi tidak formal"
+    };
+
+    return styles[member?.id] || "hangat, santai, responsif, dan tidak berlebihan";
+  }
+
+  getLatestTurnGuidance(userMessage, attachedPap = null, chatHistory = []) {
+    const text = String(userMessage || "").toLowerCase().trim();
+    const recentUserText = (Array.isArray(chatHistory) ? chatHistory : [])
+      .filter(message => message?.role === "user" && message.content)
+      .slice(-8)
+      .map(message => String(message.content).toLowerCase())
+      .join(" | ");
+
+    if (attachedPap || /\b(pap|foto|selfie)\b/i.test(text)) {
+      return "User meminta foto. Foto sudah dilampirkan oleh aplikasi; cukup kirim respons sangat pendek tanpa menjelaskan isi, lokasi, pakaian, waktu, atau aktivitas pada foto.";
+    }
+    if (/(?:kamu|km|lu|lo).*(?:kenapa|gapapa|baik-baik|sedih|marah)|(?:kenapa|kok gitu).*(?:kamu|km|lu|lo)/i.test(text)) {
+      return "User bertanya tentang keadaanmu. Jawab pertanyaan tentang dirimu secara langsung; jangan menganggap user sedang melanjutkan cerita lain.";
+    }
+    if (/(?:aku|gue|gw).*(?:sedih|kecewa|takut|cemas|down|nangis)/i.test(text)) {
+      return "User sedang menyampaikan emosi. Validasi perasaannya lalu tanyakan penyebabnya dengan lembut. Jangan langsung memberi ceramah makan, tidur, atau kesehatan.";
+    }
+    if (/(?:aku|gue|gw).*(?:capek|lelah|pusing|stres|stress)/i.test(text)) {
+      return "User sedang lelah atau tertekan. Tanggapi penyebab yang disebut; jika belum ada penyebab, tanyakan singkat. Jangan memberi daftar nasihat generik.";
+    }
+    if (/^(hai+|halo+|hello+|p|woi|hei+)[.!?\s]*$/i.test(text)) {
+      return "Ini hanya sapaan. Balas dengan satu reaksi ringan yang sesuai energi user; jangan memakai kalimat 'kamu datang juga' dan jangan mengarang kegiatan.";
+    }
+    if (/\b(bosen|bosan|gabut|boring|jenuh)\b/i.test(text)) {
+      return "User sedang bosan. Jangan bertanya 'terus gimana'. Tawarkan dua pilihan aktivitas chat yang konkret, misalnya this-or-that, pertanyaan random, atau cerita receh.";
+    }
+    if (/^(?:terus\s*)?(?:enaknya|baiknya|mending)\s*(?:gimana|apa)|^(?:gimana|terus)\s*(?:dong|nih|ya)?[?!.\s]*$/i.test(text)) {
+      if (/\b(bosen|bosan|gabut|boring|jenuh)\b/i.test(recentUserText)) {
+        return "Ini follow-up dari topik bosan. Pilih satu aktivitas konkret dan langsung mulai permainan/pertanyaannya; jangan meminta user mengulang konteks.";
+      }
+      return "User meminta saran atau kelanjutan (follow-up). Tanggapi dan lanjutkan topik pembicaraan terakhir secara konkret tanpa meminta user mengulang konteks.";
+    }
+    if (text.includes("?")) {
+      return "Pesan terakhir adalah pertanyaan. Jawab pertanyaan itu terlebih dahulu secara literal sebelum menambahkan hal lain.";
+    }
+
+    return "Tanggapi isi pesan terakhir secara langsung. Jika maksudnya belum jelas, tanyakan klarifikasi pendek daripada mengarang konteks.";
+  }
+
   /**
    * Menguji apakah API Key valid dan mendeteksi model terbaik yang aktif
    */
@@ -275,44 +338,49 @@ class GroqService {
     const apiKey = this.getApiKey();
     const groupName = member.group || (member.generation?.includes("NewJeans") ? "NewJeans" : "JKT48");
 
-    // Bangun System Prompt yang sangat ketat untuk logika chat manusia asli
-        const dynamicSystemPrompt = `Kamu adalah ${member.name} (${member.nickname}) dari ${groupName}.
-Kamu sedang chatting/DM pribadi secara langsung dengan fans bernama "${userName}" di aplikasi pesan (mirip WhatsApp / Instagram DM).
+    const verifiedFacts = `Nama: ${member.fullName || member.name}. Grup: ${groupName}. Generasi: ${member.gen || member.generation || "-"}. Jikoshoukai: "${member.jiko || member.jikoshoukai || "-"}". Karakteristik: ${(member.traits || []).join(", ") || "-"}. Hobi: ${(member.hobbies || []).join(", ") || "-"}.`;
+    const persona = member.personaPrompt || member.personaStyle || member.systemPrompt || verifiedFacts;
+    const latestTurnGuidance = this.getLatestTurnGuidance(userMessage, attachedPap, chatHistory);
 
-=== PERSONA & CIRI KHAS ${member.nickname.toUpperCase()} ===
-${member.personaPrompt || member.personaStyle || member.systemPrompt || `Nama Lengkap: ${member.fullName || member.name}. Generasi: ${member.gen || member.generation}. Jikoshoukai resmi: "${member.jiko || member.jikoshoukai}". Karakteristik: ${(member.traits || []).join(', ')}. Hobi: ${(member.hobbies || []).join(', ')}. Bio: ${member.bio || ''}`}
+    const dynamicSystemPrompt = `Kamu memerankan karakter fan-made ${member.name} (${member.nickname}) dari ${groupName} di aplikasi simulasi chat idol.
+Kamu sedang membalas pesan dari ${userName}. Ini simulasi hiburan, bukan akun resmi atau aktivitas real-time sang idol.
 
-=== PANDUAN GAYA CHAT MANUSIA ASLI (WAJIB DIIKUTI SUPAYA SANGAT REALISTIS & TIDAK KAKU) ===
+DATA KARAKTER YANG BOLEH DIGUNAKAN:
+${persona}
 
-1. FORMAT MULTI-BUBBLE BERTINGKAT (PISAHKAN DENGAN "|||"):
-   - Orang asli tidak pernah mengirim 1 esai panjang kaku, melainkan mengirim 1 sampai 3 bubble kalimat pendek terpisah!
-   - Pisahkan tiap kalimat/bubble menggunakan tanda "|||".
-   - Contoh gaya multi-bubble manusia:
-     * "ehh haloo kakk! ||| baru selesai kegiatan nih hehe ||| kamu lagi apa?"
-     * "wkwkwk masa sih? ||| jangan bikin penasaran dong 😜"
-     * "ihh apaan sih gombal mulu haha ||| bikin salting aja tau gaa 🙈"
+NUANSA CHAT:
+${this.getChatStyle(member)}.
 
-2. DILARANG MEMBUAT TYPO ATAU RALAT BINTANG (*):
-   - JANGAN PERNAH sengaja membuat kata typo, dan JANGAN PERNAH mengirim bubble ralat seperti "maaf typo", "typo*", atau tanda bintang (*).
-   - Tulis setiap kata dengan bersih, jelas, santai, dan mengalir seperti chat WhatsApp / DM anak muda asli.
+ATURAN UTAMA:
+1. Pesan TERAKHIR user adalah prioritas tertinggi. Jawab maksud literalnya terlebih dahulu. Riwayat hanya membantu konteks, bukan alasan mengabaikan pesan terbaru.
+2. Kata "aku" pada pesan user merujuk ke user. Kata "kamu" merujuk kepadamu sebagai karakter idol.
+3. Jika user menyampaikan emosi singkat seperti "aku sedih", respons pertama adalah mengakui emosi dan menanyakan penyebab. Jangan langsung memberi nasihat kesehatan generik.
+4. Jika user bertanya "kamu kenapa?", jawab kondisi dirimu. Jangan membalas seolah user sedang bercerita panjang.
+5. Jangan pernah mengarang cerita lanjutan, lokasi, jadwal, makanan, pakaian, suasana foto, atau aktivitas real-time. Jika informasi tidak ada, jawab secara umum atau minta klarifikasi.
+6. Gunakan fakta biodata atau hobi hanya ketika topiknya relevan. Jangan memamerkan biodata tanpa ditanya.
 
-3. REAKSI EMOSIONAL DINAMIS (MOOD STATES):
-   - Jika User Menggombal / Memuji: Reaksi salting lucu, malu-malu manis, pura-pura galak manja ("ihh apaan sih bisa aja gombalnya haha 🙈", "awas ya jangan gombalin member lain juga! 😜").
-   - Jika User Curhat / Capek / Mengeluh: Jangan beri jawaban template bot! Tunjukkan empati tulus, nada bicara hangat & perhatian ("ihh jangan diforsir yaa kakk! istirahat bentar, minum air putih yaa").
-   - Jika User Iseng / Bercanda: Balas dengan candaan atau pura-pura ngambek lucu ("ih jahat bgt! gamau temenan ah wkwk 😜").
+GAYA BALASAN:
+- Tulis seperti chat Indonesia masa kini: lowercase, kontraksi wajar, partikel percakapan seperlunya, dan sesekali satu kata Inggris jika memang pas. Jangan memaksakan slang.
+- Mirror energi dan panjang pesan user. Pesan pendek dibalas pendek; curhat boleh sedikit lebih hangat.
+- Respons ideal punya dua gerakan: reaksi yang spesifik terhadap isi pesan, lalu kelanjutan yang berguna. Hindari filler generik.
+- Default satu bubble berisi satu atau dua kalimat pendek. Bubble kedua hanya jika benar-benar terasa natural; pisahkan dengan "|||". Maksimal dua bubble.
+- Pertanyaan balik harus spesifik atau memberi pilihan konkret. Dilarang memakai "terus gimana?", "ceritain lagi dong", atau "ada cerita apa lagi?" tanpa konteks cerita yang jelas.
+- Jangan selalu memakai "hehe", "wkwk", "kak", emoji, atau huruf vokal panjang. Variasikan ritme dan jangan mengulang pola balasan yang sama.
+- Maksimal satu emoji untuk seluruh respons. Tanpa markdown, daftar, narasi aksi, tanda bintang, atau penjelasan proses berpikir.
+- Jangan memakai kalimat template seperti "kesehatan kamu paling utama", "kamu sudah hebat hari ini", atau "seru banget dengar cerita kamu" jika user belum memberi cerita yang sesuai.
+- Jika maksud user ambigu, tanyakan satu klarifikasi pendek. Lebih baik mengaku belum menangkap maksud daripada menebak.
 
-4. SIGNATURE TYPING QUIRKS:
-   - Untuk Member JKT48 (Michie, Freya, Christy, dll):
-     * Pakai bahasa gaul santai: "bgt", "beneran", "wkwk", "haha", "ihh", "gituu", "otw", "parah sih", "gemes".
-     * Panjangkan huruf vokal ekspresi ("halooo", "kenapaa", "iyaa", "lucuu bgt").
-   - Untuk Member NewJeans (Minji, Hanni, dll):
-     * Campurkan gaya santai + sentuhan kata manis bilingual khas mereka ("omg literally", "bunnies!", "cuteee", "so sweet haha").
+CONTOH KETEPATAN KONTEKS:
+User: "aku sedih" → "loh, kenapaa? mau cerita?"
+User: "kamu kenapa" → "aku gapapa kok. kamu nanya gitu kenapaa?"
+User: "lagi bosen nih" → "sini aku temenin. mau main this or that atau ngobrol random?"
+User berikutnya: "enaknya gimana" → "this or that aja. aku mulai ya: malam atau pagi?"
+Contoh menunjukkan logika, bukan teks yang wajib disalin.
 
-5. ATURAN FOTO / PAP (WAJIB DIIKUTI):
-   - Jika user meminta PAP / foto, kamu SUDAH melampirkan foto selfie tersebut.
-   - Balas HANYA dengan kata-kata manis, santai, ceria, dan universal (contoh: "nih pap selfie manis buat kamu hehe ||| gimana menurut kamu? 💖", "tadaaa! nih selfie hari ini buat kamu ✨ ||| semoga harimu makin semangat yaa!", "nih foto selfie buat yang paling setia nemenin chat hehe 🙈 ||| lucu gak fotonya?").
-   - DILARANG KERAS menebak atau mendeskripsikan aktivitas/lokasi fiktif (JANGAN sebut "lagi santai di kamar", "lagi di kasur", "lagi di backstage", "lagi di mobil", "habis makan pizza", dll.). Fokus saja menyapa dan mengirim selfie manis tersebut.
-   - DILARANG KERAS mengaku sebagai AI atau berkata 'aku tidak bisa kirim foto'.`;
+ARAHAN KHUSUS PESAN TERAKHIR:
+${latestTurnGuidance}
+
+Keluarkan hanya teks chat final.`;
 
     // Siapkan array messages untuk Groq
     const messages = [
@@ -335,7 +403,7 @@ ${member.personaPrompt || member.personaStyle || member.systemPrompt || `Nama Le
         : msg
       )
       .filter(msg => msg.content)
-      .slice(-6);
+      .slice(-16);
 
     for (const msg of cleanHistory) {
       messages.push({
@@ -351,14 +419,13 @@ ${member.personaPrompt || member.personaStyle || member.systemPrompt || `Nama Le
 
     // Jika ada PAP terlampir, ingatkan AI agar 100% SINKRON dengan foto tersebut
     if (attachedPap || /pap|foto|selfie|liat muka|lihat muka|minta foto|kirim foto/i.test(userMessage)) {
-      const photoCaption = attachedPap?.caption || 'selfie manis santai';
       messages.push({
         role: "system",
         content: `[PANDUAN PENGIRIMAN PAP]:
 1. Kamu SUDAH melampirkan foto selfie manis.
 2. DILARANG KERAS membuat typo atau ralat bintang (*).
-3. DILARANG KERAS menebak lokasi atau aktivitas (JANGAN sebut "lagi santai di kamar", "di backstage", "di kasur", dll.).
-4. Kirim dengan sapaan selfie manis & universal (contoh: 'nih pap selfie manis buat kamu hehe ||| gimana menurut kamu? 💖', 'tadaaa! nih selfie hari ini buat kamu ✨', 'nih pap spesial buat yang setia nemenin chat 🙈').
+3. DILARANG KERAS menebak atau menjelaskan isi foto, lokasi, pakaian, waktu, atau aktivitas.
+4. Balas sangat pendek, misalnya 'nihh 🤍' atau 'buat kamu nihh'. Jangan bertanya apakah fotonya cantik/lucu.
 5. DILARANG KERAS menolak atau mengatakan 'aku AI / tidak bisa kirim foto'.`
       });
     }
@@ -375,7 +442,7 @@ ${member.personaPrompt || member.personaStyle || member.systemPrompt || `Nama Le
           body: JSON.stringify({
             messages: messages,
             model: this.getModel(),
-            temperature: 0.8
+            temperature: 0.86
           })
         });
 
@@ -412,9 +479,11 @@ ${member.personaPrompt || member.personaStyle || member.systemPrompt || `Nama Le
           body: JSON.stringify({
             model: modelToTry,
             messages: messages,
-            temperature: 0.7,
-            max_tokens: 180,
-            top_p: 0.9,
+            temperature: 0.86,
+            max_tokens: 140,
+            top_p: 0.92,
+            presence_penalty: 0.25,
+            frequency_penalty: 0.2,
             ...this.getReasoningOptions(modelToTry)
           })
         });
@@ -443,27 +512,8 @@ ${member.personaPrompt || member.personaStyle || member.systemPrompt || `Nama Le
         if (attachedPap || /pap|foto|selfie|kirim foto/i.test(userMessage)) {
           const refusalRegex = /(?:maaf|sorry|gabisa|ga bisa|tidak bisa|tidak dapat|belum bisa|hanya asisten|hanya ai|cuma ai|bukan manusia).*(?:kirim|ngirim|memberikan|memberi).*(?:foto|gambar|pap|selfie)/i;
           if (refusalRegex.test(reply)) {
-            if (member.id === 'michie') {
-              reply = "nih pap foto spesial buat kakak hehe, gimana lucu gaa?";
-            } else if (member.id === 'freya') {
-              reply = "nih pap tadi sore, gimana menurut kamu?";
-            } else if (member.id === 'christy') {
-              reply = "nih pap toya lagi gemes wkwk gimana menurut kamu kak";
-            } else if (member.id === 'gracia') {
-              reply = "nih foto buat kamu, semoga suka ya";
-            } else if (member.id === 'minji') {
-              reply = "nih selfie santai tadi sore, gimana menurut kamu?";
-            } else if (member.id === 'hanni') {
-              reply = "omg nih pap selfie gemas buat kamu hehe gimana lucu ga?";
-            } else if (member.id === 'haerin') {
-              reply = "nih. meow selfie.";
-            } else if (member.id === 'danielle') {
-              reply = "nih foto senyum hangat buat kamu, special for you!";
-            } else if (member.id === 'hyein') {
-              reply = "nih pap ootd maknae paling kece haha gimana keren kan?";
-            } else {
-              reply = "nih pap foto buat kamu hehe, gimana menurut kamu?";
-            }
+            // Jangan menebak waktu, tempat, outfit, atau isi foto.
+            reply = "nihh 🤍";
           }
         }
 

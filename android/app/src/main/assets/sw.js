@@ -1,14 +1,15 @@
-const CACHE_NAME = "idolchat-v3.0-jkt48-biodata";
+const CACHE_NAME = "idolchat-v5.0-natural-light";
 const ASSETS = [
   "./",
   "./index.html",
-  "./css/style.css?v=3.0",
-  "./js/sound.js?v=3.0",
-  "./js/members.js?v=3.0",
-  "./js/groq-api.js?v=3.0",
-  "./js/app.js?v=3.0",
+  "./css/style.css?v=5.0",
+  "./js/sound.js?v=5.0",
+  "./js/members.js?v=5.0",
+  "./js/dialogue-engine.js?v=5.0",
+  "./js/groq-api.js?v=5.0",
+  "./js/app.js?v=5.0",
   "./manifest.json",
-  "./jkt48 logo.png"
+  "./jkt48 logo.jpg"
 ];
 
 self.addEventListener("install", (e) => {

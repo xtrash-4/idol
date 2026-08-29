@@ -1,7 +1,7 @@
 {
-  "name": "MPRUYY HALU - Chat Idol JKT48 & NewJeans",
+  "name": "MPRUYY HALU - Simulasi Chat Idol",
   "short_name": "MPRUYY HALU",
-  "description": "Aplikasi Chat 1-on-1 Simulasi Idol JKT48 & NewJeans dengan Foto PAP HD & Instagram Story 24 Jam.",
+  "description": "Pengalaman simulasi chat idol fan-made dengan percakapan personal, Story, dan PAP.",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait-primary",
@@ -9,15 +9,15 @@
   "theme_color": "#070913",
   "icons": [
     {
-      "src": "jkt48 logo.png",
+      "src": "jkt48 logo.jpg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "jkt48 logo.png",
+      "src": "jkt48 logo.jpg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     }
   ],
