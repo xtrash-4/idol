@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 ==============================================================================
-   🌸 IDOLCHAT - PURE OFFICIAL PHOTO HARVESTER (DIRECT IG & X ONLY) 🌸
+   🌸 IDOLCHAT - LIVE VISIBLE BROWSER MEMBER PHOTO HARVESTER 🌸
 ==============================================================================
-Tool 100% MURNI & LANGSUNG dari Profil Resmi Member:
-1. Instagram: Membuka profil resmi, memutar seluruh Sorotan & mengekstrak seluruh
-   postingan Feed & slide Carousel langsung dari CDN Meta (cdninstagram.com).
-2. Tanpa pihak ketiga, tanpa pencarian luar, tanpa video, 100% foto asli member!
-3. Sistem Anti-Duplikat MD5 Binary Hash.
-4. Otomatis set Avatar, update database js/members.js & Android assets.
+Membuka browser Google Chrome secara LANGSUNG dan TERLIHAT di layar Anda:
+1. Anda bisa melihat sendiri Chrome membuka Instagram resmi member.
+2. Melihat otomatis memutar Sorotan & seluruh Postingan Feed & Carousel.
+3. Mengunduh foto HD langsung dari server resmi Meta (cdninstagram.com).
+4. 100% Anti-Duplikat (MD5 Binary Hash) & Bebas Video.
+5. Otomatis pasang Avatar terbaik & update database js/members.js + Android assets.
 """
 
 import sys
@@ -77,8 +77,8 @@ MEMBERS_PRESET = {
 def banner():
     print("""
 ╔════════════════════════════════════════════════════════════════════════╗
-║             🌸 IDOLCHAT - DIRECT MEMBER PHOTO HARVESTER 🌸             ║
-║     100% MURNI Langsung dari Profil Resmi Member (Sorotan & Feed)      ║
+║         🌸 IDOLCHAT - LIVE VISIBLE INSTAGRAM PHOTO HARVESTER 🌸         ║
+║     Membuka Google Chrome LANGSUNG di Layar Anda & Mengunduh Foto      ║
 ║        100% Anti-Duplikat (MD5 Hash) • Foto HD • Tanpa Video           ║
 ╚════════════════════════════════════════════════════════════════════════╝
 """)
@@ -89,7 +89,7 @@ def select_target():
     print("------------------------------------------------------------------------")
     for k, v in MEMBERS_PRESET.items():
         print(f"  [{k}] {v['name']} (ID: {v['id']})")
-    print("  [9] Custom Member (Input link manual)")
+    print("  [9] Custom Member (Input URL manual)")
     print("------------------------------------------------------------------------")
     
     choice = input("Pilih nomor (1-9) [1]: ").strip()
@@ -149,14 +149,15 @@ def harvest_member(target):
         
     raw_photo_urls = set()
     
-    # 2. Buka Instagram Resmi secara langsung via Playwright
-    print(f"\n[2/4] Membuka Instagram Resmi: {target['ig_url']} ...")
+    # 2. Buka Instagram Resmi secara LANGSUNG & TERLIHAT (headless=False)
+    print(f"\n[2/4] 🌐 Membuka Google Chrome di layar Anda ke Instagram: {target['ig_url']} ...")
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            # headless=False agar jendela browser Chrome muncul langsung di layar user!
+            browser = p.chromium.launch(headless=False)
             context = browser.new_context(
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-                viewport={"width": 1366, "height": 900}
+                viewport={"width": 1280, "height": 800}
             )
             page = context.new_page()
             
@@ -191,8 +192,8 @@ def harvest_member(target):
                 for _ in range(90):
                     if "/stories/" not in page.url:
                         break
-                    page.mouse.click(850, 450)
-                    time.sleep(0.25)
+                    page.mouse.click(800, 400)
+                    time.sleep(0.3)
                 print(f"  [✓] Foto tertangkap dari Sorotan: {len(raw_photo_urls)}")
                 
             # B. Buka Postingan Feed & Jelajahi seluruh Carousel
@@ -211,19 +212,20 @@ def harvest_member(target):
                         c_next = page.locator("div[role='dialog'] button[aria-label='Next'], div[role='dialog'] button[aria-label='Selanjutnya'], div[role='dialog'] button._afxw")
                         if c_next.count() > 0 and c_next.first.is_visible():
                             c_next.first.click()
-                            time.sleep(0.2)
+                            time.sleep(0.25)
                         else:
                             break
                             
                     # Pindah ke postingan berikutnya
                     page.keyboard.press("ArrowRight")
-                    time.sleep(0.3)
+                    time.sleep(0.35)
                     
             print(f"  [✓] Total Foto Murni Tertangkap dari Instagram: {len(raw_photo_urls)}")
+            time.sleep(1.0)
             browser.close()
             
     except Exception as e:
-        print("  [!] Notice:", e)
+        print("  [!] Browser notice:", e)
         
     print(f"\n[3/4] Mengunduh {len(raw_photo_urls)} foto dengan MD5 Binary Deduplication...")
     
