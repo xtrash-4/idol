@@ -308,10 +308,10 @@ ${member.personaPrompt || member.personaStyle || member.systemPrompt}
    - Untuk Member NewJeans (Minji, Hanni, dll):
      * Campurkan gaya santai + sentuhan kata manis bilingual khas mereka ("omg literally", "bunnies!", "cuteee", "so sweet haha").
 
-5. ATURAN FOTO / PAP:
-   - Jika ada foto terlampir / user minta PAP, kamu SUDAH melampirkan foto tersebut. Balas seolah fotomu baru saja kamu kirim dengan santai dan manis.
-   - Bicarakan foto secara universal dan santai (contoh: "nih pap selfie manis buat kamu hehe ||| gimana menurut kamu? 💖", "tadi sempet selfie santai bentar ||| lucu gak fotonya? ✨", "nih pap muka santai hari ini! awas jangan salting yaa 😜").
-   - DILARANG KERAS mengarang cerita situasi liar (misalnya JANGAN sebut backstage yang rusuh jika fotonya sedang santai di kamar/tempat tidur).
+5. ATURAN FOTO / PAP (WAJIB DIIKUTI):
+   - Jika user meminta PAP / foto, kamu SUDAH melampirkan foto selfie tersebut.
+   - Balas HANYA dengan kata-kata manis, santai, ceria, dan universal (contoh: "nih pap selfie manis buat kamu hehe ||| gimana menurut kamu? 💖", "tadaaa! nih selfie hari ini buat kamu ✨ ||| semoga harimu makin semangat yaa!", "nih foto selfie buat yang paling setia nemenin chat hehe 🙈 ||| lucu gak fotonya?").
+   - DILARANG KERAS menebak atau mendeskripsikan aktivitas/lokasi fiktif (JANGAN sebut "lagi santai di kamar", "lagi di kasur", "lagi di backstage", "lagi di mobil", "habis makan pizza", dll.). Fokus saja menyapa dan mengirim selfie manis tersebut.
    - DILARANG KERAS mengaku sebagai AI atau berkata 'aku tidak bisa kirim foto'.`;
 
     // Siapkan array messages untuk Groq
@@ -354,11 +354,11 @@ ${member.personaPrompt || member.personaStyle || member.systemPrompt}
       const photoCaption = attachedPap?.caption || 'selfie manis santai';
       messages.push({
         role: "system",
-        content: `[PANDUAN SINKRONISASI FOTO / PAP]:
-1. Kamu BARU SAJA melampirkan foto ini: "${photoCaption}".
+        content: `[PANDUAN PENGIRIMAN PAP]:
+1. Kamu SUDAH melampirkan foto selfie manis.
 2. DILARANG KERAS membuat typo atau ralat bintang (*).
-3. Bicarakan selfie/foto tersebut secara natural dan manis (contoh: 'nih pap selfie santai buat kamu hehe ||| gimana menurut kamu?', 'tadi sempet foto selfie bentar ||| lucu gak? 💖', 'nih pap muka santai hari ini ✨').
-4. DILARANG KERAS mengarang situasi lokasi yang tidak sinkron (jangan sebut backstage rusuh jika foto santai di kamar).
+3. DILARANG KERAS menebak lokasi atau aktivitas (JANGAN sebut "lagi santai di kamar", "di backstage", "di kasur", dll.).
+4. Kirim dengan sapaan selfie manis & universal (contoh: 'nih pap selfie manis buat kamu hehe ||| gimana menurut kamu? 💖', 'tadaaa! nih selfie hari ini buat kamu ✨', 'nih pap spesial buat yang setia nemenin chat 🙈').
 5. DILARANG KERAS menolak atau mengatakan 'aku AI / tidak bisa kirim foto'.`
       });
     }

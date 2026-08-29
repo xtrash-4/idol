@@ -228,10 +228,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="lobby-card-info">
           <div class="lobby-card-top">
             <h4 class="lobby-card-name">${member.nickname || member.name}</h4>
-            <span class="lobby-card-time">${previewTime}</span>
           </div>
           <span class="lobby-card-gen">${member.group || "JKT48"} • ${member.generation}</span>
-          <p class="lobby-card-last-msg">${escapeHtml(previewText)}</p>
+          <p class="lobby-card-jiko" title="${escapeHtml(member.jikoshoukai || '')}">"${escapeHtml(member.jikoshoukai || '')}"</p>
           <button type="button" class="btn-lobby-chat-start">
             <i class="fa-solid fa-comment-dots"></i> Mulai Chat
           </button>
@@ -569,102 +568,65 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // 2. PAP / Foto Requests (Vast, Ultra-Natural Conversational Decks)
-    if (attachedPap || /pap|foto|selfie|muka|wajah|ootd/i.test(t)) {
-      if (/ootd|baju|pake apa/i.test(t)) {
-        if (isNewJeans) {
-          return pickDeck(`${id}_pap_ootd`, [
-            `here's my casual ootd for today bunnies! 👗✨ ||| gimana, cute gak outfitnya? ||| hope you like it hehe 💖`,
-            `spill ootd santai hari ini hehe ||| suka gak gaya outfit kayak gini? 🎧✨`
-          ]);
-        } else {
-          return pickDeck(`${id}_pap_ootd`, [
-            `nih ootd santai aku hari ini! 👗✨ ||| gimana, cocok gak sama aku? ||| menurut kamu bagusan pake outfit ini atau yang kemarin? hehe`,
-            `tadaaa! nih pap ootd sebelum kegiatan ||| lucu kan bajunya wkwk ||| gimana menurut kamu kak? 💖`,
-            `spill outfit santai hari ini hehe ||| simpel aja sih, yang penting nyaman dipakai ✨`
-          ]);
-        }
-      }
-
-      if (/malam|tidur|ngantuk|good night/i.test(t)) {
-        if (isNewJeans) {
-          return pickDeck(`${id}_pap_night`, [
-            `getting ready for bed now bunnies 🥱🌙 ||| here's a quick night selfie for you! ||| sweet dreams and sleep tight yaa ✨`,
-            `udah cuci muka nih siap-siap merem ✨ ||| good night bunnies, mimpi indah yaa! 🌙💖`
-          ]);
-        } else {
-          return pickDeck(`${id}_pap_night`, [
-            `mata udah sepet banget sebenernya 🥱 ||| tapi gapapa deh nih pap sebelum tidur buat kamu wkwk ||| good night yaa kakk, mimpi indah! 🌙✨`,
-            `udah rebahan di kasur nih siap-siap tidur ||| nih selfie santai sebelum merem ||| jangan begadang ya kamu, istirahat yuk! 💖`,
-            `selamat istirahat kakk! nih pap ngantuk dikit hehe ||| recharge energi buat besok yaa ✨🌙`
-          ]);
-        }
-      }
-
-      if (/muka|wajah|close up|close-up|selfie|gemes|lucu|senyum/i.test(t)) {
-        if (id === "michie") {
-          return pickDeck(`${id}_pap_face`, [
-            `nih close-up muka gemoy michie wkwk 🙈 ||| gimana, pipinya keliatan cubitable gak? haha ||| jangan dizoom-zoom yaa!`,
-            `selfie close up khusus buat kamu hehe ||| awas jangan salting ya liatnya 😜💖`,
-            `nih muka santai aku hari ini ||| tetep manis kan hehe ||| gimana menurut kamu kak?`,
-            `pas banget tadi selfie bentar ||| nih khusus buat yang minta pap muka lucu haha ✨`
-          ]);
-        } else if (id === "freya") {
-          return pickDeck(`${id}_pap_face`, [
-            `nih close up senyum karamel dari aku ✨ ||| semoga harimu jadi lebih seger yaa liat ini hehe`,
-            `tadi sempet foto selfie close-up bentar ||| spesial buat kamu, disimpan baik-baik yaa 🤍`,
-            `nih selfie santai dari aku ||| jangan lupa senyum juga ya hari ini! ✨`
-          ]);
-        } else if (id === "christy") {
-          return pickDeck(`${id}_pap_face`, [
-            `hahaha nih muka toya yang paling gemes 😝 ||| awas ketawa ya! wajib bilang cantik pokoknya wkwk 💖`,
-            `tadaaa! selfie toya close-up ||| jangan lupa bayar goceng ya wkwk 🤣`,
-            `nih selfie random hari ini buat kamu ||| lucu gak mukaku? wkwk 💖`
-          ]);
-        } else if (isNewJeans) {
-          return pickDeck(`${id}_pap_face`, [
-            `close-up selfie for bunnies! 🐰✨ ||| how does it look? cute gaa? 💖`,
-            `quick face selfie before practice! ||| hope it makes your day brighter hehe ✨`
-          ]);
-        } else {
-          return pickDeck(`${id}_pap_face`, [
-            `nih selfie close-up spesial buat kamu hehe ||| gimana menurut kamu? manis gak? 💖`,
-            `tadi sempet foto selfie bentar ||| spesial buat yang paling setia nemenin chat hehe ✨`,
-            `nih pap muka santai hari ini ||| semoga suka yaa! 🤍`
-          ]);
-        }
-      }
-
-      // Natural General PAP
+    // 2. PAP / Foto Requests (Pure, Authentic Idol Dialogue WITHOUT Guessing Locations/Activities)
+    if (attachedPap || /pap|foto|selfie|muka|wajah|ootd|spill/i.test(t)) {
       if (id === "michie") {
         return pickDeck(`${id}_pap_gen`, [
           `nih pap selfie manis buat kakak hehe ||| gimana lucu gak fotonya? 😜 ||| jangan disebar-sebar yaa wkwk`,
-          `tadi sempet selfie santai bentar pas istirahat ||| spesial dikirim buat kamu doang hehe 💖 ||| kamu lagi apa tuh?`,
-          `nih selfie santai aku hari ini ||| gimana menurut kamu kak? 💖`,
-          `kebetulan tadi sempet foto buat update, nih buat kamu duluan ✨ ||| gemes kan? hehe`
+          `tadi sempet selfie santai bentar ||| spesial dikirim buat kamu doang nih hehe 💖 ||| gimana menurut kamu?`,
+          `tadaaa! nih selfie manis hari ini buat kamu ✨ ||| manis kan? hehe`,
+          `nih pap selfie buat kamu! awas jangan salting yaa 😜 ||| semoga bikin harimu makin semangat! 💖`,
+          `nih foto selfie buat yang paling setia nemenin chat hehe 🙈 ||| lucu gak fotonya?`
         ]);
       } else if (id === "freya") {
         return pickDeck(`${id}_pap_gen`, [
           `nih selfie santai dari aku ||| gimana, keliatan seger kan fotonya? haha ✨ ||| semoga harimu makin semangat ya!`,
           `tadi sempet foto selfie santai bentar ||| spesial buat kamu, jangan lupa disimpan ya hehe 🤍`,
-          `nih pap santai hari ini ||| gimana menurut kamu? manis gak? ✨`
+          `tadaaa! nih selfie manis hari ini ✨ ||| jangan lupa senyum juga ya kamu!`,
+          `nih pap foto santai dari aku hehe ||| gimana menurut kamu? manis gak? 💖`
         ]);
       } else if (id === "christy") {
         return pickDeck(`${id}_pap_gen`, [
-          `hahaha nih pap muka aku ||| gemes kan? jangan bilang jelek ya awas lu 😝 ||| lagi ngapain tuh kamu?`,
-          `selfie random hari ini buat kamu ||| lucu gak fotoku? wkwk 💖`,
-          `nih pap toya buat kamu! ||| awas kangen ya wkwk 😜`
+          `hahaha nih pap selfie muka toya 😝 ||| gemes kan? wajib bilang cantik pokoknya wkwk 💖`,
+          `tadaaa! selfie toya hari ini buat kamu ||| lucu gak fotoku? wkwk 💖`,
+          `nih pap selfie buat kamu! awas kangen ya wkwk 😜 ||| lagi apa kamu sekarang?`
+        ]);
+      } else if (id === "gracia") {
+        return pickDeck(`${id}_pap_gen`, [
+          `nih selfie manis dari aku 🌻 ||| semoga senyuman ini bikin harimu makin ceria yaa! ✨`,
+          `spesial buat kamu yang selalu setia dukung aku 🤍 ||| disimpan baik-baik yaa hehe`
+        ]);
+      } else if (id === "ella") {
+        return pickDeck(`${id}_pap_gen`, [
+          `tadaaa! selfie cabe rawit siap menyemangati harimu 🌶️✨ ||| lucu kan wkwk 💖`,
+          `nih pap selfie santai dari aku hehe ||| gimana, imut gak fotonya? 😜`
+        ]);
+      } else if (id === "gita") {
+        return pickDeck(`${id}_pap_gen`, [
+          `nih foto selfie santai dari aku 🤍 ||| semoga harimu menyenangkan ya.`,
+          `tadi sempet selfie bentar ||| spesial buat kamu, disimpan ya. ✨`
+        ]);
+      } else if (id === "marsha") {
+        return pickDeck(`${id}_pap_gen`, [
+          `nih selfie manis permen kapas buat kamu 🍬✨ ||| semoga suka yaa hehe 💖`,
+          `tadaaa! pap selfie santai dari aku ||| gemes gak menurut kamu? 🤍`
+        ]);
+      } else if (id === "muthe") {
+        return pickDeck(`${id}_pap_gen`, [
+          `nih senyuman mutiara hari ini buat kamu ☀️✨ ||| semoga harimu makin cerah yaa!`,
+          `tadaaa! pap selfie manis dari aku ||| semangaat terus buat hari ini yaa 💖`
         ]);
       } else if (isNewJeans) {
         return pickDeck(`${id}_pap_gen`, [
-          `here's a special selfie for you bunnies! 🐰 ||| hope it brightens your day hehe ✨ ||| what are you doing right now?`,
-          `tadi sempet selfie bentar di backstage ||| how does it look? cute gaa? 💖`
+          `here's a special selfie for you bunnies! 🐰✨ ||| hope it makes your day brighter hehe 💖`,
+          `tadaaa! selfie hari ini buat kamu 🎧✨ ||| how does it look? cute gaa? 💖`,
+          `quick selfie for bunnies! ||| sweet smiles for you ✨🐰 ||| what are you doing right now?`
         ]);
       } else {
         return pickDeck(`${id}_pap_gen`, [
           `nih pap selfie santai dari aku hehe ||| gimana menurut kamu? 💖 ||| semoga suka yaa!`,
-          `tadi sempet foto bentar pas selesai kegiatan ||| lucu gak fotonya? ✨`,
-          `nih foto candid santai tadi siang ✌️ ||| lagi apa kamu sekarang?`
+          `tadi sempet foto selfie bentar ||| spesial buat kamu nih ✨`,
+          `tadaaa! selfie manis hari ini ✌️ ||| semoga bikin harimu makin semangat ya!`
         ]);
       }
     }
